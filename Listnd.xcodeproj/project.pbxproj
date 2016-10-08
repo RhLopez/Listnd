@@ -15,6 +15,14 @@
 		DD8F04031DA23267000837DE /* ListndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04021DA23267000837DE /* ListndTests.swift */; };
 		DD8F040E1DA23267000837DE /* ListndUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F040D1DA23267000837DE /* ListndUITests.swift */; };
 		DD8F041F1DA2351E000837DE /* FavoriteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F041E1DA2351E000837DE /* FavoriteTableViewController.swift */; };
+		DD8F04221DA23853000837DE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04211DA23853000837DE /* Constants.swift */; };
+		DD8F04241DA23880000837DE /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04231DA23880000837DE /* SpotifyAPI.swift */; };
+		DD8F04271DA23910000837DE /* SpotifyAPIConvinience.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */; };
+		DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9A1DA856D900DE9A4A /* Model.xcdatamodeld */; };
+		DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9D1DA858E900DE9A4A /* Artist+CoreDataClass.swift */; };
+		DDB14FA01DA858E900DE9A4A /* Artist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9E1DA858E900DE9A4A /* Artist+CoreDataProperties.swift */; };
+		DDB14FA21DA8592A00DE9A4A /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14FA11DA8592A00DE9A4A /* CoreDataStack.swift */; };
+		DDBA01CA1DA4BE7B007FE696 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +57,14 @@
 		DD8F040D1DA23267000837DE /* ListndUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListndUITests.swift; sourceTree = "<group>"; };
 		DD8F040F1DA23267000837DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD8F041E1DA2351E000837DE /* FavoriteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FavoriteTableViewController.swift; path = ../FavoriteTableViewController.swift; sourceTree = "<group>"; };
+		DD8F04211DA23853000837DE /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = ../Constants.swift; sourceTree = "<group>"; };
+		DD8F04231DA23880000837DE /* SpotifyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SpotifyAPI.swift; path = ../SpotifyAPI.swift; sourceTree = "<group>"; };
+		DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPIConvinience.swift; sourceTree = "<group>"; };
+		DDB14F9B1DA856D900DE9A4A /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		DDB14F9D1DA858E900DE9A4A /* Artist+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Artist+CoreDataClass.swift"; path = "Listnd/Artist+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DDB14F9E1DA858E900DE9A4A /* Artist+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Artist+CoreDataProperties.swift"; path = "Listnd/Artist+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		DDB14FA11DA8592A00DE9A4A /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = Listnd/CoreDataStack.swift; sourceTree = "<group>"; };
+		DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +95,10 @@
 		DD8F03E11DA23267000837DE = {
 			isa = PBXGroup;
 			children = (
+				DDB14F9D1DA858E900DE9A4A /* Artist+CoreDataClass.swift */,
+				DDB14F9E1DA858E900DE9A4A /* Artist+CoreDataProperties.swift */,
+				DDB14F9A1DA856D900DE9A4A /* Model.xcdatamodeld */,
+				DDB14FA11DA8592A00DE9A4A /* CoreDataStack.swift */,
 				DD8F03EC1DA23267000837DE /* Listnd */,
 				DD8F04011DA23267000837DE /* ListndTests */,
 				DD8F040C1DA23267000837DE /* ListndUITests */,
@@ -100,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				DD8F03ED1DA23267000837DE /* AppDelegate.swift */,
+				DD8F04251DA23888000837DE /* SpotifyAPI */,
 				DD8F04201DA23549000837DE /* Controllers */,
 				DD8F03F11DA23267000837DE /* Main.storyboard */,
 				DD8F03F41DA23267000837DE /* Assets.xcassets */,
@@ -131,9 +152,20 @@
 			isa = PBXGroup;
 			children = (
 				DD8F03EF1DA23267000837DE /* SearchViewController.swift */,
+				DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */,
 				DD8F041E1DA2351E000837DE /* FavoriteTableViewController.swift */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		DD8F04251DA23888000837DE /* SpotifyAPI */ = {
+			isa = PBXGroup;
+			children = (
+				DD8F04211DA23853000837DE /* Constants.swift */,
+				DD8F04231DA23880000837DE /* SpotifyAPI.swift */,
+				DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */,
+			);
+			name = SpotifyAPI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,9 +305,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD8F04241DA23880000837DE /* SpotifyAPI.swift in Sources */,
 				DD8F03F01DA23267000837DE /* SearchViewController.swift in Sources */,
+				DDB14FA01DA858E900DE9A4A /* Artist+CoreDataProperties.swift in Sources */,
+				DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */,
 				DD8F03EE1DA23267000837DE /* AppDelegate.swift in Sources */,
+				DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */,
+				DDB14FA21DA8592A00DE9A4A /* CoreDataStack.swift in Sources */,
+				DD8F04271DA23910000837DE /* SpotifyAPIConvinience.swift in Sources */,
 				DD8F041F1DA2351E000837DE /* FavoriteTableViewController.swift in Sources */,
+				DD8F04221DA23853000837DE /* Constants.swift in Sources */,
+				DDBA01CA1DA4BE7B007FE696 /* SearchTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,6 +568,7 @@
 				DD8F04141DA23267000837DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DD8F04151DA23267000837DE /* Build configuration list for PBXNativeTarget "ListndTests" */ = {
 			isa = XCConfigurationList;
@@ -536,6 +577,7 @@
 				DD8F04171DA23267000837DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DD8F04181DA23267000837DE /* Build configuration list for PBXNativeTarget "ListndUITests" */ = {
 			isa = XCConfigurationList;
@@ -544,8 +586,23 @@
 				DD8F041A1DA23267000837DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		DDB14F9A1DA856D900DE9A4A /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				DDB14F9B1DA856D900DE9A4A /* Model.xcdatamodel */,
+			);
+			currentVersion = DDB14F9B1DA856D900DE9A4A /* Model.xcdatamodel */;
+			name = Model.xcdatamodeld;
+			path = Listnd/Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = DD8F03E21DA23267000837DE /* Project object */;
 }

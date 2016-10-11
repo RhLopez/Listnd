@@ -40,12 +40,49 @@ extension SpotifyAPI {
         
     }
     
-    func getAlbums(_ artistId: String, completionHandlerForAlbums: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
+    func getAlbums(_ artistId: String, completionHandlerForAlbums: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
+        let parameters = [
+            Constants.ParametersKeys.AlbumType: Constants.ParameterValues.Album,
+            Constants.ParametersKeys.Market: Constants.ParameterValues.US
+        ]
         
+        let path = Constants.ParametersKeys.ArtistAlbums.replacingOccurrences(of: "{id}", with: artistId)
+        
+        taskForGetMethod(parameters as [String : AnyObject], path: path) { (success, errorMessage, data) in
+            if success {
+                self.parseAlbums(data as AnyObject?, completionHandlerforAlbumParsing: { (success, errorString) in
+                    if success {
+                        completionHandlerForAlbums(true, nil)
+                    } else {
+                        completionHandlerForAlbums(false, errorMessage)
+                    }
+                })
+            } else {
+                completionHandlerForAlbums(false, errorMessage)
+            }
+        }
     }
     
-    func getTracks(_ albumId: String, completionHandlerForTracks: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
+    func getTracks(_ albumId: String, completionHandlerForTracks: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
+        let parameters = [
+            Constants.ParametersKeys.Market: Constants.ParameterValues.US
+        ]
         
+        let path = Constants.ParametersKeys.AlbumTracks.replacingOccurrences(of: "{id}", with: albumId)
+        
+        taskForGetMethod(parameters as [String : AnyObject], path: path) { (success, errorMessage, data) in
+            if success {
+                self.parseTracks(data as AnyObject?, completionHandlerForTrackParsing: { (success, errorMessage) in
+                    if success {
+                        completionHandlerForTracks(true, nil)
+                    } else {
+                        completionHandlerForTracks(false, errorMessage)
+                    }
+                })
+            } else {
+                completionHandlerForTracks(false, errorMessage)
+            }
+        }
     }
     
     func parseAlbumDictionary(_ data: AnyObject?, completionHandlerForParseAlbumDictionary: (_ success: Bool, _ errorMessage: String?, _ result: [[String:AnyObject]]?) -> Void) {
@@ -117,33 +154,137 @@ extension SpotifyAPI {
         coreData.saveContext()
         completionHandlerForParseArtistSearch(true, nil)
     }
-    func parseAlbums(_ data: AnyObject?, completionHandlerforAlbumParsing: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
-        
-    }
     
-    func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
+    func parseAlbums(_ data: AnyObject?, completionHandlerforAlbumParsing: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
+        var albumNames = [String]()
+        var imageURL: String?
         
-    }
-    
-    func getImage(_ urlString: String, completionHandlerForImage: @escaping (_ data: Data?) -> Void) {
-        let request = URLRequest(url: URL(string: urlString)!)
+        func parsingFailed(_ message: String) {
+            completionHandlerforAlbumParsing(false, message)
+            return
+        }
         
-        let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
-            guard (error == nil) else {
-                print(error?.localizedDescription)
-                completionHandlerForImage(nil)
+        guard let data = data else {
+            parsingFailed("No data returned in request")
+            return
+        }
+        
+        guard let items = data["items"] as? [[String:AnyObject]] else {
+            parsingFailed("No value for album key 'items'")
+            return
+        }
+        
+        for item in items {
+            guard let albumName = item["name"] as? String else {
+                parsingFailed("No value for album key 'name'")
                 return
             }
             
-            guard let data = data else {
-                print("No data")
-                completionHandlerForImage(nil)
+            let name = albumName.folding(options: .diacriticInsensitive, locale: NSLocale.current)
+            
+            if albumNames.contains(name) {
+                continue
+            }
+            
+            guard let albumId = item["id"] as? String else {
+                parsingFailed("No value for album key 'id'")
                 return
             }
             
-            completionHandlerForImage(data)
-        }) 
+            guard let images = item["images"] as? [[String:AnyObject]] else {
+                parsingFailed("No value for album key 'images'")
+                return
+            }
+            
+            if images.isEmpty {
+                imageURL = ""
+            } else {
+                let image = images.first!
+                guard let url = image["url"] as? String else {
+                    parsingFailed("No value for image key 'url'")
+                    return
+                }
+                
+                imageURL = url
+            }
+            
+            let album = Album(context: coreData.managedContext)
+            album.name = albumName
+            album.id = albumId
+            album.imageURL = imageURL!
+            
+            albumNames.append(albumName)
+        }
         
-        task.resume()
+        coreData.saveContext()
+        completionHandlerforAlbumParsing(true, nil)
+    }
+    
+    func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
+        func parsingFailed(_ message: String) {
+            completionHandlerForTrackParsing(false, message)
+            return
+        }
+        
+        guard let data = data else {
+            parsingFailed("No data returned in request")
+            return
+        }
+        
+        guard let items = data["items"] as? [[String:AnyObject]] else {
+            parsingFailed("No track value for key 'item'")
+            return
+        }
+        
+        for item in items {
+            guard let trackName = item["name"] as? String else {
+                parsingFailed("No track value for ket 'name'")
+                return
+            }
+            
+            guard let trackNumber = item["track_number"] as? Int else {
+                parsingFailed("No track value for key 'track_number'")
+                return
+            }
+            
+            guard let previewURL = item["preview_url"] as? String else {
+                parsingFailed("No track value for key 'preview_url'")
+                return
+            }
+            
+            let track = Track(context: coreData.managedContext)
+            track.name = trackName
+            track.trackNumber = Int16(trackNumber)
+            track.previewURL = previewURL
+        }
+        
+        coreData.saveContext()
+        completionHandlerForTrackParsing(true, nil)
+    }
+    
+    func getImage(_ urlString: String?, completionHandlerForImage: @escaping (_ data: Data?) -> Void) {
+        if let url = urlString {
+            let request = URLRequest(url: URL(string: url)!)
+            
+            let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
+                guard (error == nil) else {
+                    print(error?.localizedDescription)
+                    completionHandlerForImage(nil)
+                    return
+                }
+                
+                guard let data = data else {
+                    print("No data")
+                    completionHandlerForImage(nil)
+                    return
+                }
+                
+                completionHandlerForImage(data)
+            }) 
+            
+            task.resume()
+        } else {
+            completionHandlerForImage(nil)
+        }
     }
 }

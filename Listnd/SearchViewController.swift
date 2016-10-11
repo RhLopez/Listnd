@@ -11,24 +11,43 @@ import CoreData
 
 class SearchViewController: UIViewController {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Properties
     let coreDataStack = CoreDataStack.sharedInstance
+    
+    // MARK: - Lifecycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.isNavigationBarHidden = true
         searchBar.delegate = self
-        
     }
+    
+    // MARK: - FetchedResultsController
+    lazy var fetchedResultsController: NSFetchedResultsController<Artist> = {
+        let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
+        let sort = NSSortDescriptor(key: #keyPath(Artist.resultNumber), ascending: true)
+        fetchRequest.sortDescriptors = [sort]
+         let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
+}
 
+// MARK: - Helper methods
+extension SearchViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
-        guard let cell = cell as? SearchTableViewCell else {
-            return
-        }
-        cell.searchImageVIew.image = UIImage(named: "placeHolder")
+        guard let cell = cell as? SearchTableViewCell else { return }
+        
         cell.activityIndicator.startAnimating()
+        cell.searchImageVIew.image = UIImage(named: "placeHolder")
         let artist = fetchedResultsController.object(at: indexPath)
         cell.searchLabel.text = artist.name
         
@@ -36,7 +55,7 @@ class SearchViewController: UIViewController {
             if artist.imageURL == "" {
                 let image = UIImage(named: "noImage")
                 let imageData = UIImagePNGRepresentation(image!)!
-                self.coreDataStack.managedContext.perform({ 
+                self.coreDataStack.managedContext.perform({
                     artist.artistImage = NSData(data: imageData)
                     self.coreDataStack.saveContext()
                 })
@@ -47,7 +66,7 @@ class SearchViewController: UIViewController {
             } else {
                 SpotifyAPI.sharedInstance.getImage(artist.imageURL!) { (data) in
                     if let resultData = data {
-                        self.coreDataStack.managedContext.perform({ 
+                        self.coreDataStack.managedContext.perform({
                             artist.artistImage = NSData(data: resultData)
                             self.coreDataStack.saveContext()
                         })
@@ -96,7 +115,7 @@ class SearchViewController: UIViewController {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Artist")
         
         let count = try! coreDataStack.managedContext.count(for: fetchRequest)
-
+        
         if count == 0 { return }
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
@@ -107,18 +126,9 @@ class SearchViewController: UIViewController {
             print("Unresolved error: \(error), \(error.userInfo)")
         }
     }
-    
-    lazy var fetchedResultsController: NSFetchedResultsController<Artist> = {
-        let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
-        let sort = NSSortDescriptor(key: #keyPath(Artist.resultNumber), ascending: true)
-        fetchRequest.sortDescriptors = [sort]
-         let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
 }
 
+// MARK: - UISearchBarDelegate
 extension SearchViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
@@ -145,6 +155,7 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
+// MARK: - UITableViewDataSource
 extension SearchViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
@@ -163,6 +174,18 @@ extension SearchViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
+extension SearchViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailCollectionViewController") as! ArtistCollectionViewController
+        
+        detailVC.currentArtist = fetchedResultsController.object(at: indexPath)
+        navigationController?.pushViewController(detailVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
 extension SearchViewController: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()

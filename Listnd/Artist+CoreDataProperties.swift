@@ -58,3 +58,4 @@ extension Artist {
     @NSManaged public func removeFromAlbums(_ values: NSOrderedSet)
 
 }
+

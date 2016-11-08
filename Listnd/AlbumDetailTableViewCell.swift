@@ -7,10 +7,15 @@
 //
 
 import UIKit
+import AVFoundation
 
 class AlbumDetailTableViewCell: UITableViewCell {
-    
-    @IBOutlet weak var trackNumberLabel: UILabel!
+
     @IBOutlet weak var trackNameLabel: UILabel!
+    @IBOutlet weak var trackNumberLabel: UILabel!
+    @IBOutlet weak var trackImageView: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    var playerItem: ListndPlayerItem?
 }
+

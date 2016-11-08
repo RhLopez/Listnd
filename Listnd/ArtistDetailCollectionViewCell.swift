@@ -14,4 +14,12 @@ class ArtistDetailCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var albumNameLabel: UILabel!
     @IBOutlet weak var activityIndicatior: UIActivityIndicatorView!
     
+    // MARK: - View life cyle
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        albumImageView.image = nil
+        albumNameLabel.text = nil
+    }
+    
 }

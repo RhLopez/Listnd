@@ -15,30 +15,30 @@ class ArtistCollectionViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var artistCoverImage: UIImageView!
     @IBOutlet weak var artistBackgroundImage: UIImageView!
+    @IBOutlet weak var artistCoverNameLabel: UILabel!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    @IBOutlet weak var backButton: UIButton!
     
     // MARK: - Properties
     var stack = CoreDataStack.sharedInstance
-    var currentArtist: Artist!
-    var insertedIndexPaths: [NSIndexPath]!
-    var deletedIndexPaths: [NSIndexPath]!
-    var updatedIndexPaths: [NSIndexPath]!
-    
+    var currentArtist: Artist?
+    var albums = [Album]()
+
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = false
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        deleteObjects()
+        backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 7, 1)
         if let artist = currentArtist {
+            artistCoverNameLabel.text = artist.name
+            artistCoverNameLabel.sizeToFit()
             let artistImage = UIImage(data: artist.artistImage as! Data)
             artistCoverImage.image = artistImage
-            artistBackgroundImage.image = artistImage
-            artistBackgroundImage.makeBlurImage(imageView: artistBackgroundImage)
-            
+            artistBackgroundImage.image = UIImage(named: "backgroundImage")
             getAlbums(artistId: artist.id!)
             getCellSize()
         } else {
@@ -46,18 +46,21 @@ class ArtistCollectionViewController: UIViewController {
         }
     }
     
-    // MARK: - FetchedResultsController
-    lazy var fetchedResultsController: NSFetchedResultsController<Album> = {
-        let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
-        let sort = NSSortDescriptor(key: #keyPath(Album.name), ascending: true)
-        fetchRequest.sortDescriptors = [sort]
-        let fetchedResultsController = NSFetchedResultsController<Album>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
-}
-
+    override func viewDidLayoutSubviews() {
+        artistCoverImage.layer.cornerRadius = 6.5
+        artistCoverImage.clipsToBounds = true
+//        artistCoverNameLabel.layer.cornerRadius = artistCoverNameLabel.bounds.height / 2.0
+//        artistCoverNameLabel.clipsToBounds = true
+        backButton.layer.cornerRadius = backButton.layer.frame.width / 2.0
+        backButton.clipsToBounds = true
+    }
+    
+    @IBAction func backButtonPressed(_ sender: AnyObject) {
+        _ = navigationController?.popViewController(animated: true)
+    }
+    
+    
+} 
 // MARK: - Helper Method
 extension ArtistCollectionViewController {
     func getCellSize() {
@@ -70,46 +73,20 @@ extension ArtistCollectionViewController {
     }
     
     func getAlbums(artistId: String) {
-        SpotifyAPI.sharedInstance.getAlbums(artistId) { (success, errorMessage) in
+        SpotifyAPI.sharedInstance.getAlbums(artistId) { (success, results, errorMessage) in
             if success {
-                self.reloadCollectionView()
-                let results = self.fetchedResultsController.fetchedObjects
-                self.stack.managedContext.perform({ 
-                    for album in results! {
-                        album.artist = self.currentArtist
+                if let searchResults = results {
+                    for album in searchResults {
+                        album.artist = self.currentArtist!
                     }
-                    self.stack.saveContext()
-                })
+                    self.albums = searchResults
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+                }
             } else {
-                print(errorMessage)
+                print(errorMessage ?? "")
             }
-        }
-    }
-    
-    func reloadCollectionView() {
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error as NSError {
-            print("Fetching error: \(error), \(error.userInfo)")
-        }
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    
-    func deleteObjects() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
-        
-        let count = try! stack.managedContext.count(for: fetchRequest)
-        
-        if count == 0 { return }
-        
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try stack.storeContainer.persistentStoreCoordinator.execute(deleteRequest, with: stack.managedContext)
-        } catch let error as NSError {
-            print("Unresolved error: \(error), \(error.userInfo)")
         }
     }
     
@@ -119,17 +96,14 @@ extension ArtistCollectionViewController {
         cell.activityIndicatior.startAnimating()
         cell.albumImageView.image = UIImage(named: "placeHolder")
         
-        let album = fetchedResultsController.object(at: indexPath)
+        let album = albums[indexPath.row]
         cell.albumNameLabel.text = album.name
         
         if album.albumImage == nil {
             if album.imageURL == "" {
                 let image = UIImage(named: "noImage")
                 let imageData = UIImagePNGRepresentation(image!)
-                self.stack.managedContext.perform({ 
-                    album.albumImage = NSData(data: imageData!)
-                    self.stack.saveContext()
-                })
+                album.albumImage = NSData(data: imageData!)
                 DispatchQueue.main.async {
                     cell.albumImageView.image = image
                     cell.activityIndicatior.stopAnimating()
@@ -137,10 +111,7 @@ extension ArtistCollectionViewController {
             } else {
                 SpotifyAPI.sharedInstance.getImage(album.imageURL, completionHandlerForImage: { (data) in
                     if let resultData = data {
-                        self.stack.managedContext.perform({ 
-                            album.albumImage = NSData(data: resultData)
-                            self.stack.saveContext()
-                        })
+                        album.albumImage = NSData(data: resultData)
                         let image = UIImage(data: resultData)
                         DispatchQueue.main.async {
                             cell.albumImageView.image = image
@@ -157,14 +128,21 @@ extension ArtistCollectionViewController {
     }
 }
 
+// MARK: - UIGestureRecognizerDelegate
+extension ArtistCollectionViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
+
 // MARK: - UICollectionViewDataSource
 extension ArtistCollectionViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchedResultsController.sections![section].numberOfObjects
+        return albums.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -181,49 +159,7 @@ extension ArtistCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
         
-        albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
+        albumDetailVC.currentAlbum = albums[indexPath.row]
         navigationController?.pushViewController(albumDetailVC, animated: true)
-    }
-}
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension ArtistCollectionViewController: NSFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        insertedIndexPaths = [NSIndexPath]()
-        deletedIndexPaths = [NSIndexPath]()
-        updatedIndexPaths = [NSIndexPath]()
-
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        switch type {
-        case .insert:
-            insertedIndexPaths.append(newIndexPath! as NSIndexPath)
-            break
-        case .delete:
-            deletedIndexPaths.append(indexPath! as NSIndexPath)
-            break
-        case .update:
-            updatedIndexPaths.append(indexPath! as NSIndexPath)
-            break
-        default:
-            break
-        }
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        collectionView.performBatchUpdates({
-            for indexPath in self.insertedIndexPaths {
-                self.collectionView.insertItems(at: [indexPath as IndexPath])
-            }
-            
-            for indexPath in self.deletedIndexPaths {
-                self.collectionView.deleteItems(at: [indexPath as IndexPath])
-            }
-            
-            for indexPath in self.updatedIndexPaths {
-                self.collectionView.reloadItems(at: [indexPath as IndexPath])
-            }
-        }, completion: nil)
     }
 }

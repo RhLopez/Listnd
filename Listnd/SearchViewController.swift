@@ -16,29 +16,17 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    let coreDataStack = CoreDataStack.sharedInstance
+    var artists = [Artist]()
+    var tap: UITapGestureRecognizer!
     
     // MARK: - Lifecycle
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
+        tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
+        searchBar.backgroundImage = UIImage()
     }
-    
-    // MARK: - FetchedResultsController
-    lazy var fetchedResultsController: NSFetchedResultsController<Artist> = {
-        let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
-        let sort = NSSortDescriptor(key: #keyPath(Artist.resultNumber), ascending: true)
-        fetchRequest.sortDescriptors = [sort]
-         let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
 }
 
 // MARK: - Helper methods
@@ -46,33 +34,33 @@ extension SearchViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? SearchTableViewCell else { return }
         
+        let viewBackground = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
+        viewBackground.backgroundColor = UIColor(red: 148/255, green: 179/255, blue: 252/255, alpha: 1.0)
+        cell.selectedBackgroundView = viewBackground
         cell.activityIndicator.startAnimating()
         cell.searchImageVIew.image = UIImage(named: "placeHolder")
-        let artist = fetchedResultsController.object(at: indexPath)
+        cell.layoutSubviews()
+        let artist = artists[indexPath.row]
         cell.searchLabel.text = artist.name
         
         if artist.artistImage == nil {
             if artist.imageURL == "" {
                 let image = UIImage(named: "noImage")
                 let imageData = UIImagePNGRepresentation(image!)!
-                self.coreDataStack.managedContext.perform({
-                    artist.artistImage = NSData(data: imageData)
-                    self.coreDataStack.saveContext()
-                })
+                artist.artistImage = NSData(data: imageData)
                 DispatchQueue.main.async {
                     cell.searchImageVIew.image = image
+                    cell.layoutSubviews()
                     cell.activityIndicator.stopAnimating()
                 }
             } else {
                 SpotifyAPI.sharedInstance.getImage(artist.imageURL!) { (data) in
                     if let resultData = data {
-                        self.coreDataStack.managedContext.perform({
-                            artist.artistImage = NSData(data: resultData)
-                            self.coreDataStack.saveContext()
-                        })
+                        artist.artistImage = NSData(data: resultData)
                         let image = UIImage(data: resultData)
                         DispatchQueue.main.async {
                             cell.searchImageVIew?.image = image
+                            cell.layoutSubviews()
                             cell.activityIndicator.stopAnimating()
                         }
                     }
@@ -99,32 +87,14 @@ extension SearchViewController {
         }
     }
     
-    func reloadTableView() {
-        do {
-            try self.fetchedResultsController.performFetch()
-        } catch let error as NSError {
-            print("Fetching error: \(error), \(error.userInfo)")
-        }
-        
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
+    func deleteObjects() {
+        artists.removeAll()
+        tableView.reloadData()
     }
     
-    func deleteObjects() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Artist")
-        
-        let count = try! coreDataStack.managedContext.count(for: fetchRequest)
-        
-        if count == 0 { return }
-        
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try coreDataStack.storeContainer.persistentStoreCoordinator.execute(deleteRequest, with: coreDataStack.managedContext)
-        } catch let error as NSError {
-            print("Unresolved error: \(error), \(error.userInfo)")
-        }
+    func dismissKeyboard() {
+        searchBar.endEditing(true)
+        searchBar.resignFirstResponder()
     }
 }
 
@@ -138,11 +108,16 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         enableCancelButton(searchBar: searchBar)
         deleteObjects()
-        SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, errorMessage) in
+        SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
             if success {
-                self.reloadTableView()
+                if let searchResults = results {
+                    self.artists = searchResults
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
+                }
             } else {
-                print(errorMessage)
+                print(errorMessage ?? "")
             }
         }
     }
@@ -150,19 +125,35 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.resignFirstResponder()
         deleteObjects()
-        reloadTableView()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText == "" {
+            searchBar.becomeFirstResponder()
+        }
+    }
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        view.addGestureRecognizer(tap)
+        return true
+    }
+    
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        view.removeGestureRecognizer(tap)
+        return true
     }
 }
 
 // MARK: - UITableViewDataSource
 extension SearchViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        return artists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -179,34 +170,8 @@ extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailCollectionViewController") as! ArtistCollectionViewController
         
-        detailVC.currentArtist = fetchedResultsController.object(at: indexPath)
+        detailVC.currentArtist = artists[indexPath.row]
         navigationController?.pushViewController(detailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension SearchViewController: NSFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.beginUpdates()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        switch type {
-        case .insert:
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        case .delete:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-        case .update:
-            let cell = tableView.cellForRow(at: indexPath!) as! SearchTableViewCell
-            configureCell(cell: cell, indexPath: indexPath!)
-        case .move:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        }
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.endUpdates()
     }
 }

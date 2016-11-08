@@ -12,10 +12,20 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let stack = CoreDataStack.sharedInstance
 
-
+    func customizeAppearance() {
+        UINavigationBar.appearance().barTintColor = UIColor(red: 63/255, green: 144/255, blue: 213/255, alpha: 1.0)
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSForegroundColorAttributeName: UIColor.white
+        ]
+//        UITabBar.appearance().tintColor = UIColor.white
+//        UITabBar.appearance().barTintColor = UIColor(red: 61/255, green: 76/255, blue: 241/255, alpha: 1.0)
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        customizeAppearance()
         return true
     }
 
@@ -39,8 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        stack.saveContext()
     }
-
-
 }
 

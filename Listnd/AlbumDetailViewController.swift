@@ -62,15 +62,12 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        backButton.layer.cornerRadius = backButton.layer.frame.width / 2.0
-        backButton.clipsToBounds = true
         albumImage.layer.cornerRadius = 4.5
         albumImage.clipsToBounds = true
     }
     
     func playerReady() {
         downloadingSampleClip = false
-        print("reloading after ready")
         tableView.reloadRows(at: [currentSong!], with: .none)
     }
     
@@ -276,6 +273,7 @@ extension AlbumDetailViewController {
                 trackToSave.id = track.id
                 trackToSave.trackNumber = track.trackNumber
                 trackToSave.album = album
+                trackToSave.listened = track.listened
                 album.addToTracks(trackToSave)
             }
         }

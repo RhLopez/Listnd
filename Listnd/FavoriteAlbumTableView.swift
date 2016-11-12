@@ -11,14 +11,16 @@ import CoreData
 
 class FavoriteAlbumTableView: UIViewController {
     
-    // MARK: - Properties
-    let stack = CoreDataStack.sharedInstance
-    var currentArtist: Artist?
+    // MARK: - IBOutlets
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var artistImage: UIImageView!
     @IBOutlet weak var artistNameLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var backButton: UIButton!
+    
+    // MARK: - Properties
+    let stack = CoreDataStack.sharedInstance
+    var currentArtist: Artist?
+
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -29,7 +31,6 @@ class FavoriteAlbumTableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 7, 1)
         if let artist = currentArtist {
             let image = UIImage(data: artist.artistImage! as Data)
             artistImage.image = image
@@ -44,8 +45,6 @@ class FavoriteAlbumTableView: UIViewController {
         super.viewDidLayoutSubviews()
         artistImage.layer.cornerRadius = 6.5
         artistImage.clipsToBounds = true
-        backButton.layer.cornerRadius = backButton.layer.frame.width / 2.0
-        backButton.clipsToBounds = true
     }
     
     // MARK: - NSFetchedResultsController
@@ -86,6 +85,16 @@ extension FavoriteAlbumTableView {
         
         cell.albumDetailLabel.text = "\(album.tracks!.count) tracks"
     }
+    
+    func listenedSelected() {
+        print("The album has been listened!")
+    }
+    
+    func deleteAlbum(indexPath: IndexPath) {
+        let albumToDelete = fetchedResultsController.object(at: indexPath)
+        stack.managedContext.delete(albumToDelete)
+        stack.saveContext()
+    }
 }
 
 // UIGestureRecognizerDelegate
@@ -112,14 +121,6 @@ extension FavoriteAlbumTableView: UITableViewDataSource {
         
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let albumToDelete = fetchedResultsController.object(at: indexPath)
-            stack.managedContext.delete(albumToDelete)
-            stack.saveContext()
-        }
-    }
 }
 
 // MARK: - UITableViewDelegate
@@ -129,6 +130,23 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
         albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
         navigationController?.pushViewController(albumDetailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let listenedAction = UITableViewRowAction(style: .normal, title: "Listnd!") { (action, indexPath) in
+            self.listenedSelected()
+            tableView.setEditing(false, animated: true)
+        }
+        
+        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete") { (action, indexPath) in
+            self.deleteAlbum(indexPath: indexPath)
+            tableView.setEditing(false, animated: true)
+        }
+        
+        listenedAction.backgroundColor = UIColor.blue
+        deleteAction.backgroundColor = UIColor.red
+        
+        return [listenedAction, deleteAction]
     }
 }
 

@@ -29,7 +29,6 @@ class ListndPlayerItem: AVPlayerItem {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(AVPlayerItem.status) {
             if self.status == AVPlayerItemStatus.readyToPlay {
-                print("ready")
                 delegate?.playerReady()
             }
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11232" systemVersion="15G1004" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="15G1108" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Album" representedClassName=".Album" syncable="YES">
         <attribute name="albumImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
@@ -18,6 +18,7 @@
     </entity>
     <entity name="Track" representedClassName=".Track" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="previewURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="trackNumber" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -26,6 +27,6 @@
     <elements>
         <element name="Album" positionX="-45" positionY="36" width="128" height="135"/>
         <element name="Artist" positionX="-45" positionY="0" width="128" height="135"/>
-        <element name="Track" positionX="-36" positionY="63" width="128" height="120"/>
+        <element name="Track" positionX="-36" positionY="63" width="128" height="135"/>
     </elements>
 </model>

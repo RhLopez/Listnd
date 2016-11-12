@@ -11,10 +11,15 @@ import CoreData
 
 class FavoriteAlbumDetailTableViewController: UIViewController {
     
+    // MARK: - IBOutlets
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var backgroundImage: UIImageView!
+    @IBOutlet weak var albumImage: UIImageView!
+    @IBOutlet weak var albumNameLabel: UILabel!
+    
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
     var currentAlbum: Album!
-    @IBOutlet weak var tableView: UITableView!
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -24,8 +29,17 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = currentAlbum.name
+        backgroundImage.image = UIImage(named: "backgroundImage")
+        let image = UIImage(data: currentAlbum.albumImage! as Data)
+        albumImage.image = image
+        albumNameLabel.text = currentAlbum.name
         fetchTracks()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        albumImage.layer.cornerRadius = 6.5
+        albumImage.clipsToBounds = true
     }
     
     // MARK: - NSFetchedResultsController
@@ -59,6 +73,31 @@ extension FavoriteAlbumDetailTableViewController {
         let trackNumberText = track.trackNumber < 10 ? " \(track.trackNumber)." : "\(track.trackNumber)."
         cell.trackNumber.text = trackNumberText
     }
+    
+    func deleteAction(indexPath: IndexPath) {
+        let trackToDelete = fetchedResultsController.object(at: indexPath)
+        stack.managedContext.delete(trackToDelete)
+        stack.saveContext()
+    }
+    
+    func listenedAction(indexPath: IndexPath)  {
+        let track = fetchedResultsController.object(at: indexPath)
+        let cell = tableView.cellForRow(at: indexPath) as! FavoriteAlbumDetailTableViewcCell
+        track.listened = !track.listened
+        if track.listened {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.none
+        }
+        stack.saveContext()
+    }
+}
+
+// MARK: - IBAction
+extension FavoriteAlbumDetailTableViewController {
+    @IBAction func backButtonPressed() {
+        _ = navigationController?.popViewController(animated: true)
+    }
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -84,19 +123,26 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
         configureCell(cell: cell, indexPath: indexPath)
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let trackToDelete = fetchedResultsController.object(at: indexPath)
-            stack.managedContext.delete(trackToDelete)
-            stack.saveContext()
-        }
-    }
 }
 
 // MARK: - UITableViewDelegate
-extension FavoriteAlbumDetailTableViewController {
-    
+extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete") { (action, indexPath) in
+            self.deleteAction(indexPath: indexPath)
+            tableView.setEditing(false, animated: true)
+        }
+        
+        let listenedAction = UITableViewRowAction(style: .normal, title: "Listnd!") { (action, indexPath) in
+            self.listenedAction(indexPath: indexPath)
+            tableView.setEditing(false, animated: true)
+        }
+        
+        deleteAction.backgroundColor = UIColor.red
+        listenedAction.backgroundColor = UIColor.blue
+        
+        return [deleteAction, listenedAction]
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

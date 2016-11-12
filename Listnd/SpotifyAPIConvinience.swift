@@ -267,6 +267,7 @@ extension SpotifyAPI {
             track.id = trackId
             track.trackNumber = Int16(trackNumber)
             track.previewURL = previewURL
+            track.listened = false
             tracks.append(track)
         }
         

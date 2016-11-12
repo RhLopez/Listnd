@@ -47,12 +47,9 @@ class ArtistCollectionViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         artistCoverImage.layer.cornerRadius = 6.5
         artistCoverImage.clipsToBounds = true
-//        artistCoverNameLabel.layer.cornerRadius = artistCoverNameLabel.bounds.height / 2.0
-//        artistCoverNameLabel.clipsToBounds = true
-        backButton.layer.cornerRadius = backButton.layer.frame.width / 2.0
-        backButton.clipsToBounds = true
     }
     
     @IBAction func backButtonPressed(_ sender: AnyObject) {

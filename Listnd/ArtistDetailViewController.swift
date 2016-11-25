@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import ALLoadingView
 
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
 
@@ -61,7 +62,7 @@ class ArtistDetailViewController: UIViewController {
 //MARK: - Helper methods
 extension ArtistDetailViewController {
     func getAlbums(artistId: String) {
-        ActivityIndicator.sharedInstance.showSearchingIndicator(tableView: tableView, view: self.view)
+        ALLoadingView.manager.showLoadingView(ofType: .basic, windowMode: .windowed)
         SpotifyAPI.sharedInstance.getAlbums(artistId) { (results, errorMessage) in
             if let searchResults = results {
                 for album in searchResults {
@@ -97,7 +98,7 @@ extension ArtistDetailViewController {
                     }
                 }
                 DispatchQueue.main.async {
-                    ActivityIndicator.sharedInstance.hideSearchingIndicator()
+                    ALLoadingView.manager.hideLoadingView()
                     self.tableView.reloadData()
                 }
             } else {

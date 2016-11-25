@@ -8,7 +8,6 @@
 
 import UIKit
 import CoreData
-import ALLoadingView
 
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
 
@@ -140,7 +139,6 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         if isSearching == true {
             SpotifyAPI.sharedInstance.cancelRequest()
-            ActivityIndicator.sharedInstance.hideSearchingIndicator()
         }
         searchBar.text = nil
         searchBar.setShowsCancelButton(false, animated: true)
@@ -150,6 +148,8 @@ extension SearchViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
+            if isSearching == true {
+            }
             deleteObjects()
             searchBar.becomeFirstResponder()
         }

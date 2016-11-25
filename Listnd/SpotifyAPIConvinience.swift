@@ -36,14 +36,6 @@ extension SpotifyAPI {
         }
     }
     
-//    func searchAlbum(_ userInput: String, completionHandlerForAlbumSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
-//        
-//    }
-//    
-//    func searchSong(_ userInput: String, completionHandlerForSongSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
-//        
-//    }
-    
     func getAlbums(_ artistId: String, completionHandlerForAlbums: @escaping (_ results: [Album]?, _ errorMessage: String) -> Void) {
         let parameters = [
             Constants.ParametersKeys.AlbumType: Constants.ParameterValues.AlbumSearch,
@@ -87,10 +79,6 @@ extension SpotifyAPI {
                 completionHandlerForTracks(false, nil, errorMessage)
             }
         }
-    }
-    
-    func parseAlbumDictionary(_ data: AnyObject?, completionHandlerForParseAlbumDictionary: (_ success: Bool, _ errorMessage: String?, _ result: [[String:AnyObject]]?) -> Void) {
-        
     }
     
     func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String?) -> Void) {

@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import CoreData
 import SwiftMessages
+import ALLoadingView
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
@@ -94,13 +95,13 @@ extension AlbumDetailViewController {
     }
     
     func getTracks() {
-        ActivityIndicator.sharedInstance.showSearchingIndicator(tableView: tableView, view: self.view)
+        ALLoadingView.manager.showLoadingView(ofType: .basic, windowMode: .windowed)
         SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
                     self.tracks = searchResults
                     DispatchQueue.main.async {
-                        ActivityIndicator.sharedInstance.hideSearchingIndicator()
+                        ALLoadingView.manager.hideLoadingView()
                         self.tableView.reloadData()
                     }
                 }

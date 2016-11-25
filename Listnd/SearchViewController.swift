@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import ALLoadingView
 
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
 
@@ -114,20 +115,17 @@ extension SearchViewController: UISearchBarDelegate {
         enableCancelButton(searchBar: searchBar)
         deleteObjects()
         isSearching = true
-        ActivityIndicator.sharedInstance.showSearchingIndicator(tableView: tableView, view: self.view)
         tableView.reloadData()
         SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
                     if searchResults.isEmpty {
-                        AlerView.showAlert(view: self, title: "", message: "No results found. Please try again.")
                         DispatchQueue.main.async {
-                            ActivityIndicator.sharedInstance.hideSearchingIndicator()
+                            AlerView.showAlert(view: self, title: "", message: "No results found. Please try again.")
                         }
                     } else {
                         self.artists = searchResults
                         DispatchQueue.main.async {
-                            ActivityIndicator.sharedInstance.hideSearchingIndicator()
                             self.tableView.reloadData()
                         }
                     }

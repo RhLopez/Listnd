@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import CoreData
+import SwiftMessages
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
@@ -182,6 +183,14 @@ extension AlbumDetailViewController {
                 if let track = fetchTrack(indexPath: indexPath, album: album) {
                     album.addToTracks(track)
                     stack.saveContext()
+                    let view = MessageView.viewFromNib(layout: .StatusLine)
+                    view.configureTheme(.success)
+                    view.configureDropShadow()
+                    view.configureContent(body: "Song Saved!")
+                    var config = SwiftMessages.Config()
+                    config.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+                    config.duration = .seconds(seconds: 0.5)
+                    SwiftMessages.show(config: config, view: view)
                 }
             }
         }
@@ -322,6 +331,14 @@ extension AlbumDetailViewController {
                 artist.addToAlbums(album)
                 saveSongsFromAlbum(album: album)
                 stack.saveContext()
+                let view = MessageView.viewFromNib(layout: .StatusLine)
+                view.configureTheme(.success)
+                view.configureDropShadow()
+                view.configureContent(body: "Album Saved!")
+                var config = SwiftMessages.Config()
+                config.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+                config.duration = .seconds(seconds: 0.5)
+                SwiftMessages.show(config: config, view: view)
             }
         }
     }

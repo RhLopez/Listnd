@@ -33,7 +33,7 @@ extension SpotifyAPI {
         
         struct ParameterValues {
             static let Artist = "artist"
-            static let Album = "album"
+            static let AlbumSearch = "album,single"
             static let Track = "track"
             static let US = "US"
         }

@@ -16,9 +16,9 @@ extension Artist {
     }
 
     @NSManaged public var artistImage: NSData?
-    @NSManaged public var id: String?
+    @NSManaged public var id: String
     @NSManaged public var imageURL: String?
-    @NSManaged public var name: String?
+    @NSManaged public var name: String
     @NSManaged public var resultNumber: Int16
     @NSManaged public var albums: NSOrderedSet?
 

@@ -9,6 +9,8 @@
 import UIKit
 import CoreData
 
+let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
+
 class SearchViewController: UIViewController {
 
     // MARK: - IBOutlets
@@ -18,6 +20,9 @@ class SearchViewController: UIViewController {
     // MARK: - Properties
     var artists = [Artist]()
     var tap: UITapGestureRecognizer!
+    var isSearching: Bool?
+    var indicatorView: UIView!
+    var selectedRow: IndexPath?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -37,7 +42,6 @@ extension SearchViewController {
         let viewBackground = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
         viewBackground.backgroundColor = UIColor(red: 148/255, green: 179/255, blue: 252/255, alpha: 1.0)
         cell.selectedBackgroundView = viewBackground
-        cell.activityIndicator.startAnimating()
         cell.searchImageVIew.image = UIImage(named: "placeHolder")
         cell.layoutSubviews()
         let artist = artists[indexPath.row]
@@ -45,23 +49,24 @@ extension SearchViewController {
         
         if artist.artistImage == nil {
             if artist.imageURL == "" {
-                let image = UIImage(named: "noImage")
+                let image = UIImage(named: "coverImagePlaceHolder")
                 let imageData = UIImagePNGRepresentation(image!)!
                 artist.artistImage = NSData(data: imageData)
                 DispatchQueue.main.async {
                     cell.searchImageVIew.image = image
                     cell.layoutSubviews()
-                    cell.activityIndicator.stopAnimating()
                 }
             } else {
                 SpotifyAPI.sharedInstance.getImage(artist.imageURL!) { (data) in
                     if let resultData = data {
                         artist.artistImage = NSData(data: resultData)
+                        if self.selectedRow == indexPath {
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: artistImageDownloadNotification), object: self)
+                        }
                         let image = UIImage(data: resultData)
                         DispatchQueue.main.async {
-                            cell.searchImageVIew?.image = image
+                            UIView.transition(with: cell.searchImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { cell.searchImageVIew.image = image }, completion: nil)
                             cell.layoutSubviews()
-                            cell.activityIndicator.stopAnimating()
                         }
                     }
                 }
@@ -108,13 +113,25 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         enableCancelButton(searchBar: searchBar)
         deleteObjects()
+        isSearching = true
+        ActivityIndicator.sharedInstance.showSearchingIndicator(tableView: tableView, view: self.view)
+        tableView.reloadData()
         SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
-                    self.artists = searchResults
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
+                    if searchResults.isEmpty {
+                        AlerView.showAlert(view: self, title: "", message: "No results found. Please try again.")
+                        DispatchQueue.main.async {
+                            ActivityIndicator.sharedInstance.hideSearchingIndicator()
+                        }
+                    } else {
+                        self.artists = searchResults
+                        DispatchQueue.main.async {
+                            ActivityIndicator.sharedInstance.hideSearchingIndicator()
+                            self.tableView.reloadData()
+                        }
                     }
+                    self.isSearching = false
                 }
             } else {
                 print(errorMessage ?? "")
@@ -123,6 +140,10 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        if isSearching == true {
+            SpotifyAPI.sharedInstance.cancelRequest()
+            ActivityIndicator.sharedInstance.hideSearchingIndicator()
+        }
         searchBar.text = nil
         searchBar.setShowsCancelButton(false, animated: true)
         searchBar.resignFirstResponder()
@@ -131,6 +152,7 @@ extension SearchViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
+            deleteObjects()
             searchBar.becomeFirstResponder()
         }
     }
@@ -141,6 +163,7 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.setShowsCancelButton(false, animated: true)
         view.removeGestureRecognizer(tap)
         return true
     }
@@ -168,9 +191,11 @@ extension SearchViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailCollectionViewController") as! ArtistCollectionViewController
+        let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailViewController") as! ArtistDetailViewController
         
-        detailVC.currentArtist = artists[indexPath.row]
+        let artist = artists[indexPath.row]
+        selectedRow = indexPath
+        detailVC.currentArtist = artist
         navigationController?.pushViewController(detailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }

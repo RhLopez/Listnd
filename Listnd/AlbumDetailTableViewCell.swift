@@ -15,6 +15,7 @@ class AlbumDetailTableViewCell: UITableViewCell {
     @IBOutlet weak var trackNumberLabel: UILabel!
     @IBOutlet weak var trackImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var trackDurationLabel: UILabel!
     
     var playerItem: ListndPlayerItem?
 }

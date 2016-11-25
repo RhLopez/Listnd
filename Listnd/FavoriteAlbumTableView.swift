@@ -21,12 +21,16 @@ class FavoriteAlbumTableView: UIViewController {
     let stack = CoreDataStack.sharedInstance
     var currentArtist: Artist?
 
+    lazy var listenedCountPredicate: NSPredicate = {
+        return NSPredicate(format: "%K == %@", #keyPath(Track.listened), true as CVarArg)
+    }()
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
@@ -50,7 +54,7 @@ class FavoriteAlbumTableView: UIViewController {
     // MARK: - NSFetchedResultsController
         lazy var fetchedResultsController: NSFetchedResultsController<Album> = {
             let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.artist.id), self.currentArtist!.id!)
+            fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.artist.id), self.currentArtist!.id)
             let sort = NSSortDescriptor(key: #keyPath(Album.name), ascending: true)
             fetchRequest.sortDescriptors = [sort]
             let fetchedResultsController = NSFetchedResultsController<Album>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
@@ -83,17 +87,41 @@ extension FavoriteAlbumTableView {
         let image = UIImage(data: album.albumImage as! Data)!
         cell.albumImageView.image = image
         
-        cell.albumDetailLabel.text = "\(album.tracks!.count) tracks"
+        let count = getListenedCount(indexPath: indexPath)
+        cell.albumDetailLabel.text = "\(count)/\(album.tracks!.count) tracks"
+        
+        if count == album.tracks!.count {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.none
+        }
     }
     
-    func listenedSelected() {
-        print("The album has been listened!")
+    func getListenedCount(indexPath: IndexPath) -> Int {
+        var count = 0
+        let album = fetchedResultsController.object(at: indexPath)
+        if let tracks = album.tracks {
+            for item in tracks {
+                let track = item as! Track
+                if track.listened {
+                    count = count + 1
+                }
+            }
+        }
+        
+        return count
     }
-    
+        
     func deleteAlbum(indexPath: IndexPath) {
         let albumToDelete = fetchedResultsController.object(at: indexPath)
         stack.managedContext.delete(albumToDelete)
         stack.saveContext()
+    }
+    
+    func openSpotify(indexPath: IndexPath) {
+        let album = fetchedResultsController.object(at: indexPath)
+        let urlString = URL(string: album.uri)!
+        UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
     }
 }
 
@@ -133,8 +161,8 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let listenedAction = UITableViewRowAction(style: .normal, title: "Listnd!") { (action, indexPath) in
-            self.listenedSelected()
+        let openSpotifyAction = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
+            self.openSpotify(indexPath: indexPath)
             tableView.setEditing(false, animated: true)
         }
         
@@ -143,10 +171,10 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
             tableView.setEditing(false, animated: true)
         }
         
-        listenedAction.backgroundColor = UIColor.blue
+        openSpotifyAction.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
         deleteAction.backgroundColor = UIColor.red
         
-        return [listenedAction, deleteAction]
+        return [deleteAction, openSpotifyAction]
     }
 }
 

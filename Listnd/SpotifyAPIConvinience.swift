@@ -10,6 +10,10 @@ import Foundation
 
 extension SpotifyAPI {
     
+    func cancelRequest() {
+        task?.cancel()
+    }
+    
     func searchArtist(_ userInput: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String?) -> Void) {
         let parameters = [
             Constants.ParametersKeys.Query: userInput,
@@ -32,17 +36,17 @@ extension SpotifyAPI {
         }
     }
     
-    func searchAlbum(_ userInput: String, completionHandlerForAlbumSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
-        
-    }
+//    func searchAlbum(_ userInput: String, completionHandlerForAlbumSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
+//        
+//    }
+//    
+//    func searchSong(_ userInput: String, completionHandlerForSongSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
+//        
+//    }
     
-    func searchSong(_ userInput: String, completionHandlerForSongSearch: (_ success: Bool, _ errorMessage: String?, _ results: [[String:AnyObject]]?) -> Void) {
-        
-    }
-    
-    func getAlbums(_ artistId: String, completionHandlerForAlbums: @escaping (_ success: Bool, _ results: [Album]?, _ errorMessage: String?) -> Void) {
+    func getAlbums(_ artistId: String, completionHandlerForAlbums: @escaping (_ results: [Album]?, _ errorMessage: String) -> Void) {
         let parameters = [
-            Constants.ParametersKeys.AlbumType: Constants.ParameterValues.Album,
+            Constants.ParametersKeys.AlbumType: Constants.ParameterValues.AlbumSearch,
             Constants.ParametersKeys.Market: Constants.ParameterValues.US
         ]
         
@@ -52,13 +56,13 @@ extension SpotifyAPI {
             if success {
                 self.parseAlbums(data as AnyObject?, completionHandlerforAlbumParsing: { (success, results, errorString) in
                     if success {
-                        completionHandlerForAlbums(true, results, nil)
+                        completionHandlerForAlbums(results, "")
                     } else {
-                        completionHandlerForAlbums(false, nil, errorMessage)
+                        completionHandlerForAlbums(nil, errorMessage)
                     }
                 })
             } else {
-                completionHandlerForAlbums(false, nil, errorMessage)
+                completionHandlerForAlbums(nil, errorMessage)
             }
         }
     }
@@ -157,7 +161,7 @@ extension SpotifyAPI {
         completionHandlerForParseArtistSearch(true, artists, nil)
     }
     
-    func parseAlbums(_ data: AnyObject?, completionHandlerforAlbumParsing: @escaping (_ success: Bool, _ results: [Album]?,_ errorMessage: String?) -> Void) {
+    func parseAlbums(_ data: AnyObject?, completionHandlerforAlbumParsing: @escaping (_ success: Bool, _ results: [Album]?,_ errorMessage: String) -> Void) {
         var albumNames = [String]()
         var imageURL: String?
         var albums = [Album]()
@@ -194,6 +198,16 @@ extension SpotifyAPI {
                 return
             }
             
+            guard let uri = item["uri"] as? String else {
+                parsingFailed("No value for album key 'uri'")
+                return
+            }
+            
+            guard let album_type = item["album_type"] as? String else {
+                parsingFailed("No value for album key 'type'")
+                return
+            }
+            
             guard let images = item["images"] as? [[String:AnyObject]] else {
                 parsingFailed("No value for album key 'images'")
                 return
@@ -214,13 +228,14 @@ extension SpotifyAPI {
             let album = Album(entity: albumEntity!, insertInto: nil)
             album.name = albumName
             album.id = albumId
+            album.uri = uri
+            album.type = album_type
             album.imageURL = imageURL!
             albums.append(album)
-            
             albumNames.append(albumName)
         }
         
-        completionHandlerforAlbumParsing(true, albums, nil)
+        completionHandlerforAlbumParsing(true, albums, "")
     }
     
     func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: @escaping (_ success: Bool, _ results: [Track]?, _ errorMessage: String?) -> Void) {
@@ -262,11 +277,23 @@ extension SpotifyAPI {
                 return
             }
             
+            guard let uri = item["uri"] as? String else {
+                parsingFailed("No track value for key 'uri'")
+                return
+            }
+            
+            guard let duration = item["duration_ms"] as? Int else {
+                parsingFailed("No track value for key 'duration'")
+                return
+            }
+            
             let track = Track(entity: trackEntity!, insertInto: nil)
             track.name = trackName
             track.id = trackId
             track.trackNumber = Int16(trackNumber)
             track.previewURL = previewURL
+            track.uri = uri
+            track.duration = Int32(duration)
             track.listened = false
             tracks.append(track)
         }

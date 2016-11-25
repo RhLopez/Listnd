@@ -18,14 +18,20 @@ class SpotifyAPI {
     let trackEntity = NSEntityDescription.entity(forEntityName: "Track", in: CoreDataStack.sharedInstance.managedContext)
 
     let session = URLSession.shared
+    var task: URLSessionDataTask?
     
-    func taskForGetMethod(_ parameters: [String:AnyObject], path: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ errorMessage: String?, _ data: Any?) -> Void) {
+    func taskForGetMethod(_ parameters: [String:AnyObject], path: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ errorMessage: String, _ data: Any?) -> Void) {
         let request = URLRequest(url: spotifyURL(parameters, path: path))
+        task?.cancel()
         
-        let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
+        task = session.dataTask(with: request, completionHandler: { (data, response, error) in
             
             func reportError(_ message: String) {
                 completionHandlerForArtistSearch(false, message, nil)
+                return
+            }
+            
+            if let error = error as? NSError, error.code == -999 {
                 return
             }
             
@@ -47,10 +53,10 @@ class SpotifyAPI {
             self.serializeData(data, completionHandlerForSerialization: completionHandlerForArtistSearch)
         })
         
-        task.resume()
+        task?.resume()
     }
     
-    func serializeData(_ data: Data, completionHandlerForSerialization: (_ success: Bool, _ errorMessage: String?, _ data: Any?) -> Void) {
+    func serializeData(_ data: Data, completionHandlerForSerialization: (_ success: Bool, _ errorMessage: String, _ data: Any?) -> Void) {
         var serializedData: Any?
         
         do {
@@ -59,7 +65,7 @@ class SpotifyAPI {
             completionHandlerForSerialization(false, "Unable to serialize data", nil)
         }
         
-        completionHandlerForSerialization(true, nil, serializedData)
+        completionHandlerForSerialization(true, "", serializedData)
     }
     
     fileprivate func spotifyURL(_ parameters: [String:AnyObject], path: String) -> URL {
@@ -73,8 +79,6 @@ class SpotifyAPI {
             let queryItem = URLQueryItem(name: key, value: "\(value)")
             components.queryItems!.append(queryItem)
         }
-        
-        print(components.url!)
         
         return components.url!
     }

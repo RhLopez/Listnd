@@ -45,7 +45,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController<Track> = {
         let fetchRequest: NSFetchRequest<Track> = Track.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.album.id), self.currentAlbum.id!)
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.album.id), self.currentAlbum.id)
         let sortDescriptor = NSSortDescriptor(key: #keyPath(Track.trackNumber), ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         let fetchedResultsController = NSFetchedResultsController<Track>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
@@ -72,6 +72,11 @@ extension FavoriteAlbumDetailTableViewController {
         
         let trackNumberText = track.trackNumber < 10 ? " \(track.trackNumber)." : "\(track.trackNumber)."
         cell.trackNumber.text = trackNumberText
+        if track.listened {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.none
+        }
     }
     
     func deleteAction(indexPath: IndexPath) {
@@ -82,14 +87,14 @@ extension FavoriteAlbumDetailTableViewController {
     
     func listenedAction(indexPath: IndexPath)  {
         let track = fetchedResultsController.object(at: indexPath)
-        let cell = tableView.cellForRow(at: indexPath) as! FavoriteAlbumDetailTableViewcCell
         track.listened = !track.listened
-        if track.listened {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
-        }
         stack.saveContext()
+    }
+    
+    func openSpotifyAction(indexPath: IndexPath) {
+        let track = fetchedResultsController.object(at: indexPath)
+        let uriString = URL(string: track.uri)!
+        UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
     }
 }
 
@@ -127,21 +132,26 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        listenedAction(indexPath: indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let deleteAction = UITableViewRowAction(style: .normal, title: "Delete") { (action, indexPath) in
             self.deleteAction(indexPath: indexPath)
             tableView.setEditing(false, animated: true)
         }
         
-        let listenedAction = UITableViewRowAction(style: .normal, title: "Listnd!") { (action, indexPath) in
-            self.listenedAction(indexPath: indexPath)
+        let spotifyAction = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
+            self.openSpotifyAction(indexPath: indexPath)
             tableView.setEditing(false, animated: true)
         }
         
         deleteAction.backgroundColor = UIColor.red
-        listenedAction.backgroundColor = UIColor.blue
+        spotifyAction.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
         
-        return [deleteAction, listenedAction]
+        return [deleteAction, spotifyAction]
     }
 }
 

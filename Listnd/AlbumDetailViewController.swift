@@ -27,7 +27,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var savedTrackIds = [String]()
     var player = AVPlayer()
     var currentSong: IndexPath?
-    var isPlaying: Bool?
     var previousSelectedCell: IndexPath?
     var downloadingSampleClip: Bool?
     
@@ -45,15 +44,20 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         setAudio()
         albumNameLabel.text = currentAlbum.name
         albumNameLabel.sizeToFit()
-        let image = UIImage(data: (currentAlbum.albumImage as? Data)!)
-        albumImage.image = image
+        albumImage.image = UIImage(named: "coverImagePlaceHolder")
+        if let imageData = currentAlbum.albumImage {
+            setAlbumImage(imageData: imageData)
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+        }
         albumBackgoundImage.image = UIImage(named: "backgroundImage")
         getTracks()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -89,11 +93,13 @@ extension AlbumDetailViewController {
     }
     
     func getTracks() {
-        SpotifyAPI.sharedInstance.getTracks(currentAlbum.id!) { (success, results, errorMessage) in
+        ActivityIndicator.sharedInstance.showSearchingIndicator(tableView: tableView, view: self.view)
+        SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
                     self.tracks = searchResults
                     DispatchQueue.main.async {
+                        ActivityIndicator.sharedInstance.hideSearchingIndicator()
                         self.tableView.reloadData()
                     }
                 }
@@ -108,6 +114,8 @@ extension AlbumDetailViewController {
 
         let track = tracks[indexPath.row]
         cell.trackNameLabel.text = track.name
+        cell.trackDurationLabel.text = timeConversion(duration: Int(track.duration))
+
         cell.playerItem = ListndPlayerItem(url: URL(string: track.previewURL!)!)
         cell.playerItem?.delegate = self
         
@@ -117,36 +125,33 @@ extension AlbumDetailViewController {
         }
         
         if currentSong == indexPath {
-            cell.trackNumberLabel.isHidden = true
-            cell.trackImageView.isHidden = false
             cell.activityIndicator.stopAnimating()
             cell.trackImageView.image = UIImage(named: "stopButton")
+            cell.trackNumberLabel.text = ""
+            cell.trackNumberLabel.isHidden = true
+            cell.trackImageView.isHidden = false
         }  else {
             if previousSelectedCell == indexPath {
                 cell.activityIndicator.stopAnimating()
             }
             cell.trackImageView.isHidden = true
             cell.trackNumberLabel.isHidden = false
-            let trackNumberText = track.trackNumber < 10 ? " \(track.trackNumber)." : "\(track.trackNumber)."
-            cell.trackNumberLabel.text = trackNumberText
+            cell.trackNumberLabel.text = track.trackNumber < 10 ? " \(track.trackNumber)." : "\(track.trackNumber)."
             
         }
-        previousSelectedCell = indexPath
     }
     
     func playSampleClip(indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! AlbumDetailTableViewCell
-        
-        if isPlaying == true {
+
+        if player.rate > 0 {
             player.pause()
-            isPlaying = false
         }
         
         if currentSong == nil || indexPath != currentSong! {
             downloadingSampleClip =  true
             player.replaceCurrentItem(with: cell.playerItem)
             player.play()
-            isPlaying = true
         }
         
         reloadRows(indexPath: indexPath)
@@ -184,7 +189,7 @@ extension AlbumDetailViewController {
     
     func fetchArtist() -> Artist? {
         let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Artist.id), currentAlbum.artist!.id!)
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Artist.id), currentAlbum.artist.id)
         fetchRequest.sortDescriptors = []
         
         do {
@@ -194,7 +199,7 @@ extension AlbumDetailViewController {
             } else {
                 let entity = NSEntityDescription.entity(forEntityName: "Artist", in: stack.managedContext)
                 currentArtist = Artist(entity: entity!, insertInto: stack.managedContext)
-                let artistSelected = currentAlbum.artist!
+                let artistSelected = currentAlbum.artist
                 currentArtist!.name = artistSelected.name
                 currentArtist!.id = artistSelected.id
                 currentArtist!.imageURL = artistSelected.imageURL
@@ -211,7 +216,7 @@ extension AlbumDetailViewController {
     func fetchAlbum() -> Album? {
         var album: Album?
         let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.id), currentAlbum!.id!)
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.id), currentAlbum!.id)
         fetchRequest.sortDescriptors = []
         
         do {
@@ -220,7 +225,7 @@ extension AlbumDetailViewController {
                 album = results.first
                 for item in (album?.tracks)! {
                     let track = item as! Track
-                    savedTrackIds.append(track.id!)
+                    savedTrackIds.append(track.id)
                 }
             } else {
                 let entity = NSEntityDescription.entity(forEntityName: "Album", in: stack.managedContext)!
@@ -228,6 +233,7 @@ extension AlbumDetailViewController {
                 album!.name = currentAlbum.name
                 album!.id = currentAlbum.id
                 album!.imageURL = currentAlbum.imageURL
+                album!.uri = currentAlbum.uri
                 album!.albumImage = currentAlbum.albumImage
                 album!.artist = currentArtist
                 stack.saveContext()
@@ -242,7 +248,7 @@ extension AlbumDetailViewController {
         var track: Track?
         let currentTrack = tracks[indexPath.row]
         let fetchRequest: NSFetchRequest<Track> = Track.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.id), currentTrack.id!)
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.id), currentTrack.id)
         fetchRequest.sortDescriptors = []
         
         do {
@@ -255,6 +261,8 @@ extension AlbumDetailViewController {
                 track!.name = currentTrack.name
                 track!.id = currentTrack.id
                 track!.trackNumber = currentTrack.trackNumber
+                track!.uri = currentTrack.uri
+                track!.listened = currentTrack.listened
                 track!.album = album
                 stack.saveContext()
             }
@@ -266,17 +274,36 @@ extension AlbumDetailViewController {
     
     func saveSongsFromAlbum(album: Album) {
         for track in tracks {
-            if !savedTrackIds.contains(track.id!) {
+            if !savedTrackIds.contains(track.id) {
                 let entity = NSEntityDescription.entity(forEntityName: "Track", in: stack.managedContext)!
                 let trackToSave = Track(entity: entity, insertInto: stack.managedContext)
                 trackToSave.name = track.name
                 trackToSave.id = track.id
                 trackToSave.trackNumber = track.trackNumber
                 trackToSave.album = album
+                trackToSave.uri = track.uri
                 trackToSave.listened = track.listened
                 album.addToTracks(trackToSave)
             }
         }
+    }
+    
+    func timeConversion(duration: Int) -> String {
+        let second = (duration / 1000) % 60
+        let minute = (duration / (1000 * 60)) % 60
+        
+        return String(format: "%d:%02d", minute, second)
+    }
+    
+    func albumImageDownloaded() {
+        if let imageData = currentAlbum.albumImage {
+            setAlbumImage(imageData: imageData)
+        }
+    }
+    
+    func setAlbumImage(imageData: NSData) {
+        let image = UIImage(data: imageData as Data)
+        UIView.transition(with: self.albumImage, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImage.image = image }, completion: nil)
     }
 }
 
@@ -316,15 +343,12 @@ extension AlbumDetailViewController: UITableViewDataSource {
         configureCell(cell: cell, indexPath: indexPath)
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        return
-    }
 }
 
 // MARK: - UITableViewDelegate
 extension AlbumDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        previousSelectedCell = currentSong
         playSampleClip(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
     }

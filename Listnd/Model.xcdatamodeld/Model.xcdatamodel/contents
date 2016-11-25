@@ -5,6 +5,8 @@
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uri" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="artist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Artist" inverseName="albums" inverseEntity="Artist" syncable="YES"/>
         <relationship name="tracks" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Track" inverseName="album" inverseEntity="Track" syncable="YES"/>
     </entity>
@@ -17,16 +19,18 @@
         <relationship name="albums" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Album" inverseName="artist" inverseEntity="Album" syncable="YES"/>
     </entity>
     <entity name="Track" representedClassName=".Track" syncable="YES">
+        <attribute name="duration" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="previewURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="trackNumber" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="uri" attributeType="String" syncable="YES"/>
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="tracks" inverseEntity="Album" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Album" positionX="-45" positionY="36" width="128" height="135"/>
+        <element name="Album" positionX="-45" positionY="36" width="128" height="165"/>
         <element name="Artist" positionX="-45" positionY="0" width="128" height="135"/>
-        <element name="Track" positionX="-36" positionY="63" width="128" height="135"/>
+        <element name="Track" positionX="-36" positionY="63" width="128" height="165"/>
     </elements>
 </model>

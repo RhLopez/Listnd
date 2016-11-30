@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import CoreData
 import SwiftMessages
+import SVProgressHUD
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
@@ -30,6 +31,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var currentSong: IndexPath?
     var previousSelectedCell: IndexPath?
     var downloadingSampleClip: Bool?
+    var isLoading: Bool?
     
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
@@ -59,6 +61,9 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+        if isLoading == true {
+            SVProgressHUD.dismiss()
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -94,12 +99,17 @@ extension AlbumDetailViewController {
     }
     
     func getTracks() {
+        isLoading = true
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.show(withStatus: "Loading...")
         SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
                     self.tracks = searchResults
                     DispatchQueue.main.async {
+                        SVProgressHUD.dismiss()
                         self.tableView.reloadData()
+                        self.isLoading = false
                     }
                 }
             } else {
@@ -181,14 +191,7 @@ extension AlbumDetailViewController {
                 if let track = fetchTrack(indexPath: indexPath, album: album) {
                     album.addToTracks(track)
                     stack.saveContext()
-                    let view = MessageView.viewFromNib(layout: .StatusLine)
-                    view.configureTheme(.success)
-                    view.configureDropShadow()
-                    view.configureContent(body: "Song Saved!")
-                    var config = SwiftMessages.Config()
-                    config.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
-                    config.duration = .seconds(seconds: 0.5)
-                    SwiftMessages.show(config: config, view: view)
+                    SwiftMessages.sharedInstance.displayConfirmation(message: "Song Saved!")
                 }
             }
         }
@@ -329,14 +332,7 @@ extension AlbumDetailViewController {
                 artist.addToAlbums(album)
                 saveSongsFromAlbum(album: album)
                 stack.saveContext()
-                let view = MessageView.viewFromNib(layout: .StatusLine)
-                view.configureTheme(.success)
-                view.configureDropShadow()
-                view.configureContent(body: "Album Saved!")
-                var config = SwiftMessages.Config()
-                config.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
-                config.duration = .seconds(seconds: 0.5)
-                SwiftMessages.show(config: config, view: view)
+                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
             }
         }
     }
@@ -378,3 +374,4 @@ extension AlbumDetailViewController: UITableViewDelegate {
         return [saveSongAction]
     }
 }
+

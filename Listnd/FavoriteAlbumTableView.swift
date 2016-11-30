@@ -83,9 +83,21 @@ extension FavoriteAlbumTableView {
         
         let album = fetchedResultsController.object(at: indexPath)
         cell.albumNameLabel.text = album.name
+        cell.albumImageView.image = UIImage(named: "coverImagePlaceHolder")
         
-        let image = UIImage(data: album.albumImage as! Data)!
-        cell.albumImageView.image = image
+        // Get album image if the album was saved prior to image being saved due to slow connetcion
+        if let data = album.albumImage {
+            cell.albumImageView.image = UIImage(data: data as Data)
+        } else {
+            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
+                DispatchQueue.main.async {
+                    let image = UIImage(data: data as Data)
+                    UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
+                    album.albumImage = data
+                    self.stack.saveContext()
+                }
+            })
+        }
         
         let count = getListenedCount(indexPath: indexPath)
         cell.albumDetailLabel.text = "\(count)/\(album.tracks!.count) tracks"
@@ -94,6 +106,20 @@ extension FavoriteAlbumTableView {
             cell.accessoryType = UITableViewCellAccessoryType.checkmark
         } else {
             cell.accessoryType = UITableViewCellAccessoryType.none
+        }
+    }
+    
+    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
+        if let urlString = url {
+            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
+                if let data = result {
+                    completetionHandlerForAlbumImage(data as NSData)
+                }
+            })
+        } else {
+            let image = UIImage(named: "coverImagePlaceHolder")
+            let data = UIImagePNGRepresentation(image!)!
+            completetionHandlerForAlbumImage(data as NSData)
         }
     }
     

@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import SVProgressHUD
+import SwiftMessages
 
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
 
@@ -21,7 +23,6 @@ class SearchViewController: UIViewController {
     var artists = [Artist]()
     var tap: UITapGestureRecognizer!
     var isSearching: Bool?
-    var indicatorView: UIView!
     var selectedRow: IndexPath?
     
     // MARK: - Lifecycle
@@ -47,34 +48,35 @@ extension SearchViewController {
         let artist = artists[indexPath.row]
         cell.searchLabel.text = artist.name
         
-        if artist.artistImage == nil {
-            if artist.imageURL == "" {
-                let image = UIImage(named: "coverImagePlaceHolder")
-                let imageData = UIImagePNGRepresentation(image!)!
-                artist.artistImage = NSData(data: imageData)
+        if let data = artist.artistImage {
+            let image = UIImage(data: data as Data)
+            cell.searchImageVIew?.image = image
+        } else {
+            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
+                artist.artistImage = NSData(data: data as Data)
                 DispatchQueue.main.async {
-                    cell.searchImageVIew.image = image
+                    let image = UIImage(data: data as Data)
+                    UIView.transition(with: cell.searchImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { cell.searchImageVIew.image = image }, completion: nil)
                     cell.layoutSubviews()
-                }
-            } else {
-                SpotifyAPI.sharedInstance.getImage(artist.imageURL!) { (data) in
-                    if let resultData = data {
-                        artist.artistImage = NSData(data: resultData)
-                        if self.selectedRow == indexPath {
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: artistImageDownloadNotification), object: self)
-                        }
-                        let image = UIImage(data: resultData)
-                        DispatchQueue.main.async {
-                            UIView.transition(with: cell.searchImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { cell.searchImageVIew.image = image }, completion: nil)
-                            cell.layoutSubviews()
-                        }
+                    if self.selectedRow == indexPath {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: artistImageDownloadNotification), object: self)
                     }
                 }
-            }
+            })
+        }
+    }
+    
+    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
+        if let urlString = url {
+            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
+                if let data = result {
+                    completetionHandlerForAlbumImage(data as NSData)
+                }
+            })
         } else {
-            let image = UIImage(data: artist.artistImage as! Data)
-            cell.searchImageVIew?.image = image
-            cell.activityIndicator.stopAnimating()
+            let image = UIImage(named: "coverImagePlaceHolder")
+            let data = UIImagePNGRepresentation(image!)!
+            completetionHandlerForAlbumImage(data as NSData)
         }
     }
     
@@ -115,16 +117,20 @@ extension SearchViewController: UISearchBarDelegate {
         deleteObjects()
         isSearching = true
         tableView.reloadData()
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.show(withStatus: "Loading...")
         SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
                     if searchResults.isEmpty {
                         DispatchQueue.main.async {
-                            AlerView.showAlert(view: self, title: "", message: "No results found. Please try again.")
+                            SVProgressHUD.dismiss()
+                            SwiftMessages.sharedInstance.displayError(title: "No Results Found", message: "Please try again")
                         }
                     } else {
                         self.artists = searchResults
                         DispatchQueue.main.async {
+                            SVProgressHUD.dismiss()
                             self.tableView.reloadData()
                         }
                     }
@@ -196,5 +202,11 @@ extension SearchViewController: UITableViewDelegate {
         detailVC.currentArtist = artist
         navigationController?.pushViewController(detailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension SVProgressHUD {
+    func visibleKeyboardHeight() -> CFloat {
+        return 0.0
     }
 }

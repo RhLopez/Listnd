@@ -124,7 +124,7 @@ extension SpotifyAPI {
             }
             
             if images.isEmpty {
-                imageURL = ""
+                imageURL = nil
             } else {
                 let item = images.first!
                 guard let url = item["url"] as? String else {
@@ -133,13 +133,12 @@ extension SpotifyAPI {
                 }
                 
                 imageURL = url
-                
             }
             
             let artist = Artist(entity: self.artistEntity!, insertInto: nil)
             artist.name = artistName
             artist.id = artistId
-            artist.imageURL = imageURL!
+            artist.imageURL = imageURL
             artist.resultNumber = Int16(resultNumber)
             artists.append(artist)
             resultNumber = resultNumber + 1
@@ -202,7 +201,7 @@ extension SpotifyAPI {
             }
             
             if images.isEmpty {
-                imageURL = ""
+                imageURL = nil
             } else {
                 let image = images.first!
                 guard let url = image["url"] as? String else {
@@ -218,7 +217,7 @@ extension SpotifyAPI {
             album.id = albumId
             album.uri = uri
             album.type = album_type
-            album.imageURL = imageURL!
+            album.imageURL = imageURL
             albums.append(album)
             albumNames.append(albumName)
         }
@@ -292,7 +291,7 @@ extension SpotifyAPI {
     func getImage(_ urlString: String?, completionHandlerForImage: @escaping (_ data: Data?) -> Void) {
         if let url = urlString {
             let request = URLRequest(url: URL(string: url)!)
-            
+
             let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
                 guard (error == nil) else {
                     print(error?.localizedDescription as Any)

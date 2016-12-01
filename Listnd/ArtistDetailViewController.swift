@@ -10,12 +10,14 @@ import UIKit
 import CoreData
 import SwiftMessages
 import SVProgressHUD
+import GSKStretchyHeaderView
 
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
 
 class ArtistDetailViewController: UIViewController {
     
     // MARK: - IBOutlets
+    @IBOutlet var headerView: GSKStretchyHeaderView!
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var artistImageView: UIImageView!
     @IBOutlet weak var artistNameLabel: UILabel!
@@ -39,14 +41,9 @@ class ArtistDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        artistNameLabel.text = currentArtist.name
-        artistImageView.image = UIImage(named: "coverImagePlaceHolder")
-        if let imageData = currentArtist.artistImage {
-            setArtistImage(imageData: imageData)
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
-        }
-        backgroundImageView.image = UIImage(named: "backgroundImage")
+        tableView.addSubview(headerView)
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
+        setUpUI()
         getAlbums(artistId: currentArtist.id)
     }
     
@@ -66,6 +63,17 @@ class ArtistDetailViewController: UIViewController {
 
 //MARK: - Helper methods
 extension ArtistDetailViewController {
+    func setUpUI() {
+        artistNameLabel.text = currentArtist.name
+        artistImageView.image = UIImage(named: "coverImagePlaceHolder")
+        if let imageData = currentArtist.artistImage {
+            setArtistImage(imageData: imageData)
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
+        }
+        backgroundImageView.image = UIImage(named: "backgroundImage")
+    }
+    
     func getAlbums(artistId: String) {
         isLoading = true
         SVProgressHUD.setDefaultStyle(.dark)
@@ -190,11 +198,10 @@ extension ArtistDetailViewController: UITableViewDataSource {
         let identifier = "artistCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         configureCell(cell: cell, indexPath: indexPath)
-        
+
         return cell
     }
 }
-
 
 // MARK: - UITableViewDelegate
 extension ArtistDetailViewController: UITableViewDelegate {
@@ -206,7 +213,38 @@ extension ArtistDetailViewController: UITableViewDelegate {
         navigationController?.pushViewController(albumDetailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30.0
+    }
 }
+
+//extension ArtistDetailViewController: UIScrollViewDelegate {
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let offset_HeaderStop: CGFloat = 1.0
+//        let offset = scrollView.contentOffset.y
+//        var imageTransform = CATransform3DIdentity
+//        
+//        let avatarScaleFactor = (min(offset_HeaderStop, offset)) / artistImageView.bounds.height // Slow down the animation
+//        let avatarSizeVariation = ((artistImageView.bounds.height * (1.0 + avatarScaleFactor)) - artistImageView.bounds.height) / 2.0
+//        imageTransform = CATransform3DTranslate(imageTransform, 0, avatarSizeVariation, 0)
+//        imageTransform = CATransform3DScale(imageTransform, 1.0 - avatarScaleFactor, 1.0 - avatarScaleFactor, 0)
+//        
+//        if offset <= offset_HeaderStop {
+//            
+//            if artistImageView.layer.zPosition < headerView.layer.zPosition{
+//                headerView.layer.zPosition = 0
+//            }
+//            
+//        }else {
+//            if artistImageView.layer.zPosition >= headerView.layer.zPosition{
+//                headerView.layer.zPosition = 2
+//            }
+//        }
+//        
+//        artistImageView.layer.transform = imageTransform
+//    }
+//}
 
 // MARK: - UIGestureRecognizerDelegate
 extension ArtistDetailViewController: UIGestureRecognizerDelegate {

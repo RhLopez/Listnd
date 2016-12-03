@@ -32,6 +32,7 @@ class ArtistDetailViewController: UIViewController {
     var singleIndex: Int?
     var selectedRow: IndexPath?
     var isLoading: Bool?
+    var artistImage: UIImageView!
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -47,12 +48,6 @@ class ArtistDetailViewController: UIViewController {
         getAlbums(artistId: currentArtist.id)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        artistImageView.layer.cornerRadius = 6.5
-        artistImageView.clipsToBounds = true
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
         if isLoading == true {
@@ -64,13 +59,22 @@ class ArtistDetailViewController: UIViewController {
 //MARK: - Helper methods
 extension ArtistDetailViewController {
     func setUpUI() {
-        artistNameLabel.text = currentArtist.name
-        artistImageView.image = UIImage(named: "coverImagePlaceHolder")
+        artistImageView.layer.shadowColor = UIColor.black.cgColor
+        artistImageView.layer.shadowOffset = CGSize(width: 3, height: 3)
+        artistImageView.layer.shadowOpacity = 0.8
+        artistImageView.layer.shadowRadius = 10.0
+        artistImage = UIImageView()
+        artistImage.image = UIImage(named: "coverImagePlaceHolder")
+        artistImage.frame = artistImageView.bounds
+        artistImage.contentMode = .scaleAspectFill
+        artistImage.clipsToBounds = true
+        artistImageView.addSubview(artistImage)
         if let imageData = currentArtist.artistImage {
             setArtistImage(imageData: imageData)
         } else {
             NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
         }
+        artistNameLabel.text = currentArtist.name
         backgroundImageView.image = UIImage(named: "backgroundImage")
     }
     
@@ -169,7 +173,7 @@ extension ArtistDetailViewController {
     
     func setArtistImage(imageData: NSData) {
         let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImageView.image = image }, completion: nil)
+        UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImage.image = image }, completion: nil)
     }
 }
 
@@ -177,6 +181,21 @@ extension ArtistDetailViewController {
 extension ArtistDetailViewController {
     @IBAction func backButtonPressed() {
         _ = navigationController?.popViewController(animated: true)
+    }
+}
+
+extension ArtistDetailViewController: UIScrollViewDelegate {
+    // Fade artistImageView when scrolling from stackoverflow post
+    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var height: CGFloat
+        var position: CGFloat
+        var percent: CGFloat
+        
+        height = scrollView.bounds.size.height / 4
+        position = max(-scrollView.contentOffset.y, 0.0)
+        percent = min(position / height, 1.0)
+        artistImageView.alpha = percent
     }
 }
 
@@ -218,33 +237,6 @@ extension ArtistDetailViewController: UITableViewDelegate {
         return 30.0
     }
 }
-
-//extension ArtistDetailViewController: UIScrollViewDelegate {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let offset_HeaderStop: CGFloat = 1.0
-//        let offset = scrollView.contentOffset.y
-//        var imageTransform = CATransform3DIdentity
-//        
-//        let avatarScaleFactor = (min(offset_HeaderStop, offset)) / artistImageView.bounds.height // Slow down the animation
-//        let avatarSizeVariation = ((artistImageView.bounds.height * (1.0 + avatarScaleFactor)) - artistImageView.bounds.height) / 2.0
-//        imageTransform = CATransform3DTranslate(imageTransform, 0, avatarSizeVariation, 0)
-//        imageTransform = CATransform3DScale(imageTransform, 1.0 - avatarScaleFactor, 1.0 - avatarScaleFactor, 0)
-//        
-//        if offset <= offset_HeaderStop {
-//            
-//            if artistImageView.layer.zPosition < headerView.layer.zPosition{
-//                headerView.layer.zPosition = 0
-//            }
-//            
-//        }else {
-//            if artistImageView.layer.zPosition >= headerView.layer.zPosition{
-//                headerView.layer.zPosition = 2
-//            }
-//        }
-//        
-//        artistImageView.layer.transform = imageTransform
-//    }
-//}
 
 // MARK: - UIGestureRecognizerDelegate
 extension ArtistDetailViewController: UIGestureRecognizerDelegate {

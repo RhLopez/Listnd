@@ -11,10 +11,12 @@ import AVFoundation
 import CoreData
 import SwiftMessages
 import SVProgressHUD
+import GSKStretchyHeaderView
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     // MARK: - IBOutlets
+    @IBOutlet var headerView: GSKStretchyHeaderView!
     @IBOutlet weak var albumBackgoundImage: UIImageView!
     @IBOutlet weak var albumImage: UIImageView!
     @IBOutlet weak var albumNameLabel: UILabel!
@@ -32,6 +34,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var previousSelectedCell: IndexPath?
     var downloadingSampleClip: Bool?
     var isLoading: Bool?
+    var albumImageFrame: UIImageView!
     
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
@@ -41,19 +44,11 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpUI()
+        tableView.addSubview(headerView)
         NotificationCenter.default.addObserver(self, selector: #selector(playerFinishedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
-        backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 7, 0)
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        //self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         setAudio()
-        albumNameLabel.text = currentAlbum.name
-        albumNameLabel.sizeToFit()
-        albumImage.image = UIImage(named: "coverImagePlaceHolder")
-        if let imageData = currentAlbum.albumImage {
-            setAlbumImage(imageData: imageData)
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
-        }
-        albumBackgoundImage.image = UIImage(named: "backgroundImage")
         getTracks()
     }
     
@@ -70,12 +65,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         return .lightContent
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        albumImage.layer.cornerRadius = 4.5
-        albumImage.clipsToBounds = true
-    }
-    
     func playerReady() {
         downloadingSampleClip = false
         tableView.reloadRows(at: [currentSong!], with: .none)
@@ -88,6 +77,26 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
 
 // Mark: - Helper methods
 extension AlbumDetailViewController {
+    func setUpUI() {
+        albumImage.layer.shadowColor = UIColor.black.cgColor
+        albumImage.layer.shadowOffset = CGSize(width: 3, height: 3)
+        albumImage.layer.shadowOpacity = 0.8
+        albumImage.layer.shadowRadius = 10.0
+        albumImageFrame = UIImageView()
+        albumImageFrame.image = UIImage(named: "coverIMagePlaceHolder")
+        albumImageFrame.frame = albumImage.bounds
+        albumImageFrame.contentMode = .scaleAspectFill
+        albumImageFrame.clipsToBounds = true
+        albumImage.addSubview(albumImageFrame)
+        albumNameLabel.text = currentAlbum.name
+        if let imageData = currentAlbum.albumImage {
+            setAlbumImage(imageData: imageData)
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+        }
+        albumBackgoundImage.image = UIImage(named: "backgroundImage")
+    }
+    
     func setAudio() {
         let audioSession = AVAudioSession.sharedInstance()
         
@@ -313,7 +322,7 @@ extension AlbumDetailViewController {
     
     func setAlbumImage(imageData: NSData) {
         let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.albumImage, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImage.image = image }, completion: nil)
+        UIView.transition(with: self.albumImage, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImageFrame.image = image }, completion: nil)
     }
 }
 
@@ -372,6 +381,22 @@ extension AlbumDetailViewController: UITableViewDelegate {
         
         saveSongAction.backgroundColor = UIColor.blue
         return [saveSongAction]
+    }
+}
+
+extension AlbumDetailViewController: UIScrollViewDelegate {
+    // Fade artistImageView when scrolling from stackoverflow post
+    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var height: CGFloat
+        var position: CGFloat
+        var percent: CGFloat
+        
+        height = scrollView.bounds.size.height / 4
+        position = max(-scrollView.contentOffset.y, 0.0)
+        percent = min(position / height, 1.0)
+        albumImage.alpha = percent
+        
     }
 }
 

@@ -12,6 +12,7 @@ import CoreData
 class FavoriteAlbumTableView: UIViewController {
     
     // MARK: - IBOutlets
+//    @IBOutlet var headerView: HeaderView!
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var artistImage: UIImageView!
     @IBOutlet weak var artistNameLabel: UILabel!
@@ -20,6 +21,8 @@ class FavoriteAlbumTableView: UIViewController {
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
     var currentArtist: Artist?
+    var artistImageFrame: UIImageView!
+    var headerView: HeaderView?
 
     lazy var listenedCountPredicate: NSPredicate = {
         return NSPredicate(format: "%K == %@", #keyPath(Track.listened), true as CVarArg)
@@ -35,20 +38,15 @@ class FavoriteAlbumTableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let view = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
+            headerView = view
+            tableView.addSubview(view)
+        }
         if let artist = currentArtist {
-            let image = UIImage(data: artist.artistImage! as Data)
-            artistImage.image = image
-            artistNameLabel.text = artist.name
-            backgroundImage.image = UIImage(named: "backgroundImage")
+            setUpUI(artist: artist)
             getAlbums()
         }
         
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        artistImage.layer.cornerRadius = 6.5
-        artistImage.clipsToBounds = true
     }
     
     // MARK: - NSFetchedResultsController
@@ -70,6 +68,22 @@ class FavoriteAlbumTableView: UIViewController {
 
 // MARK: - Helper method
 extension FavoriteAlbumTableView {
+    func setUpUI(artist: Artist) {
+        headerView?.addButton.isHidden = true
+        headerView?.imageView.layer.shadowColor = UIColor.black.cgColor
+        headerView?.imageView.layer.shadowOffset = CGSize(width: 3, height: 3)
+        headerView?.imageView.layer.shadowOpacity = 0.8
+        headerView?.imageView.layer.shadowRadius = 10.0
+        artistImageFrame = UIImageView()
+        artistImageFrame.image = UIImage(data: artist.artistImage! as Data)
+        artistImageFrame.frame = (headerView?.imageView.bounds)!
+        artistImageFrame.contentMode = .scaleAspectFill
+        artistImageFrame.clipsToBounds = true
+        headerView?.imageView.addSubview(artistImageFrame)
+        headerView?.backgroundImage.image = UIImage(named: "backgroundImage")
+        headerView?.nameLabel.text = artist.name
+    }
+    
     func getAlbums() {
         do {
             try fetchedResultsController.performFetch()
@@ -230,3 +244,18 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
         tableView.endUpdates()
     }
 }
+
+//extension FavoriteAlbumTableView: UIScrollViewDelegate {
+//    // Fade artistImageView when scrolling from stackoverflow post
+//    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        var height: CGFloat
+//        var position: CGFloat
+//        var percent: CGFloat
+//        
+//        height = scrollView.bounds.size.height / 4
+//        position = max(-scrollView.contentOffset.y, 0.0)
+//        percent = min(position / height, 1.0)
+//        artistImage.alpha = percent
+//    }
+//}

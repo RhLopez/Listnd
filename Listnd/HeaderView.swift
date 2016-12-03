@@ -28,5 +28,7 @@ class HeaderView: GSKStretchyHeaderView {
         
         var imageSizeFactor: CGFloat = CGFloatTranslateRange(backgroundImage.frame.height, 64, backgroundImage.frame.height, 0, 1)
         imageSizeFactor = min(1, max(0, imageSizeFactor))
+        var imageEdge: CGFloat = CGFloatInterpolate(imageSizeFactor, 64, 42)
+        
     }
 }

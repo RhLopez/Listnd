@@ -12,17 +12,12 @@ import CoreData
 class FavoriteAlbumTableView: UIViewController {
     
     // MARK: - IBOutlets
-//    @IBOutlet var headerView: HeaderView!
-    @IBOutlet weak var backgroundImage: UIImageView!
-    @IBOutlet weak var artistImage: UIImageView!
-    @IBOutlet weak var artistNameLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
     var currentArtist: Artist?
     var artistImageFrame: UIImageView!
-    var headerView: HeaderView?
 
     lazy var listenedCountPredicate: NSPredicate = {
         return NSPredicate(format: "%K == %@", #keyPath(Track.listened), true as CVarArg)
@@ -38,15 +33,15 @@ class FavoriteAlbumTableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let view = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
-            headerView = view
-            tableView.addSubview(view)
-        }
-        if let artist = currentArtist {
-            setUpUI(artist: artist)
+        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
+            headerView.configureImageViews()
+            headerView.imageTemplate.image = UIImage(data: artist.artistImage! as Data)
+            headerView.nameLabel.text = artist.name
+            headerView.addButton.isHidden = true
+            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
+            tableView.addSubview(headerView)
             getAlbums()
         }
-        
     }
     
     // MARK: - NSFetchedResultsController
@@ -61,29 +56,13 @@ class FavoriteAlbumTableView: UIViewController {
             return fetchedResultsController
         }()
     
-    @IBAction func backButtonPressed(_ sender: Any) {
+    func backButtonPressed(_ sender: UIButton) {
        _ = navigationController?.popViewController(animated: true)
     }
 }
 
 // MARK: - Helper method
 extension FavoriteAlbumTableView {
-    func setUpUI(artist: Artist) {
-        headerView?.addButton.isHidden = true
-        headerView?.imageView.layer.shadowColor = UIColor.black.cgColor
-        headerView?.imageView.layer.shadowOffset = CGSize(width: 3, height: 3)
-        headerView?.imageView.layer.shadowOpacity = 0.8
-        headerView?.imageView.layer.shadowRadius = 10.0
-        artistImageFrame = UIImageView()
-        artistImageFrame.image = UIImage(data: artist.artistImage! as Data)
-        artistImageFrame.frame = (headerView?.imageView.bounds)!
-        artistImageFrame.contentMode = .scaleAspectFill
-        artistImageFrame.clipsToBounds = true
-        headerView?.imageView.addSubview(artistImageFrame)
-        headerView?.backgroundImage.image = UIImage(named: "backgroundImage")
-        headerView?.nameLabel.text = artist.name
-    }
-    
     func getAlbums() {
         do {
             try fetchedResultsController.performFetch()

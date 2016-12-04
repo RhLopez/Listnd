@@ -184,21 +184,6 @@ extension ArtistDetailViewController {
     }
 }
 
-extension ArtistDetailViewController: UIScrollViewDelegate {
-    // Fade artistImageView when scrolling from stackoverflow post
-    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var height: CGFloat
-        var position: CGFloat
-        var percent: CGFloat
-        
-        height = scrollView.bounds.size.height / 4
-        position = max(-scrollView.contentOffset.y, 0.0)
-        percent = min(position / height, 1.0)
-        artistImageView.alpha = percent
-    }
-}
-
 // MARK: - UITableViewDataSource
 extension ArtistDetailViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {

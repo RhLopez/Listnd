@@ -13,9 +13,6 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var backgroundImage: UIImageView!
-    @IBOutlet weak var albumImage: UIImageView!
-    @IBOutlet weak var albumNameLabel: UILabel!
     
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
@@ -29,17 +26,15 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        backgroundImage.image = UIImage(named: "backgroundImage")
-        let image = UIImage(data: currentAlbum.albumImage! as Data)
-        albumImage.image = image
-        albumNameLabel.text = currentAlbum.name
+        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
+            headerView.configureImageViews()
+            headerView.imageTemplate.image = UIImage(data: currentAlbum.albumImage! as Data)
+            headerView.nameLabel.text = currentAlbum.name
+            headerView.addButton.isHidden = true
+            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
+            tableView.addSubview(headerView)
+        }
         fetchTracks()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        albumImage.layer.cornerRadius = 6.5
-        albumImage.clipsToBounds = true
     }
     
     // MARK: - NSFetchedResultsController
@@ -96,11 +91,8 @@ extension FavoriteAlbumDetailTableViewController {
         let uriString = URL(string: track.uri)!
         UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
     }
-}
-
-// MARK: - IBAction
-extension FavoriteAlbumDetailTableViewController {
-    @IBAction func backButtonPressed() {
+    
+    func backButtonPressed(sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
     }
 }

@@ -26,9 +26,9 @@
                     </constraints>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U6I-GU-L5A">
-                    <rect key="frame" x="11" y="32" width="20" height="20"/>
+                    <rect key="frame" x="11" y="27" width="20" height="27"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="20" id="WlC-vD-vUI"/>
+                        <constraint firstAttribute="height" constant="27" id="ItB-Rg-VKB"/>
                         <constraint firstAttribute="width" constant="20" id="pLC-G5-gRS"/>
                     </constraints>
                     <state key="normal" image="backArrow"/>
@@ -39,22 +39,23 @@
                         <constraint firstAttribute="height" constant="30" id="Oy9-KN-K6r"/>
                         <constraint firstAttribute="width" constant="30" id="poS-zk-PM4"/>
                     </constraints>
-                    <state key="normal" title="Add"/>
+                    <state key="normal" title="Add">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
                     <rect key="frame" x="47" y="164" width="280" height="36"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="hAn-RE-OrZ"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
-                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="Y5H-6q-HO4" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="27" id="0F1-hz-Woc"/>
-                <constraint firstItem="U6I-GU-L5A" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="32" id="30B-9P-SGA"/>
+                <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="U6I-GU-L5A" secondAttribute="bottom" constant="-54" id="FNB-I0-BwR"/>
                 <constraint firstItem="g4T-3e-XNG" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="36" id="Ip6-YB-WE1"/>
                 <constraint firstItem="g4T-3e-XNG" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="MQ5-sD-ARn"/>
                 <constraint firstItem="U6I-GU-L5A" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="11" id="QiD-3R-Cmd"/>
@@ -89,6 +90,6 @@
         </view>
     </objects>
     <resources>
-        <image name="backArrow" width="40" height="74"/>
+        <image name="backArrow" width="75" height="138"/>
     </resources>
 </document>

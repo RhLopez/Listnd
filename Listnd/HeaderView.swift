@@ -17,6 +17,8 @@ class HeaderView: GSKStretchyHeaderView {
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
     
+    var imageTemplate: UIImageView!
+    
     override func didChangeStretchFactor(_ stretchFactor: CGFloat) {
         super.didChangeStretchFactor(stretchFactor)
         var alpha: CGFloat = 1
@@ -25,5 +27,18 @@ class HeaderView: GSKStretchyHeaderView {
         }
         alpha = max(0, alpha)
         imageView.alpha = alpha
+    }
+    
+    func configureImageViews() {
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        imageView.layer.shadowOffset = CGSize(width: 3, height: 3)
+        imageView.layer.shadowOpacity = 0.8
+        imageView.layer.shadowRadius = 10.0
+        imageTemplate = UIImageView()
+        imageTemplate.frame = imageView.bounds
+        imageTemplate.contentMode = .scaleAspectFill
+        imageTemplate.clipsToBounds = true
+        imageView.addSubview(imageTemplate)
+        backgroundImage.image = UIImage(named: "backgroundImage")
     }
 }

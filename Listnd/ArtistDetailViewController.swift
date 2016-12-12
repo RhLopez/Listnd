@@ -17,10 +17,6 @@ let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
 class ArtistDetailViewController: UIViewController {
     
     // MARK: - IBOutlets
-    @IBOutlet var headerView: GSKStretchyHeaderView!
-    @IBOutlet weak var backgroundImageView: UIImageView!
-    @IBOutlet weak var artistImageView: UIImageView!
-    @IBOutlet weak var artistNameLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
@@ -33,6 +29,7 @@ class ArtistDetailViewController: UIViewController {
     var selectedRow: IndexPath?
     var isLoading: Bool?
     var artistImage: UIImageView!
+    var headerView: HeaderView!
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -42,9 +39,21 @@ class ArtistDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.addSubview(headerView)
+        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
+            self.headerView = headerView
+            headerView.configureImageViews()
+            headerView.imageView.image = UIImage(named: "coverImagePlaceHolder")
+            if let imageData = currentArtist.artistImage {
+                setArtistImage(imageData: imageData)
+            } else {
+                NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
+            }
+            headerView.nameLabel.text = currentArtist.name
+            headerView.addButton.isHidden = true
+            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
+            tableView.addSubview(headerView)
+        }
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
-        setUpUI()
         getAlbums(artistId: currentArtist.id)
     }
     
@@ -58,26 +67,6 @@ class ArtistDetailViewController: UIViewController {
 
 //MARK: - Helper methods
 extension ArtistDetailViewController {
-    func setUpUI() {
-        artistImageView.layer.shadowColor = UIColor.black.cgColor
-        artistImageView.layer.shadowOffset = CGSize(width: 3, height: 3)
-        artistImageView.layer.shadowOpacity = 0.8
-        artistImageView.layer.shadowRadius = 10.0
-        artistImage = UIImageView()
-        artistImage.image = UIImage(named: "coverImagePlaceHolder")
-        artistImage.frame = artistImageView.bounds
-        artistImage.contentMode = .scaleAspectFill
-        artistImage.clipsToBounds = true
-        artistImageView.addSubview(artistImage)
-        if let imageData = currentArtist.artistImage {
-            setArtistImage(imageData: imageData)
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
-        }
-        artistNameLabel.text = currentArtist.name
-        backgroundImageView.image = UIImage(named: "backgroundImage")
-    }
-    
     func getAlbums(artistId: String) {
         isLoading = true
         SVProgressHUD.setDefaultStyle(.dark)
@@ -117,7 +106,7 @@ extension ArtistDetailViewController {
                     sections.append("Album")
                     albumIndex = sections.index(of: "Album")
                 }
-                if searchItems.isEmpty {
+                if searchItems.isEmpty || (sections[0] == "Single" && searchItems.count == 1){
                     searchItems.append([album])
                 } else {
                     searchItems[albumIndex!].append(album)
@@ -129,14 +118,14 @@ extension ArtistDetailViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? ArtistDetailTableViewCell else { return }
         
-        cell.albumImageView.image = UIImage(named: "placeHolder")
+        cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
         
         let album = searchItems[indexPath.section][indexPath.row]
         cell.albumNameLabel.text = album.name
         
         if let data = album.albumImage {
             let image = UIImage(data: data as Data)
-            UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
+            cell.albumImageView.image = image
         } else {
             getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
                 album.albumImage = NSData(data: data as Data)
@@ -173,13 +162,10 @@ extension ArtistDetailViewController {
     
     func setArtistImage(imageData: NSData) {
         let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImage.image = image }, completion: nil)
+        UIView.transition(with: self.headerView.imageTemplate, duration: 1, options: .transitionCrossDissolve, animations: { self.headerView.imageTemplate.image = image }, completion: nil)
     }
-}
-
-// MARK: - IBAction
-extension ArtistDetailViewController {
-    @IBAction func backButtonPressed() {
+    
+    func backButtonPressed(sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
     }
 }

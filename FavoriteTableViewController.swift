@@ -50,9 +50,33 @@ extension FavoriteTableViewController {
         let artist = fetchedResultsController.object(at: indexPath)
 
         cell.artistNameLabel.text = artist.name
+        cell.artistImageView.image = UIImage(named: "coverImagePlaceHolder")
         
-        let image = UIImage(data: artist.artistImage as! Data)
-        cell.artistImageView.image = image
+        // Get album image if the album was saved prior to image being saved due to slow connetcion
+        if let data = artist.artistImage {
+            cell.artistImageView.image = UIImage(data: data as Data)
+        } else {
+            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
+                let image = UIImage(data: data as Data)
+                UIView.transition(with: cell.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.artistImageView.image = image }, completion: nil)
+                artist.artistImage = data
+                self.stack.saveContext()
+            })
+        }
+    }
+    
+    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
+        if let urlString = url {
+            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
+                if let data = result {
+                    completetionHandlerForAlbumImage(data as NSData)
+                }
+            })
+        } else {
+            let image = UIImage(named: "coverImagePlaceHolder")
+            let data = UIImagePNGRepresentation(image!)!
+            completetionHandlerForAlbumImage(data as NSData)
+        }
     }
 }
 

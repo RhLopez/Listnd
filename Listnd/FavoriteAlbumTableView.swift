@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import SwiftMessages
 
 class FavoriteAlbumTableView: UIViewController {
     
@@ -18,6 +19,8 @@ class FavoriteAlbumTableView: UIViewController {
     let stack = CoreDataStack.sharedInstance
     var currentArtist: Artist?
     var artistImageFrame: UIImageView!
+    var headerView: HeaderView!
+    var selectedCell: IndexPath?
 
     lazy var listenedCountPredicate: NSPredicate = {
         return NSPredicate(format: "%K == %@", #keyPath(Track.listened), true as CVarArg)
@@ -28,14 +31,21 @@ class FavoriteAlbumTableView: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
         navigationController?.interactivePopGestureRecognizer?.delegate = self
-        tableView.reloadData()
+        if let cell = selectedCell {
+            tableView.reloadRows(at: [cell], with: .automatic)
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
+            self.headerView = headerView
             headerView.configureImageViews()
-            headerView.imageTemplate.image = UIImage(data: artist.artistImage! as Data)
+            if let data = artist.artistImage {
+               headerView.imageTemplate.image = UIImage(data: data as Data)
+            } else {
+                headerView.imageTemplate.image = UIImage(named: "coverImagePlaceHolder")
+            }
             headerView.nameLabel.text = artist.name
             headerView.addButton.isHidden = true
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
@@ -93,7 +103,7 @@ extension FavoriteAlbumTableView {
         }
         
         let count = getListenedCount(indexPath: indexPath)
-        cell.albumDetailLabel.text = "\(count)/\(album.tracks!.count) tracks"
+        cell.albumDetailLabel.text = "\(count) of \(album.tracks!.count) Tracks Lisntd"
         
         if count == album.tracks!.count {
             cell.accessoryType = UITableViewCellAccessoryType.checkmark
@@ -140,7 +150,11 @@ extension FavoriteAlbumTableView {
     func openSpotify(indexPath: IndexPath) {
         let album = fetchedResultsController.object(at: indexPath)
         let urlString = URL(string: album.uri)!
-        UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
+        if UIApplication.shared.canOpenURL(urlString) {
+            UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
+        } else {
+            SwiftMessages.sharedInstance.displayCustomMessage()
+        }
     }
 }
 
@@ -176,6 +190,7 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! FavoriteAlbumDetailTableViewController
         albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
         navigationController?.pushViewController(albumDetailVC, animated: true)
+        selectedCell = indexPath   
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -223,18 +238,3 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
         tableView.endUpdates()
     }
 }
-
-//extension FavoriteAlbumTableView: UIScrollViewDelegate {
-//    // Fade artistImageView when scrolling from stackoverflow post
-//    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        var height: CGFloat
-//        var position: CGFloat
-//        var percent: CGFloat
-//        
-//        height = scrollView.bounds.size.height / 4
-//        position = max(-scrollView.contentOffset.y, 0.0)
-//        percent = min(position / height, 1.0)
-//        artistImage.alpha = percent
-//    }
-//}

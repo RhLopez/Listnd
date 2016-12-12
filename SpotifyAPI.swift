@@ -79,7 +79,7 @@ class SpotifyAPI {
             let queryItem = URLQueryItem(name: key, value: "\(value)")
             components.queryItems!.append(queryItem)
         }
-        
+
         return components.url!
     }
 }

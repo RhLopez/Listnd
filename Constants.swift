@@ -29,6 +29,7 @@ extension SpotifyAPI {
             static let Track = "/tracks/{id}"
             static let Market = "market"
             static let AlbumType = "album_type"
+            static let Limit = "limit"
         }
         
         struct ParameterValues {
@@ -36,6 +37,7 @@ extension SpotifyAPI {
             static let AlbumSearch = "album,single"
             static let Track = "track"
             static let US = "US"
+            static let LimitAmount = "50"
         }
     }
 }

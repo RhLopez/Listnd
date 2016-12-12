@@ -23,6 +23,7 @@ class SearchViewController: UIViewController {
     var artists = [Artist]()
     var tap: UITapGestureRecognizer!
     var isSearching: Bool?
+    var hasSearched = false
     var selectedRow: IndexPath?
     
     // MARK: - Lifecycle
@@ -31,7 +32,6 @@ class SearchViewController: UIViewController {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
-        searchBar.backgroundImage = UIImage()
     }
 }
 
@@ -40,10 +40,7 @@ extension SearchViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? SearchTableViewCell else { return }
         
-        let viewBackground = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
-        viewBackground.backgroundColor = UIColor(red: 148/255, green: 179/255, blue: 252/255, alpha: 1.0)
-        cell.selectedBackgroundView = viewBackground
-        cell.searchImageVIew.image = UIImage(named: "placeHolder")
+        cell.searchImageVIew.image = UIImage(named: "thumbnailPlaceHolder")
         cell.layoutSubviews()
         let artist = artists[indexPath.row]
         cell.searchLabel.text = artist.name
@@ -96,6 +93,7 @@ extension SearchViewController {
     
     func deleteObjects() {
         artists.removeAll()
+        hasSearched = false
         tableView.reloadData()
     }
     
@@ -116,26 +114,21 @@ extension SearchViewController: UISearchBarDelegate {
         enableCancelButton(searchBar: searchBar)
         deleteObjects()
         isSearching = true
-        tableView.reloadData()
+        hasSearched = true
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.show(withStatus: "Loading...")
         SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
             if success {
                 if let searchResults = results {
-                    if searchResults.isEmpty {
-                        DispatchQueue.main.async {
-                            SVProgressHUD.dismiss()
-                            SwiftMessages.sharedInstance.displayError(title: "No Results Found", message: "Please try again")
-                        }
-                    } else {
-                        self.artists = searchResults
-                        DispatchQueue.main.async {
-                            SVProgressHUD.dismiss()
-                            self.tableView.reloadData()
-                        }
-                    }
-                    self.isSearching = false
+                    self.artists = searchResults
+                } else {
+                    print("There was a problem with the search results. Please try again.")
                 }
+                DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
+                    self.tableView.reloadData()
+                }
+                self.isSearching = false
             } else {
                 print(errorMessage ?? "")
             }
@@ -154,8 +147,6 @@ extension SearchViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
-            if isSearching == true {
-            }
             deleteObjects()
             searchBar.becomeFirstResponder()
         }
@@ -171,24 +162,32 @@ extension SearchViewController: UISearchBarDelegate {
         view.removeGestureRecognizer(tap)
         return true
     }
+    
+    func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
+    }
 }
 
 // MARK: - UITableViewDataSource
 extension SearchViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return artists.count
+        if !hasSearched {
+            return 0
+        } else if artists.count == 0 {
+            return 1
+        } else {
+            return artists.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let identifier = "searchCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        
-        configureCell(cell: cell, indexPath: indexPath)
-        return cell
+        if artists.count == 0 {
+            return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
+            configureCell(cell: cell, indexPath: indexPath)
+            return cell
+        }
     }
 }
 
@@ -202,6 +201,14 @@ extension SearchViewController: UITableViewDelegate {
         detailVC.currentArtist = artist
         navigationController?.pushViewController(detailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if artists.count == 0 {
+            return nil
+        } else {
+            return indexPath
+        }
     }
 }
 

@@ -23,7 +23,7 @@ class HeaderView: GSKStretchyHeaderView {
         super.didChangeStretchFactor(stretchFactor)
         var alpha: CGFloat = 1
         if stretchFactor < 0.8 {
-            alpha = CGFloatTranslateRange(stretchFactor / 0.9, 0.6, 0.9, 0, 1)
+            alpha = CGFloatTranslateRange(stretchFactor, 0.2, 1, 0, 1)
         }
         alpha = max(0, alpha)
         imageView.alpha = alpha
@@ -31,9 +31,9 @@ class HeaderView: GSKStretchyHeaderView {
     
     func configureImageViews() {
         imageView.layer.shadowColor = UIColor.black.cgColor
-        imageView.layer.shadowOffset = CGSize(width: 3, height: 3)
-        imageView.layer.shadowOpacity = 0.8
-        imageView.layer.shadowRadius = 10.0
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 5)
+        imageView.layer.shadowOpacity = 1.0
+        imageView.layer.shadowRadius = 7.0
         imageTemplate = UIImageView()
         imageTemplate.frame = imageView.bounds
         imageTemplate.contentMode = .scaleAspectFill

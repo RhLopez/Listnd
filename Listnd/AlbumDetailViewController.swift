@@ -16,12 +16,7 @@ import GSKStretchyHeaderView
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     // MARK: - IBOutlets
-    @IBOutlet var headerView: GSKStretchyHeaderView!
-    @IBOutlet weak var albumBackgoundImage: UIImageView!
-    @IBOutlet weak var albumImage: UIImageView!
-    @IBOutlet weak var albumNameLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var backButton: UIButton!
     
     // MARK: - Properties
     var stack = CoreDataStack.sharedInstance
@@ -34,7 +29,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var previousSelectedCell: IndexPath?
     var downloadingSampleClip: Bool?
     var isLoading: Bool?
-    var albumImageFrame: UIImageView!
+    var headerView: HeaderView!
     
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
@@ -44,10 +39,21 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpUI()
-        tableView.addSubview(headerView)
+        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
+            self.headerView = headerView
+            headerView.configureImageViews()
+            headerView.imageView.image = UIImage(named: "coverImagePlaceHolder")
+            if let imageData = currentAlbum.albumImage {
+                setAlbumImage(imageData: imageData)
+            } else {
+                NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+            }
+            headerView.nameLabel.text = currentAlbum.name
+            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
+            headerView.addButton.addTarget(self, action: #selector(saveAlbum), for: .touchUpInside)
+            tableView.addSubview(headerView)
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(playerFinishedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
-        //self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         setAudio()
         getTracks()
     }
@@ -61,13 +67,11 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         }
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    
     func playerReady() {
         downloadingSampleClip = false
-        tableView.reloadRows(at: [currentSong!], with: .none)
+        if let song = currentSong {
+            tableView.reloadRows(at: [song], with: .none)
+        }
     }
     
     func playerFinishedPlaying() {
@@ -77,26 +81,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
 
 // Mark: - Helper methods
 extension AlbumDetailViewController {
-    func setUpUI() {
-        albumImage.layer.shadowColor = UIColor.black.cgColor
-        albumImage.layer.shadowOffset = CGSize(width: 3, height: 3)
-        albumImage.layer.shadowOpacity = 0.8
-        albumImage.layer.shadowRadius = 10.0
-        albumImageFrame = UIImageView()
-        albumImageFrame.image = UIImage(named: "coverIMagePlaceHolder")
-        albumImageFrame.frame = albumImage.bounds
-        albumImageFrame.contentMode = .scaleAspectFill
-        albumImageFrame.clipsToBounds = true
-        albumImage.addSubview(albumImageFrame)
-        albumNameLabel.text = currentAlbum.name
-        if let imageData = currentAlbum.albumImage {
-            setAlbumImage(imageData: imageData)
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
-        }
-        albumBackgoundImage.image = UIImage(named: "backgroundImage")
-    }
-    
     func setAudio() {
         let audioSession = AVAudioSession.sharedInstance()
         
@@ -134,10 +118,17 @@ extension AlbumDetailViewController {
         cell.trackNameLabel.text = track.name
         cell.trackDurationLabel.text = timeConversion(duration: Int(track.duration))
 
-        cell.playerItem = ListndPlayerItem(url: URL(string: track.previewURL!)!)
+        if let url = track.previewURL {
+            cell.playerItem = ListndPlayerItem(url: URL(string: url)!)
+        } else {
+            cell.playerItem = nil
+        }
+        
         cell.playerItem?.delegate = self
         
         if downloadingSampleClip == true && previousSelectedCell != indexPath {
+            cell.trackImageView.isHidden = true
+            cell.trackNumberLabel.isHidden = true
             cell.activityIndicator.startAnimating()
             return
         }
@@ -161,18 +152,22 @@ extension AlbumDetailViewController {
     
     func playSampleClip(indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! AlbumDetailTableViewCell
-
-        if player.rate > 0 {
-            player.pause()
-        }
         
-        if currentSong == nil || indexPath != currentSong! {
-            downloadingSampleClip =  true
-            player.replaceCurrentItem(with: cell.playerItem)
-            player.play()
+        if cell.playerItem != nil {
+            if player.rate > 0 {
+                player.pause()
+            }
+            
+            if currentSong == nil || indexPath != currentSong! {
+                downloadingSampleClip =  true
+                player.replaceCurrentItem(with: cell.playerItem)
+                player.play()
+            }
+            
+            reloadRows(indexPath: indexPath)
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to preview song")
         }
-        
-        reloadRows(indexPath: indexPath)
     }
     
     func reloadRows(indexPath: IndexPath) {
@@ -201,6 +196,8 @@ extension AlbumDetailViewController {
                     album.addToTracks(track)
                     stack.saveContext()
                     SwiftMessages.sharedInstance.displayConfirmation(message: "Song Saved!")
+                } else {
+                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
                 }
             }
         }
@@ -242,9 +239,13 @@ extension AlbumDetailViewController {
             let results = try  stack.managedContext.fetch(fetchRequest)
             if results.count > 0 {
                 album = results.first
-                for item in (album?.tracks)! {
-                    let track = item as! Track
-                    savedTrackIds.append(track.id)
+                if album?.tracks?.count == tracks.count {
+                    album = nil
+                } else {
+                    for item in (album?.tracks)! {
+                        let track = item as! Track
+                        savedTrackIds.append(track.id)
+                    }
                 }
             } else {
                 let entity = NSEntityDescription.entity(forEntityName: "Album", in: stack.managedContext)!
@@ -273,7 +274,7 @@ extension AlbumDetailViewController {
         do {
             let results = try stack.managedContext.fetch(fetchRequest)
             if results.count > 0 {
-                track = results.first
+                track = nil
             } else {
                 let entity = NSEntityDescription.entity(forEntityName: "Track", in: stack.managedContext)!
                 track = Track(entity: entity, insertInto: stack.managedContext)
@@ -322,7 +323,24 @@ extension AlbumDetailViewController {
     
     func setAlbumImage(imageData: NSData) {
         let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.albumImage, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImageFrame.image = image }, completion: nil)
+        UIView.transition(with: self.headerView.imageTemplate, duration: 1, options: .transitionCrossDissolve, animations: { self.headerView.imageTemplate.image = image }, completion: nil)
+    }
+    
+    func backButtonPressed(sender: UIButton) {
+        _ = navigationController?.popViewController(animated: true)
+    }
+    
+    func saveAlbum() {
+        if let artist = fetchArtist() {
+            if  let album = fetchAlbum() {
+                artist.addToAlbums(album)
+                saveSongsFromAlbum(album: album)
+                stack.saveContext()
+                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
+            } else {
+                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
+            }
+        }
     }
 }
 
@@ -330,24 +348,6 @@ extension AlbumDetailViewController {
 extension AlbumDetailViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
-    }
-}
-
-// MARK: - IBAction
-extension AlbumDetailViewController {
-    @IBAction func saveAlbum() {
-        if let artist = fetchArtist() {
-            if  let album = fetchAlbum() {
-                artist.addToAlbums(album)
-                saveSongsFromAlbum(album: album)
-                stack.saveContext()
-                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
-            }
-        }
-    }
-    
-    @IBAction func backButtonPressed() {
-        _ = navigationController?.popViewController(animated: true)
     }
 }
 
@@ -383,20 +383,3 @@ extension AlbumDetailViewController: UITableViewDelegate {
         return [saveSongAction]
     }
 }
-
-extension AlbumDetailViewController: UIScrollViewDelegate {
-    // Fade artistImageView when scrolling from stackoverflow post
-    // http://stackoverflow.com/questions/30114746/how-do-i-make-a-uiimage-fade-in-and-fade-out-as-i-scroll
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var height: CGFloat
-        var position: CGFloat
-        var percent: CGFloat
-        
-        height = scrollView.bounds.size.height / 4
-        position = max(-scrollView.contentOffset.y, 0.0)
-        percent = min(position / height, 1.0)
-        albumImage.alpha = percent
-        
-    }
-}
-

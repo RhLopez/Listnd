@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import SwiftMessages
 
 class FavoriteTableViewController: UIViewController {
     
@@ -40,7 +41,7 @@ extension FavoriteTableViewController {
         do {
             try self.fetchedResultsController.performFetch()
         } catch {
-            print("Unable to fetch artists")
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load saved information.")
         }
     }
     
@@ -50,7 +51,7 @@ extension FavoriteTableViewController {
         let artist = fetchedResultsController.object(at: indexPath)
 
         cell.artistNameLabel.text = artist.name
-        cell.artistImageView.image = UIImage(named: "coverImagePlaceHolder")
+        cell.artistImageView.image = UIImage(named: "headerPlaceHolder")
         
         // Get album image if the album was saved prior to image being saved due to slow connetcion
         if let data = artist.artistImage {
@@ -60,7 +61,6 @@ extension FavoriteTableViewController {
                 let image = UIImage(data: data as Data)
                 UIView.transition(with: cell.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.artistImageView.image = image }, completion: nil)
                 artist.artistImage = data
-                self.stack.saveContext()
             })
         }
     }
@@ -73,7 +73,7 @@ extension FavoriteTableViewController {
                 }
             })
         } else {
-            let image = UIImage(named: "coverImagePlaceHolder")
+            let image = UIImage(named: "headerPlaceHolder")
             let data = UIImagePNGRepresentation(image!)!
             completetionHandlerForAlbumImage(data as NSData)
         }
@@ -82,10 +82,6 @@ extension FavoriteTableViewController {
 
 // MARK: - UITableViewDataSouce
 extension FavoriteTableViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }

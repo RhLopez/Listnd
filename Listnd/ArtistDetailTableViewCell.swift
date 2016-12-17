@@ -16,7 +16,7 @@ class ArtistDetailTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        albumImageView.layer.cornerRadius = 6.5
+        albumImageView.layer.cornerRadius = 4.0
         albumImageView.clipsToBounds = true
     }
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,13 +27,6 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g4T-3e-XNG">
-                    <rect key="frame" x="107" y="35" width="161" height="120"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="161" id="ikY-lA-xd8"/>
-                        <constraint firstAttribute="height" constant="120" id="rAT-g6-z2E"/>
-                    </constraints>
-                </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U6I-GU-L5A">
                     <rect key="frame" x="11" y="32" width="17" height="22"/>
                     <constraints>
@@ -53,6 +46,13 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g4T-3e-XNG">
+                    <rect key="frame" x="102" y="34" width="170" height="120"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="170" id="ikY-lA-xd8"/>
+                        <constraint firstAttribute="height" constant="120" id="rAT-g6-z2E"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -64,7 +64,7 @@
                 <constraint firstItem="Y5H-6q-HO4" firstAttribute="leading" secondItem="EfM-OS-SPM" secondAttribute="trailing" constant="4" id="Wda-LJ-EeH"/>
                 <constraint firstAttribute="bottom" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" id="XVu-2K-WAH"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Xb7-tJ-EgL"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="g4T-3e-XNG" secondAttribute="bottom" constant="12" id="Z6c-Xa-J9k"/>
+                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="g4T-3e-XNG" secondAttribute="bottom" constant="13" id="Z6c-Xa-J9k"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-33" id="ZxD-fQ-mX7"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="U6I-GU-L5A" secondAttribute="trailing" constant="19" id="fPP-Or-X3D"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hMk-DA-TVU"/>

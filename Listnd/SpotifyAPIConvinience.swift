@@ -14,7 +14,7 @@ extension SpotifyAPI {
         task?.cancel()
     }
     
-    func searchArtist(_ userInput: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String?) -> Void) {
+    func searchArtist(_ userInput: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
         let parameters = [
             Constants.ParametersKeys.Query: userInput,
             Constants.ParametersKeys.SearchType: Constants.ParameterValues.Artist,
@@ -26,7 +26,7 @@ extension SpotifyAPI {
             if success {
                 self.parseArtistSearch(data as AnyObject?, completionHandlerForParseArtistSearch: { (success, results, errorMessage) in
                     if success {
-                        completionHandlerForArtistSearch(true, results, nil)
+                        completionHandlerForArtistSearch(true, results, "")
                     } else {
                         completionHandlerForArtistSearch(false, nil, errorMessage)
                     }
@@ -84,7 +84,7 @@ extension SpotifyAPI {
         }
     }
     
-    func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String?) -> Void) {
+    func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
 
         var imageURL: String?
         var resultNumber = 0
@@ -148,7 +148,7 @@ extension SpotifyAPI {
             
         }
         
-        completionHandlerForParseArtistSearch(true, artists, nil)
+        completionHandlerForParseArtistSearch(true, artists, "")
     }
     
     func parseAlbums(_ data: AnyObject?, completionHandlerforAlbumParsing: @escaping (_ success: Bool, _ results: [Album]?,_ errorMessage: String) -> Void) {

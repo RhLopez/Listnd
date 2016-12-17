@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import SwiftMessages
 
 class FavoriteAlbumDetailTableViewController: UIViewController {
     
@@ -31,14 +32,16 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
             if let data = currentAlbum.albumImage {
                headerView.imageTemplate.image = UIImage(data: data as Data)
             } else {
-                headerView.imageTemplate.image = UIImage(named: "coverImagePlaceHolder")
+                headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             }
             headerView.nameLabel.text = currentAlbum.name
             headerView.addButton.isHidden = true
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
+            fetchTracks()
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
         }
-        fetchTracks()
     }
     
     // MARK: - NSFetchedResultsController
@@ -59,7 +62,7 @@ extension FavoriteAlbumDetailTableViewController {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            print("Unable to fetch tracks")
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to retrieve track information.")
         }
     }
     

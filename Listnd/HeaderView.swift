@@ -32,13 +32,18 @@ class HeaderView: GSKStretchyHeaderView {
     func configureImageViews() {
         imageView.layer.shadowColor = UIColor.black.cgColor
         imageView.layer.shadowOffset = CGSize(width: 0, height: 5)
-        imageView.layer.shadowOpacity = 1.0
-        imageView.layer.shadowRadius = 7.0
+        imageView.layer.shadowOpacity = 0.7
+        imageView.layer.shadowRadius = 8.5
+        let borderFrame = UIView()
+        borderFrame.frame = imageView.bounds
+        borderFrame.layer.cornerRadius = 4.0
+        borderFrame.layer.masksToBounds = true
+        imageView.addSubview(borderFrame)
         imageTemplate = UIImageView()
         imageTemplate.frame = imageView.bounds
         imageTemplate.contentMode = .scaleAspectFill
         imageTemplate.clipsToBounds = true
-        imageView.addSubview(imageTemplate)
+        borderFrame.addSubview(imageTemplate)
         backgroundImage.image = UIImage(named: "backgroundImage")
     }
 }

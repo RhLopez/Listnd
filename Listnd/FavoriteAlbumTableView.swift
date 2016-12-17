@@ -44,13 +44,15 @@ class FavoriteAlbumTableView: UIViewController {
             if let data = artist.artistImage {
                headerView.imageTemplate.image = UIImage(data: data as Data)
             } else {
-                headerView.imageTemplate.image = UIImage(named: "coverImagePlaceHolder")
+                headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             }
             headerView.nameLabel.text = artist.name
             headerView.addButton.isHidden = true
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             getAlbums()
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
         }
     }
     
@@ -65,10 +67,6 @@ class FavoriteAlbumTableView: UIViewController {
     
             return fetchedResultsController
         }()
-    
-    func backButtonPressed(_ sender: UIButton) {
-       _ = navigationController?.popViewController(animated: true)
-    }
 }
 
 // MARK: - Helper method
@@ -77,7 +75,7 @@ extension FavoriteAlbumTableView {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            print("Unable to fetch albums")
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load information. Please try again")
         }
     }
     
@@ -86,18 +84,17 @@ extension FavoriteAlbumTableView {
         
         let album = fetchedResultsController.object(at: indexPath)
         cell.albumNameLabel.text = album.name
-        cell.albumImageView.image = UIImage(named: "coverImagePlaceHolder")
+        cell.albumImageView.image = UIImage(named: "headerPlaceHolder")
         
-        // Get album image if the album was saved prior to image being saved due to slow connetcion
         if let data = album.albumImage {
             cell.albumImageView.image = UIImage(data: data as Data)
         } else {
+            // Get album image if the album was saved prior to image being saved due to slow connetcion
             getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
                 DispatchQueue.main.async {
                     let image = UIImage(data: data as Data)
                     UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
                     album.albumImage = data
-                    self.stack.saveContext()
                 }
             })
         }
@@ -120,7 +117,7 @@ extension FavoriteAlbumTableView {
                 }
             })
         } else {
-            let image = UIImage(named: "coverImagePlaceHolder")
+            let image = UIImage(named: "headerPlaceHolder")
             let data = UIImagePNGRepresentation(image!)!
             completetionHandlerForAlbumImage(data as NSData)
         }
@@ -155,6 +152,10 @@ extension FavoriteAlbumTableView {
         } else {
             SwiftMessages.sharedInstance.displayCustomMessage()
         }
+    }
+    
+    func backButtonPressed(_ sender: UIButton) {
+        _ = navigationController?.popViewController(animated: true)
     }
 }
 

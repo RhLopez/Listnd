@@ -30,6 +30,7 @@ class ArtistDetailViewController: UIViewController {
     var isLoading: Bool?
     var artistImage: UIImageView!
     var headerView: HeaderView!
+    var fetchingAlbums = true
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -42,7 +43,7 @@ class ArtistDetailViewController: UIViewController {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureImageViews()
-            headerView.imageView.image = UIImage(named: "coverImagePlaceHolder")
+            headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             if let imageData = currentArtist.artistImage {
                 setArtistImage(imageData: imageData)
             } else {
@@ -72,8 +73,12 @@ extension ArtistDetailViewController {
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.show(withStatus: "Loading...")
         SpotifyAPI.sharedInstance.getAlbums(artistId) { (results, errorMessage) in
+            self.fetchingAlbums = false
             if let searchResults = results {
-                self.processAlbumSections(albums: searchResults)
+                if !searchResults.isEmpty {
+                    print(searchResults.count)
+                   self.processAlbumSections(albums: searchResults)
+                }
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
                     self.tableView.reloadData()
@@ -148,7 +153,7 @@ extension ArtistDetailViewController {
                 }
             })
         } else {
-            let image = UIImage(named: "coverImagePlaceHolder")
+            let image = UIImage(named: "headerPlaceHolder")
             let data = UIImagePNGRepresentation(image!)!
             completetionHandlerForAlbumImage(data as NSData)
         }
@@ -173,23 +178,41 @@ extension ArtistDetailViewController {
 // MARK: - UITableViewDataSource
 extension ArtistDetailViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+        if fetchingAlbums {
+            return 0
+        } else if searchItems.isEmpty {
+            return 1
+        } else {
+            return sections.count
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sections[section]
+        if searchItems.isEmpty {
+            return nil
+        } else {
+            return sections[section]
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchItems[section].count
+        if searchItems.isEmpty {
+            return 1
+        } else {
+            return searchItems[section].count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let identifier = "artistCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        configureCell(cell: cell, indexPath: indexPath)
-
-        return cell
+        if searchItems.count == 0 {
+            return tableView.dequeueReusableCell(withIdentifier: "noAlbumsResultCell", for: indexPath)
+        } else {
+            let identifier = "artistCell"
+            let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+            configureCell(cell: cell, indexPath: indexPath)
+            
+            return cell
+        }
     }
 }
 
@@ -205,7 +228,19 @@ extension ArtistDetailViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 30.0
+        if searchItems.isEmpty {
+            return CGFloat.leastNormalMagnitude
+        } else {
+            return 30.0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if searchItems.isEmpty {
+            return nil
+        } else {
+            return indexPath
+        }
     }
 }
 

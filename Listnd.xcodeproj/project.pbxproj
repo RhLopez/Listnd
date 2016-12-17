@@ -37,7 +37,6 @@
 		DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9D1DA858E900DE9A4A /* Artist+CoreDataClass.swift */; };
 		DDB14FA01DA858E900DE9A4A /* Artist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9E1DA858E900DE9A4A /* Artist+CoreDataProperties.swift */; };
 		DDB14FA21DA8592A00DE9A4A /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14FA11DA8592A00DE9A4A /* CoreDataStack.swift */; };
-		DDB14FA61DA8E25F00DE9A4A /* ArtistDetailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB14FA51DA8E25F00DE9A4A /* ArtistDetailCollectionViewCell.swift */; };
 		DDBA01CA1DA4BE7B007FE696 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */; };
 		DDC9D92D1DD850660076D1A7 /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC9D92C1DD850660076D1A7 /* Album+CoreDataProperties.swift */; };
 		DDCA78721DE04A2000B98354 /* Track+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDCA78711DE04A2000B98354 /* Track+CoreDataProperties.swift */; };
@@ -109,7 +108,6 @@
 		DDB14F9D1DA858E900DE9A4A /* Artist+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Artist+CoreDataClass.swift"; path = "Listnd/Artist+CoreDataClass.swift"; sourceTree = "<group>"; };
 		DDB14F9E1DA858E900DE9A4A /* Artist+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Artist+CoreDataProperties.swift"; path = "Listnd/Artist+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DDB14FA11DA8592A00DE9A4A /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = Listnd/CoreDataStack.swift; sourceTree = "<group>"; };
-		DDB14FA51DA8E25F00DE9A4A /* ArtistDetailCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistDetailCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 		DDC9D92C1DD850660076D1A7 /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "Listnd/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DDCA78711DE04A2000B98354 /* Track+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Track+CoreDataProperties.swift"; path = "Listnd/Track+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -177,9 +175,9 @@
 				DDE21A0D1DB4A8D5000A9318 /* FavoriteAlbumTableViewCell.swift */,
 				DD0338901DB88C0A00515724 /* FavoriteAlbumDetailTableViewCell.swift */,
 				DDBA01C91DA4BE7B007FE696 /* SearchTableViewCell.swift */,
-				DDB14FA51DA8E25F00DE9A4A /* ArtistDetailCollectionViewCell.swift */,
 				DD512EFF1DDED89E00BF76EB /* ArtistDetailTableViewCell.swift */,
 				DD5DEF621DAAFC4900BDF98C /* AlbumDetailTableViewCell.swift */,
+				DD324F001DF32217006AC03F /* HeaderView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -200,7 +198,6 @@
 			children = (
 				DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */,
 				DD2B0F711DEABAA800999C94 /* SMExtension.swift */,
-				DD324F001DF32217006AC03F /* HeaderView.swift */,
 				DD4A6AD31DFE1FFB00465F76 /* CustomDialogView.swift */,
 			);
 			name = Utility;
@@ -381,7 +378,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Ramiro H. Lopez";
 				TargetAttributes = {
 					DD8F03E91DA23267000837DE = {
@@ -610,7 +607,6 @@
 				DD03388F1DB88BAF00515724 /* FavoriteAlbumDetailTableViewController.swift in Sources */,
 				DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */,
 				DD8F03EE1DA23267000837DE /* AppDelegate.swift in Sources */,
-				DDB14FA61DA8E25F00DE9A4A /* ArtistDetailCollectionViewCell.swift in Sources */,
 				DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */,
 				DD324F011DF32217006AC03F /* HeaderView.swift in Sources */,
 				DDFF1E631DA9FE7800E8231E /* Album+CoreDataClass.swift in Sources */,

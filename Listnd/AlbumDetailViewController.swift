@@ -42,7 +42,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureImageViews()
-            headerView.imageView.image = UIImage(named: "coverImagePlaceHolder")
+            headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             if let imageData = currentAlbum.albumImage {
                 setAlbumImage(imageData: imageData)
             } else {
@@ -199,6 +199,8 @@ extension AlbumDetailViewController {
                 } else {
                     SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
                 }
+            } else {
+                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
             }
         }
     }
@@ -273,6 +275,7 @@ extension AlbumDetailViewController {
         
         do {
             let results = try stack.managedContext.fetch(fetchRequest)
+            print(results)
             if results.count > 0 {
                 track = nil
             } else {

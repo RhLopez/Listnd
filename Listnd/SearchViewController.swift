@@ -71,7 +71,7 @@ extension SearchViewController {
                 }
             })
         } else {
-            let image = UIImage(named: "coverImagePlaceHolder")
+            let image = UIImage(named: "headerPlaceHolder")
             let data = UIImagePNGRepresentation(image!)!
             completetionHandlerForAlbumImage(data as NSData)
         }
@@ -118,19 +118,19 @@ extension SearchViewController: UISearchBarDelegate {
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.show(withStatus: "Loading...")
         SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
-            if success {
-                if let searchResults = results {
-                    self.artists = searchResults
+            DispatchQueue.main.async {
+                SVProgressHUD.dismiss()
+                if success {
+                    if let searchResults = results {
+                        self.artists = searchResults
+                        self.tableView.reloadData()
+                    } else {
+                        SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
+                    }
+                    self.isSearching = false
                 } else {
-                    print("There was a problem with the search results. Please try again.")
+                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
                 }
-                DispatchQueue.main.async {
-                    SVProgressHUD.dismiss()
-                    self.tableView.reloadData()
-                }
-                self.isSearching = false
-            } else {
-                print(errorMessage ?? "")
             }
         }
     }
@@ -173,7 +173,7 @@ extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if !hasSearched {
             return 0
-        } else if artists.count == 0 {
+        } else if artists.isEmpty {
             return 1
         } else {
             return artists.count

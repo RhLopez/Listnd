@@ -36,17 +36,17 @@ class SpotifyAPI {
             }
             
             guard (error == nil) else {
-                reportError((error?.localizedDescription)!)
+                reportError("There was an error with request. Please try again.")
                 return
             }
             
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode , statusCode >= 200 && statusCode <= 299 else {
-                reportError("Status code returned response other than 200")
+                reportError("The request did not return a valid response. Please try again.")
                 return
             }
             
             guard let data = data else {
-                reportError("No data was returned")
+                reportError("There was no data returned from the request. Please try again.")
                 return
             }
             
@@ -62,7 +62,7 @@ class SpotifyAPI {
         do {
             serializedData = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
-            completionHandlerForSerialization(false, "Unable to serialize data", nil)
+            completionHandlerForSerialization(false, "Unable to process data response from server. Please try again.", nil)
         }
         
         completionHandlerForSerialization(true, "", serializedData)
@@ -80,6 +80,7 @@ class SpotifyAPI {
             components.queryItems!.append(queryItem)
         }
 
+        print(components.url!)
         return components.url!
     }
 }

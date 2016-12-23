@@ -102,11 +102,11 @@ extension FavoriteAlbumTableView {
         let count = getListenedCount(indexPath: indexPath)
         cell.albumDetailLabel.text = "\(count) of \(album.tracks!.count) Tracks Lisntd"
         
-        if count == album.tracks!.count {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
-        }
+//        if album.listened {
+//            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+//        } else {
+//            cell.accessoryType = UITableViewCellAccessoryType.none
+//        }
     }
     
     func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {

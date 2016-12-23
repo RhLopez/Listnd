@@ -39,6 +39,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             fetchTracks()
+            tracksListened()
         } else {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
         }
@@ -63,6 +64,16 @@ extension FavoriteAlbumDetailTableViewController {
             try fetchedResultsController.performFetch()
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to retrieve track information.")
+        }
+    }
+    
+    func tracksListened() {
+        var listenedCount = 0
+        let tracks = fetchedResultsController.fetchedObjects
+        for track in tracks! {
+            if track.listened {
+                listenedCount += 1
+            }
         }
     }
     

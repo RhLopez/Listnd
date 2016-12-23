@@ -258,6 +258,7 @@ extension AlbumDetailViewController {
                 album!.uri = currentAlbum.uri
                 album!.albumImage = currentAlbum.albumImage
                 album!.artist = currentArtist
+                album!.listened = currentAlbum.listened
                 stack.saveContext()
             }
         } catch {

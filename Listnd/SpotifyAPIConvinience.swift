@@ -222,6 +222,7 @@ extension SpotifyAPI {
             album.type = album_type
             album.imageURL = imageURL
             albums.append(album)
+            album.listened = false
             albumNames.append(albumName)
         }
         

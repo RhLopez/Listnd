@@ -12,6 +12,7 @@ import SwiftMessages
 import SVProgressHUD
 import GSKStretchyHeaderView
 
+// MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
 
 class ArtistDetailViewController: UIViewController {
@@ -28,7 +29,6 @@ class ArtistDetailViewController: UIViewController {
     var singleIndex: Int?
     var selectedRow: IndexPath?
     var isLoading: Bool?
-    var artistImage: UIImageView!
     var headerView: HeaderView!
     var fetchingAlbums = true
     
@@ -53,9 +53,11 @@ class ArtistDetailViewController: UIViewController {
             headerView.addButton.isHidden = true
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
+            tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
+            getAlbums(artistId: currentArtist.id)
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error loading the artist detail. Please try again.")
         }
-        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
-        getAlbums(artistId: currentArtist.id)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -76,7 +78,6 @@ extension ArtistDetailViewController {
             self.fetchingAlbums = false
             if let searchResults = results {
                 if !searchResults.isEmpty {
-                    print(searchResults.count)
                    self.processAlbumSections(albums: searchResults)
                 }
                 DispatchQueue.main.async {
@@ -85,10 +86,12 @@ extension ArtistDetailViewController {
                     self.isLoading = false
                 }
             } else {
-                let messageView = MessageView.viewFromNib(layout: .TabView)
-                messageView.configureTheme(.error)
-                messageView.configureContent(title: "Error", body: errorMessage)
-                SwiftMessages.show(view: messageView)
+                DispatchQueue.main.async {
+                    let messageView = MessageView.viewFromNib(layout: .TabView)
+                    messageView.configureTheme(.error)
+                    messageView.configureContent(title: "Error", body: errorMessage)
+                    SwiftMessages.show(view: messageView)
+                }
             }
         }
     }
@@ -115,6 +118,13 @@ extension ArtistDetailViewController {
                     searchItems.append([album])
                 } else {
                     searchItems[albumIndex!].append(album)
+                }
+                if let index = albumIndex {
+                    if !searchItems.isEmpty && singleIndex != nil {
+                        searchItems[index].append(album)
+                    }
+                } else {
+                    searchItems.append([album])
                 }
             }
         }

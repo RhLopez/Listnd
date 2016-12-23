@@ -11,6 +11,7 @@ import CoreData
 import SVProgressHUD
 import SwiftMessages
 
+// MARK: - Notification key
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
 
 class SearchViewController: UIViewController {
@@ -29,6 +30,7 @@ class SearchViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Change searchBar Cancel button font color to white
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
@@ -41,7 +43,6 @@ extension SearchViewController {
         guard let cell = cell as? SearchTableViewCell else { return }
         
         cell.searchImageVIew.image = UIImage(named: "thumbnailPlaceHolder")
-        cell.layoutSubviews()
         let artist = artists[indexPath.row]
         cell.searchLabel.text = artist.name
         
@@ -54,7 +55,7 @@ extension SearchViewController {
                 DispatchQueue.main.async {
                     let image = UIImage(data: data as Data)
                     UIView.transition(with: cell.searchImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { cell.searchImageVIew.image = image }, completion: nil)
-                    cell.layoutSubviews()
+                    // Post notification if cell was selected before image was downloaded
                     if self.selectedRow == indexPath {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: artistImageDownloadNotification), object: self)
                     }
@@ -106,32 +107,38 @@ extension SearchViewController {
 // MARK: - UISearchBarDelegate
 extension SearchViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        if hasSearched {
+            deleteObjects()
+        }
         searchBar.setShowsCancelButton(true, animated: true)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        enableCancelButton(searchBar: searchBar)
-        deleteObjects()
-        isSearching = true
-        hasSearched = true
-        SVProgressHUD.setDefaultStyle(.dark)
-        SVProgressHUD.show(withStatus: "Loading...")
-        SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
-            DispatchQueue.main.async {
-                SVProgressHUD.dismiss()
-                if success {
-                    if let searchResults = results {
-                        self.artists = searchResults
-                        self.tableView.reloadData()
+        if Reachability.sharedInstance.isConnectedToNetwork() == true {
+            searchBar.resignFirstResponder()
+            enableCancelButton(searchBar: searchBar)
+            isSearching = true
+            hasSearched = true
+            SVProgressHUD.setDefaultStyle(.dark)
+            SVProgressHUD.show(withStatus: "Loading...")
+            SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
+                DispatchQueue.main.async {
+                    self.isSearching = false
+                    SVProgressHUD.dismiss()
+                    if success {
+                        if let searchResults = results {
+                            self.artists = searchResults
+                            self.tableView.reloadData()
+                        } else {
+                            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Invalid results were returned. Please try again.")
+                        }
                     } else {
                         SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
                     }
-                    self.isSearching = false
-                } else {
-                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
                 }
             }
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to search. \nNo internet connection detected.")
         }
     }
     
@@ -140,7 +147,6 @@ extension SearchViewController: UISearchBarDelegate {
             SpotifyAPI.sharedInstance.cancelRequest()
         }
         searchBar.text = nil
-        searchBar.setShowsCancelButton(false, animated: true)
         searchBar.resignFirstResponder()
         deleteObjects()
     }
@@ -212,7 +218,9 @@ extension SearchViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - SVProgressHUD
 extension SVProgressHUD {
+    // Adjust position of progess hud after keyboard is dismissed
     func visibleKeyboardHeight() -> CFloat {
         return 0.0
     }

@@ -1,9 +1,9 @@
 //
 //  Album+CoreDataProperties.swift
-//  Listnd
+//  
 //
-//  Created by Ramiro H. Lopez on 11/16/16.
-//  Copyright © 2016 Ramiro H. Lopez. All rights reserved.
+//  Created by Ramiro H. Lopez on 12/23/16.
+//
 //
 
 import Foundation
@@ -20,8 +20,9 @@ extension Album {
     @NSManaged public var id: String
     @NSManaged public var imageURL: String?
     @NSManaged public var name: String
+    @NSManaged public var type: String?
     @NSManaged public var uri: String
-    @NSManaged public var type: String
+    @NSManaged public var listened: Bool
     @NSManaged public var artist: Artist
     @NSManaged public var tracks: NSOrderedSet?
 

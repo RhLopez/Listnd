@@ -119,13 +119,6 @@ extension ArtistDetailViewController {
                 } else {
                     searchItems[albumIndex!].append(album)
                 }
-                if let index = albumIndex {
-                    if !searchItems.isEmpty && singleIndex != nil {
-                        searchItems[index].append(album)
-                    }
-                } else {
-                    searchItems.append([album])
-                }
             }
         }
     }

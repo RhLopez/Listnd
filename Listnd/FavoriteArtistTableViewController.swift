@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 import SwiftMessages
 
-class FavoriteTableViewController: UIViewController {
+class FavoriteArtistTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -46,7 +46,7 @@ class FavoriteTableViewController: UIViewController {
 }
 
 // MARK: - Helper methods
-extension FavoriteTableViewController {
+extension FavoriteArtistTableViewController {
     func fetchArtist() {
         do {
             try self.fetchedResultsController.performFetch()
@@ -97,7 +97,7 @@ extension FavoriteTableViewController {
 }
 
 // MARK: - UITableViewDataSouce
-extension FavoriteTableViewController: UITableViewDataSource {
+extension FavoriteArtistTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
@@ -124,7 +124,7 @@ extension FavoriteTableViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension FavoriteTableViewController: UITableViewDelegate {
+extension FavoriteArtistTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! FavoriteAlbumTableView
         albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
@@ -135,7 +135,7 @@ extension FavoriteTableViewController: UITableViewDelegate {
 }
 
 // MARK: - NSFecthedResultsControllerDelegate
-extension FavoriteTableViewController: NSFetchedResultsControllerDelegate {
+extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate {
         func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
             tableView.beginUpdates()
         }

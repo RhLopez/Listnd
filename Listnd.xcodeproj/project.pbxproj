@@ -16,7 +16,7 @@
 		DD293FF01E0DA11800F6EB76 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FEF1E0DA11800F6EB76 /* Constants.swift */; };
 		DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF11E0DA13100F6EB76 /* SpotifyAPI.swift */; };
 		DD293FF41E0DA14B00F6EB76 /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF31E0DA14B00F6EB76 /* Album+CoreDataProperties.swift */; };
-		DD293FF61E0DA16200F6EB76 /* FavoriteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF51E0DA16200F6EB76 /* FavoriteTableViewController.swift */; };
+		DD293FF61E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */; };
 		DD293FF81E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */; };
 		DD2B0F721DEABAA800999C94 /* SMExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2B0F711DEABAA800999C94 /* SMExtension.swift */; };
 		DD324F011DF32217006AC03F /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD324F001DF32217006AC03F /* HeaderView.swift */; };
@@ -82,7 +82,7 @@
 		DD293FEF1E0DA11800F6EB76 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DD293FF11E0DA13100F6EB76 /* SpotifyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
 		DD293FF31E0DA14B00F6EB76 /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "Listnd/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		DD293FF51E0DA16200F6EB76 /* FavoriteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteTableViewController.swift; sourceTree = "<group>"; };
+		DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteArtistTableViewController.swift; sourceTree = "<group>"; };
 		DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteArtistTableViewCell.swift; sourceTree = "<group>"; };
 		DD2B0F711DEABAA800999C94 /* SMExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMExtension.swift; sourceTree = "<group>"; };
 		DD324F001DF32217006AC03F /* HeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
@@ -264,7 +264,7 @@
 		DD8F04201DA23549000837DE /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				DD293FF51E0DA16200F6EB76 /* FavoriteTableViewController.swift */,
+				DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */,
 				DDE21A0B1DB4A870000A9318 /* FavoriteAlbumTableView.swift */,
 				DD03388E1DB88BAF00515724 /* FavoriteAlbumDetailTableViewController.swift */,
 				DD8F03EF1DA23267000837DE /* SearchViewController.swift */,
@@ -601,7 +601,7 @@
 				DD293FF41E0DA14B00F6EB76 /* Album+CoreDataProperties.swift in Sources */,
 				DD8F03F01DA23267000837DE /* SearchViewController.swift in Sources */,
 				DD293FF01E0DA11800F6EB76 /* Constants.swift in Sources */,
-				DD293FF61E0DA16200F6EB76 /* FavoriteTableViewController.swift in Sources */,
+				DD293FF61E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift in Sources */,
 				DD0A17CE1E051B8C00578E4E /* Reachability.swift in Sources */,
 				DDE21A0C1DB4A870000A9318 /* FavoriteAlbumTableView.swift in Sources */,
 				DD5DEF631DAAFC4900BDF98C /* AlbumDetailTableViewCell.swift in Sources */,

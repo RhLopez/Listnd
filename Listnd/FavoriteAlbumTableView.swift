@@ -137,21 +137,6 @@ extension FavoriteAlbumTableView {
     func backButtonPressed(_ sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
     }
-    
-    func albumsListened() {
-        var listenedCount = 0
-        let albums = fetchedResultsController.fetchedObjects!
-        for album in albums {
-            if album.listened {
-                listenedCount += 1
-            }
-        }
-        if listenedCount == fetchedResultsController.fetchedObjects?.count {
-            currentArtist?.listened = true
-        } else {
-            currentArtist?.listened = false
-        }
-    }
 }
 
 // UIGestureRecognizerDelegate

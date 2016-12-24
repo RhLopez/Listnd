@@ -14,6 +14,12 @@ class ArtistDetailTableViewCell: UITableViewCell {
     @IBOutlet weak var albumNameLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    var cell = ArtistDetailTableViewCell.self {
+        didSet {
+            layoutIfNeeded()
+        }
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         albumImageView.layer.cornerRadius = 4.0

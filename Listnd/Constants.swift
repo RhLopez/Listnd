@@ -18,7 +18,6 @@ extension SpotifyAPI {
         }
         
         struct ParametersKeys {
-            // FIX: add id number to end of parameters
             static let Search = "/search"
             static let Query = "q"
             static let SearchType = "type"

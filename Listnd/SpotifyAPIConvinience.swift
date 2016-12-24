@@ -87,7 +87,6 @@ extension SpotifyAPI {
     func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
 
         var imageURL: String?
-        var resultNumber = 0
         var artists = [Artist]()
         
         func parsingFailed() {
@@ -142,11 +141,8 @@ extension SpotifyAPI {
             artist.name = artistName
             artist.id = artistId
             artist.imageURL = imageURL
-            artist.resultNumber = Int16(resultNumber)
             artist.listened = false
             artists.append(artist)
-            resultNumber = resultNumber + 1
-            
         }
         
         completionHandlerForParseArtistSearch(true, artists, "")
@@ -302,13 +298,11 @@ extension SpotifyAPI {
 
             let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
                 guard (error == nil) else {
-                    print(error?.localizedDescription as Any)
                     completionHandlerForImage(nil)
                     return
                 }
                 
                 guard let data = data else {
-                    print("No data")
                     completionHandlerForImage(nil)
                     return
                 }

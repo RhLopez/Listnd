@@ -73,7 +73,7 @@ extension FavoriteAlbumDetailTableViewController {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to retrieve track information.")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to retrieve track information.")
         }
     }
     

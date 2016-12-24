@@ -52,10 +52,12 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             headerView.addButton.addTarget(self, action: #selector(saveAlbum), for: .touchUpInside)
             tableView.addSubview(headerView)
+            NotificationCenter.default.addObserver(self, selector: #selector(playerFinishedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+            setAudio()
+            getTracks()
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error loading the album detail. Please try again.")
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(playerFinishedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
-        setAudio()
-        getTracks()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

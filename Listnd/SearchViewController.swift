@@ -130,15 +130,15 @@ extension SearchViewController: UISearchBarDelegate {
                             self.artists = searchResults
                             self.tableView.reloadData()
                         } else {
-                            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Invalid results were returned. Please try again.")
+                            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Invalid results were returned. Please try again.")
                         }
                     } else {
-                        SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
+                        SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
                     }
                 }
             }
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to search. \nNo internet connection detected.")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to search. \nNo internet connection detected.")
         }
     }
     

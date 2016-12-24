@@ -61,7 +61,7 @@ extension SpotifyAPI {
         }
     }
     
-    func getTracks(_ albumId: String, completionHandlerForTracks: @escaping (_ success: Bool, _ resutls: [Track]?, _ errorMessage: String?) -> Void) {
+    func getTracks(_ albumId: String, completionHandlerForTracks: @escaping (_ resutls: [Track]?, _ errorMessage: String) -> Void) {
         let parameters = [
             Constants.ParametersKeys.Market: Constants.ParameterValues.US,
             Constants.ParametersKeys.Limit: Constants.ParameterValues.LimitAmount
@@ -73,13 +73,13 @@ extension SpotifyAPI {
             if success {
                 self.parseTracks(data as AnyObject?, completionHandlerForTrackParsing: { (success, results, errorMessage) in
                     if success {
-                        completionHandlerForTracks(true, results, nil)
+                        completionHandlerForTracks(results, "")
                     } else {
-                        completionHandlerForTracks(false, nil, errorMessage)
+                        completionHandlerForTracks(nil, errorMessage)
                     }
                 })
             } else {
-                completionHandlerForTracks(false, nil, errorMessage)
+                completionHandlerForTracks(nil, errorMessage)
             }
         }
     }
@@ -231,7 +231,7 @@ extension SpotifyAPI {
         completionHandlerforAlbumParsing(true, albums, "")
     }
     
-    func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: @escaping (_ success: Bool, _ results: [Track]?, _ errorMessage: String?) -> Void) {
+    func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: @escaping (_ success: Bool, _ results: [Track]?, _ errorMessage: String) -> Void) {
         var tracks = [Track]()
         var previewURL: String?
 
@@ -293,7 +293,7 @@ extension SpotifyAPI {
             tracks.append(track)
         }
         
-        completionHandlerForTrackParsing(true, tracks, nil)
+        completionHandlerForTrackParsing(true, tracks, "")
     }
     
     func getImage(_ urlString: String?, completionHandlerForImage: @escaping (_ data: Data?) -> Void) {

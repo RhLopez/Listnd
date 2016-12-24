@@ -25,7 +25,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var tracks = [Track]()
     var savedTrackIds = [String]()
     var player = AVPlayer()
-    var currentSong: IndexPath?
+    var currentIndexPath: IndexPath?
     var previousSelectedCell: IndexPath?
     var downloadingSampleClip: Bool?
     var isLoading: Bool?
@@ -71,13 +71,15 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     func playerReady() {
         downloadingSampleClip = false
-        if let song = currentSong {
-            tableView.reloadRows(at: [song], with: .none)
+        if let indexPath = currentIndexPath {
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
     func playerFinishedPlaying() {
-        reloadRows(indexPath: currentSong!)
+        if let indexPath = currentIndexPath {
+            reloadRows(indexPath: indexPath)
+        }
     }
 }
 
@@ -89,7 +91,7 @@ extension AlbumDetailViewController {
         do {
             try audioSession.setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
         } catch {
-            print("Audio Session could not be set")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Audio session could not be set")
         }
     }
     
@@ -97,18 +99,19 @@ extension AlbumDetailViewController {
         isLoading = true
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.show(withStatus: "Loading...")
-        SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (success, results, errorMessage) in
-            if success {
-                if let searchResults = results {
-                    self.tracks = searchResults
-                    DispatchQueue.main.async {
-                        SVProgressHUD.dismiss()
-                        self.tableView.reloadData()
-                        self.isLoading = false
-                    }
+        SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (results, errorMessage) in
+            if let searchResults = results {
+                self.tracks = searchResults
+                DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
+                    self.tableView.reloadData()
+                    self.isLoading = false
                 }
             } else {
-                print(errorMessage!)
+                DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
+                    SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
+                }
             }
         }
     }
@@ -122,11 +125,10 @@ extension AlbumDetailViewController {
 
         if let url = track.previewURL {
             cell.playerItem = ListndPlayerItem(url: URL(string: url)!)
+            cell.playerItem?.delegate = self
         } else {
             cell.playerItem = nil
         }
-        
-        cell.playerItem?.delegate = self
         
         if downloadingSampleClip == true && previousSelectedCell != indexPath {
             cell.trackImageView.isHidden = true
@@ -135,10 +137,9 @@ extension AlbumDetailViewController {
             return
         }
         
-        if currentSong == indexPath {
+        if currentIndexPath == indexPath {
             cell.activityIndicator.stopAnimating()
             cell.trackImageView.image = UIImage(named: "stopButton")
-            cell.trackNumberLabel.text = ""
             cell.trackNumberLabel.isHidden = true
             cell.trackImageView.isHidden = false
         }  else {
@@ -160,7 +161,7 @@ extension AlbumDetailViewController {
                 player.pause()
             }
             
-            if currentSong == nil || indexPath != currentSong! {
+            if currentIndexPath == nil || indexPath != currentIndexPath {
                 downloadingSampleClip =  true
                 player.replaceCurrentItem(with: cell.playerItem)
                 player.play()
@@ -177,7 +178,7 @@ extension AlbumDetailViewController {
         // from stackoverflow post http://stackoverflow.com/questions/27234684/how-to-change-previously-pressed-uibutton-label-in-uitableviewcell
         var rowsToReload = [NSIndexPath]()
         var stopCurrent = false
-        if let _currenSong = currentSong {
+        if let _currenSong = currentIndexPath {
             if indexPath == _currenSong {
                 stopCurrent = true
             } else {
@@ -186,7 +187,7 @@ extension AlbumDetailViewController {
         }
         
         rowsToReload.append(IndexPath(row: indexPath.row, section: 0) as NSIndexPath)
-        currentSong = stopCurrent ? nil : indexPath
+        currentIndexPath = stopCurrent ? nil : indexPath
         self.tableView.reloadRows(at: rowsToReload as [IndexPath], with: .none)
     }
     
@@ -204,6 +205,23 @@ extension AlbumDetailViewController {
             } else {
                 SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
             }
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save song. Please try again.")
+        }
+    }
+    
+    func saveAlbum() {
+        if let artist = fetchArtist() {
+            if  let album = fetchAlbum() {
+                artist.addToAlbums(album)
+                saveSongsFromAlbum(album: album)
+                stack.saveContext()
+                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
+            } else {
+                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
+            }
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save album. Please try again.")
         }
     }
     
@@ -228,7 +246,7 @@ extension AlbumDetailViewController {
                 stack.saveContext()
             }
         } catch {
-            print("Unable to fetch artist")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved artist information")
         }
         
         return currentArtist
@@ -266,7 +284,7 @@ extension AlbumDetailViewController {
                 stack.saveContext()
             }
         } catch {
-            print("Unable to fetch album")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved album information")
         }
         return album
     }
@@ -280,7 +298,6 @@ extension AlbumDetailViewController {
         
         do {
             let results = try stack.managedContext.fetch(fetchRequest)
-            print(results)
             if results.count > 0 {
                 track = nil
             } else {
@@ -295,7 +312,7 @@ extension AlbumDetailViewController {
                 stack.saveContext()
             }
         } catch {
-            print("Unable to fetch track")
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved song information")
         }
         return track
     }
@@ -337,19 +354,6 @@ extension AlbumDetailViewController {
     func backButtonPressed(sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
     }
-    
-    func saveAlbum() {
-        if let artist = fetchArtist() {
-            if  let album = fetchAlbum() {
-                artist.addToAlbums(album)
-                saveSongsFromAlbum(album: album)
-                stack.saveContext()
-                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
-            } else {
-                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
-            }
-        }
-    }
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -376,7 +380,7 @@ extension AlbumDetailViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension AlbumDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        previousSelectedCell = currentSong
+        previousSelectedCell = currentIndexPath
         playSampleClip(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
     }

@@ -87,10 +87,8 @@ extension ArtistDetailViewController {
                 }
             } else {
                 DispatchQueue.main.async {
-                    let messageView = MessageView.viewFromNib(layout: .TabView)
-                    messageView.configureTheme(.error)
-                    messageView.configureContent(title: "Error", body: errorMessage)
-                    SwiftMessages.show(view: messageView)
+                    SVProgressHUD.dismiss()
+                    SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
                 }
             }
         }

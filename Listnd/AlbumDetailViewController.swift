@@ -222,6 +222,7 @@ extension AlbumDetailViewController {
                 currentArtist!.id = artistSelected.id
                 currentArtist!.imageURL = artistSelected.imageURL
                 currentArtist!.artistImage = artistSelected.artistImage
+                currentArtist.listened = artistSelected.listened
                 stack.saveContext()
             }
         } catch {
@@ -259,6 +260,7 @@ extension AlbumDetailViewController {
                 album!.albumImage = currentAlbum.albumImage
                 album!.artist = currentArtist
                 album!.listened = currentAlbum.listened
+                album!.listenedCount = currentAlbum.listenedCount
                 stack.saveContext()
             }
         } catch {

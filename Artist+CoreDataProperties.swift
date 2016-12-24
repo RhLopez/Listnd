@@ -1,13 +1,14 @@
 //
 //  Artist+CoreDataProperties.swift
-//  Listnd
+//  
 //
-//  Created by Ramiro H. Lopez on 10/9/16.
-//  Copyright © 2016 Ramiro H. Lopez. All rights reserved.
+//  Created by Ramiro H. Lopez on 12/23/16.
+//
 //
 
 import Foundation
 import CoreData
+
 
 extension Artist {
 
@@ -20,6 +21,7 @@ extension Artist {
     @NSManaged public var imageURL: String?
     @NSManaged public var name: String
     @NSManaged public var resultNumber: Int16
+    @NSManaged public var listened: Bool
     @NSManaged public var albums: NSOrderedSet?
 
 }
@@ -58,4 +60,3 @@ extension Artist {
     @NSManaged public func removeFromAlbums(_ values: NSOrderedSet)
 
 }
-

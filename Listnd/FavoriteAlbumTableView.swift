@@ -17,22 +17,18 @@ class FavoriteAlbumTableView: UIViewController {
     
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
-    var currentArtist: Artist?
+    var currentArtist: Artist!
     var artistImageFrame: UIImageView!
     var headerView: HeaderView!
     var selectedCell: IndexPath?
-
-    lazy var listenedCountPredicate: NSPredicate = {
-        return NSPredicate(format: "%K == %@", #keyPath(Track.listened), true as CVarArg)
-    }()
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
         navigationController?.interactivePopGestureRecognizer?.delegate = self
-        if let cell = selectedCell {
-            tableView.reloadRows(at: [cell], with: .automatic)
+        if let indexPath = selectedCell {
+            tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
     
@@ -55,7 +51,7 @@ class FavoriteAlbumTableView: UIViewController {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
         }
     }
-    
+        
     // MARK: - NSFetchedResultsController
         lazy var fetchedResultsController: NSFetchedResultsController<Album> = {
             let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
@@ -99,14 +95,13 @@ extension FavoriteAlbumTableView {
             })
         }
         
-        let count = getListenedCount(indexPath: indexPath)
-        cell.albumDetailLabel.text = "\(count) of \(album.tracks!.count) Tracks Lisntd"
+        cell.albumDetailLabel.text = "\(album.listenedCount) of \(album.tracks!.count) Tracks Lisntd"
         
-//        if album.listened {
-//            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-//        } else {
-//            cell.accessoryType = UITableViewCellAccessoryType.none
-//        }
+        if album.listened {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.none
+        }
     }
     
     func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
@@ -123,21 +118,6 @@ extension FavoriteAlbumTableView {
         }
     }
     
-    func getListenedCount(indexPath: IndexPath) -> Int {
-        var count = 0
-        let album = fetchedResultsController.object(at: indexPath)
-        if let tracks = album.tracks {
-            for item in tracks {
-                let track = item as! Track
-                if track.listened {
-                    count = count + 1
-                }
-            }
-        }
-        
-        return count
-    }
-        
     func deleteAlbum(indexPath: IndexPath) {
         let albumToDelete = fetchedResultsController.object(at: indexPath)
         stack.managedContext.delete(albumToDelete)
@@ -156,6 +136,21 @@ extension FavoriteAlbumTableView {
     
     func backButtonPressed(_ sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
+    }
+    
+    func albumsListened() {
+        var listenedCount = 0
+        let albums = fetchedResultsController.fetchedObjects!
+        for album in albums {
+            if album.listened {
+                listenedCount += 1
+            }
+        }
+        if listenedCount == fetchedResultsController.fetchedObjects?.count {
+            currentArtist?.listened = true
+        } else {
+            currentArtist?.listened = false
+        }
     }
 }
 
@@ -190,6 +185,7 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! FavoriteAlbumDetailTableViewController
         albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
+        albumDetailVC.albumListenedDelegate = self
         navigationController?.pushViewController(albumDetailVC, animated: true)
         selectedCell = indexPath   
         tableView.deselectRow(at: indexPath, animated: true)
@@ -237,5 +233,29 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
+    }
+}
+
+extension FavoriteAlbumTableView: AlbumListenedDelegate {
+    func albumListenedChange() {
+        var listenedCount = 0
+        let albums = fetchedResultsController.fetchedObjects!
+        for album in albums {
+            if album.listened {
+                listenedCount += 1
+            }
+        }
+        
+        if listenedCount == fetchedResultsController.fetchedObjects?.count {
+            if !currentArtist.listened {
+                currentArtist.listened = true
+            }
+        } else {
+            if currentArtist.listened {
+                currentArtist.listened = false
+            }
+        }
+        
+        stack.saveContext()
     }
 }

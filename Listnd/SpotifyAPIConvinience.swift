@@ -143,6 +143,7 @@ extension SpotifyAPI {
             artist.id = artistId
             artist.imageURL = imageURL
             artist.resultNumber = Int16(resultNumber)
+            artist.listened = false
             artists.append(artist)
             resultNumber = resultNumber + 1
             
@@ -223,6 +224,7 @@ extension SpotifyAPI {
             album.imageURL = imageURL
             albums.append(album)
             album.listened = false
+            album.listenedCount = 0
             albumNames.append(albumName)
         }
         

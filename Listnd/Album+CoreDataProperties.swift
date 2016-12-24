@@ -19,10 +19,11 @@ extension Album {
     @NSManaged public var albumImage: NSData?
     @NSManaged public var id: String
     @NSManaged public var imageURL: String?
+    @NSManaged public var listened: Bool
     @NSManaged public var name: String
     @NSManaged public var type: String?
     @NSManaged public var uri: String
-    @NSManaged public var listened: Bool
+    @NSManaged public var listenedCount: Int16
     @NSManaged public var artist: Artist
     @NSManaged public var tracks: NSOrderedSet?
 

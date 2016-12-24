@@ -5,6 +5,7 @@
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="listenedCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uri" optional="YES" attributeType="String" syncable="YES"/>
@@ -15,6 +16,7 @@
         <attribute name="artistImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="imageURL" attributeType="String" syncable="YES"/>
+        <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="resultNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="albums" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Album" inverseName="artist" inverseEntity="Album" syncable="YES"/>
@@ -30,8 +32,8 @@
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="tracks" inverseEntity="Album" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Album" positionX="-45" positionY="36" width="128" height="180"/>
-        <element name="Artist" positionX="-45" positionY="0" width="128" height="135"/>
+        <element name="Album" positionX="-45" positionY="36" width="128" height="195"/>
+        <element name="Artist" positionX="-45" positionY="0" width="128" height="150"/>
         <element name="Track" positionX="-36" positionY="63" width="128" height="165"/>
     </elements>
 </model>

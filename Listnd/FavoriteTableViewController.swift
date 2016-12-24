@@ -12,11 +12,21 @@ import SwiftMessages
 
 class FavoriteTableViewController: UIViewController {
     
-    // MARK: - Properties
-    let stack = CoreDataStack.sharedInstance
+    // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    // MARK: - View life cycle    
+    // MARK: - Properties
+    let stack = CoreDataStack.sharedInstance
+    var selectedCell: IndexPath?
+    
+    // MARK: - View life cycle 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let indexPath = selectedCell {
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
@@ -52,6 +62,12 @@ extension FavoriteTableViewController {
 
         cell.artistNameLabel.text = artist.name
         cell.artistImageView.image = UIImage(named: "headerPlaceHolder")
+        
+        if artist.listened {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.none
+        }
         
         // Get album image if the album was saved prior to image being saved due to slow connetcion
         if let data = artist.artistImage {
@@ -113,6 +129,7 @@ extension FavoriteTableViewController: UITableViewDelegate {
         let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! FavoriteAlbumTableView
         albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
         navigationController?.pushViewController(albumVC, animated: true)
+        selectedCell = indexPath
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }

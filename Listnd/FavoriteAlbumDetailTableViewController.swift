@@ -10,6 +10,10 @@ import UIKit
 import CoreData
 import SwiftMessages
 
+protocol AlbumListenedDelegate: class {
+    func albumListenedChange()
+}
+
 class FavoriteAlbumDetailTableViewController: UIViewController {
     
     // MARK: - IBOutlets
@@ -18,6 +22,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     // MARK: - Properties
     let stack = CoreDataStack.sharedInstance
     var currentAlbum: Album!
+    weak var albumListenedDelegate: AlbumListenedDelegate?
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -39,10 +44,15 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             fetchTracks()
-            tracksListened()
         } else {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tracksListened()
+        stack.saveContext()
     }
     
     // MARK: - NSFetchedResultsController
@@ -69,10 +79,23 @@ extension FavoriteAlbumDetailTableViewController {
     
     func tracksListened() {
         var listenedCount = 0
-        let tracks = fetchedResultsController.fetchedObjects
-        for track in tracks! {
+        let tracks = fetchedResultsController.fetchedObjects!
+        for track in tracks {
             if track.listened {
                 listenedCount += 1
+            }
+        }
+        currentAlbum.listenedCount = Int16(listenedCount)
+        
+        if listenedCount == fetchedResultsController.fetchedObjects?.count {
+            if !currentAlbum.listened {
+                currentAlbum.listened = true
+                albumListenedDelegate?.albumListenedChange()
+            }
+        } else {
+            if currentAlbum.listened {
+                currentAlbum.listened = false
+                albumListenedDelegate?.albumListenedChange()
             }
         }
     }

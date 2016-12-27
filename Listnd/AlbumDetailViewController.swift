@@ -380,8 +380,12 @@ extension AlbumDetailViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension AlbumDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        previousSelectedCell = currentIndexPath
-        playSampleClip(indexPath: indexPath)
+        if Reachability.sharedInstance.isConnectedToNetwork() {
+            previousSelectedCell = currentIndexPath
+            playSampleClip(indexPath: indexPath)
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to play song. \nNo internet connection detected.")
+        }
         tableView.deselectRow(at: indexPath, animated: true)
     }
     

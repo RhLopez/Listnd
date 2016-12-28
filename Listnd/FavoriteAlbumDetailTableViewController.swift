@@ -130,7 +130,11 @@ extension FavoriteAlbumDetailTableViewController {
     func openSpotifyAction(indexPath: IndexPath) {
         let track = fetchedResultsController.object(at: indexPath)
         let uriString = URL(string: track.uri)!
-        UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
+        if UIApplication.shared.canOpenURL(uriString) {
+            UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
+        } else {
+            SwiftMessages.sharedInstance.displayCustomMessage()
+        }
     }
     
     func backButtonPressed(sender: UIButton) {

@@ -281,7 +281,6 @@ extension AlbumDetailViewController {
                 album!.artist = currentArtist
                 album!.listened = currentAlbum.listened
                 album!.listenedCount = currentAlbum.listenedCount
-                stack.saveContext()
             }
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved album information")

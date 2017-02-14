@@ -7,15 +7,26 @@
 //
 
 import UIKit
+import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    lazy var coreDataStack = CoreDataStack(modelName: "Model")
     let stack = CoreDataStack.sharedInstance
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        guard let tabController = window?.rootViewController as? UITabBarController,
+            let firstNavController = tabController.viewControllers?[0] as? UINavigationController,
+            let firstTabController = firstNavController.topViewController as? FavoriteArtistTableViewController,
+            let secondNavController = tabController.viewControllers?[1] as? UINavigationController,
+            let secondTabController = secondNavController.topViewController as? SearchViewController else {
+                return true
+        }
+        
+        firstTabController.coreDataStack = coreDataStack
+        secondTabController.coreDataStack = coreDataStack
         return true
     }
     

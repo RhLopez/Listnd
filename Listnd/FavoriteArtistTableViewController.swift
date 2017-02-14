@@ -16,6 +16,7 @@ class FavoriteArtistTableViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
+    var coreDataStack: CoreDataStack!
     let stack = CoreDataStack.sharedInstance
     var selectedCell: IndexPath?
     
@@ -38,7 +39,7 @@ class FavoriteArtistTableViewController: UIViewController {
             let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
             let sort = NSSortDescriptor(key: #keyPath(Artist.name), ascending: true)
             fetchRequest.sortDescriptors = [sort]
-             let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+             let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
             fetchedResultsController.delegate = self
     
             return fetchedResultsController
@@ -117,8 +118,8 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let artistToDelete = fetchedResultsController.object(at: indexPath)
-            stack.managedContext.delete(artistToDelete)
-            stack.saveContext()
+            coreDataStack.managedContext.delete(artistToDelete)
+            coreDataStack.saveContext()
         }
     }
 }

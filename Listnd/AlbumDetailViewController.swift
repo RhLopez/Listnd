@@ -19,7 +19,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var stack = CoreDataStack.sharedInstance
+    var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
     var currentArtist: Artist!
     var tracks = [Track]()
@@ -197,7 +197,7 @@ extension AlbumDetailViewController {
                 artist.addToAlbums(album)
                 if let track = fetchTrack(indexPath: indexPath, album: album) {
                     album.addToTracks(track)
-                    stack.saveContext()
+                    coreDataStack.saveContext()
                     SwiftMessages.sharedInstance.displayConfirmation(message: "Song Saved!")
                 } else {
                     SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
@@ -215,7 +215,7 @@ extension AlbumDetailViewController {
             if  let album = fetchAlbum() {
                 artist.addToAlbums(album)
                 saveSongsFromAlbum(album: album)
-                stack.saveContext()
+                coreDataStack.saveContext()
                 SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
             } else {
                 SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
@@ -231,19 +231,19 @@ extension AlbumDetailViewController {
         fetchRequest.sortDescriptors = []
         
         do {
-            let results = try stack.managedContext.fetch(fetchRequest)
+            let results = try coreDataStack.managedContext.fetch(fetchRequest)
             if results.count > 0 {
                 currentArtist = results.first
             } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Artist", in: stack.managedContext)
-                currentArtist = Artist(entity: entity!, insertInto: stack.managedContext)
+                let entity = NSEntityDescription.entity(forEntityName: "Artist", in: coreDataStack.managedContext)
+                currentArtist = Artist(entity: entity!, insertInto: coreDataStack.managedContext)
                 let artistSelected = currentAlbum.artist
                 currentArtist!.name = artistSelected.name
                 currentArtist!.id = artistSelected.id
                 currentArtist!.imageURL = artistSelected.imageURL
                 currentArtist!.artistImage = artistSelected.artistImage
                 currentArtist.listened = artistSelected.listened
-                stack.saveContext()
+                coreDataStack.saveContext()
             }
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved artist information")
@@ -259,7 +259,7 @@ extension AlbumDetailViewController {
         fetchRequest.sortDescriptors = []
         
         do {
-            let results = try  stack.managedContext.fetch(fetchRequest)
+            let results = try  coreDataStack.managedContext.fetch(fetchRequest)
             if results.count > 0 {
                 album = results.first
                 if album?.tracks?.count == tracks.count {
@@ -271,8 +271,8 @@ extension AlbumDetailViewController {
                     }
                 }
             } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Album", in: stack.managedContext)!
-                album = Album(entity: entity, insertInto: stack.managedContext)
+                let entity = NSEntityDescription.entity(forEntityName: "Album", in: coreDataStack.managedContext)!
+                album = Album(entity: entity, insertInto: coreDataStack.managedContext)
                 album!.name = currentAlbum.name
                 album!.id = currentAlbum.id
                 album!.imageURL = currentAlbum.imageURL
@@ -296,19 +296,19 @@ extension AlbumDetailViewController {
         fetchRequest.sortDescriptors = []
         
         do {
-            let results = try stack.managedContext.fetch(fetchRequest)
+            let results = try coreDataStack.managedContext.fetch(fetchRequest)
             if results.count > 0 {
                 track = nil
             } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Track", in: stack.managedContext)!
-                track = Track(entity: entity, insertInto: stack.managedContext)
+                let entity = NSEntityDescription.entity(forEntityName: "Track", in: coreDataStack.managedContext)!
+                track = Track(entity: entity, insertInto: coreDataStack.managedContext)
                 track!.name = currentTrack.name
                 track!.id = currentTrack.id
                 track!.trackNumber = currentTrack.trackNumber
                 track!.uri = currentTrack.uri
                 track!.listened = currentTrack.listened
                 track!.album = album
-                stack.saveContext()
+                coreDataStack.saveContext()
             }
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved song information")
@@ -319,8 +319,8 @@ extension AlbumDetailViewController {
     func saveSongsFromAlbum(album: Album) {
         for track in tracks {
             if !savedTrackIds.contains(track.id) {
-                let entity = NSEntityDescription.entity(forEntityName: "Track", in: stack.managedContext)!
-                let trackToSave = Track(entity: entity, insertInto: stack.managedContext)
+                let entity = NSEntityDescription.entity(forEntityName: "Track", in: coreDataStack.managedContext)!
+                let trackToSave = Track(entity: entity, insertInto: coreDataStack.managedContext)
                 trackToSave.name = track.name
                 trackToSave.id = track.id
                 trackToSave.trackNumber = track.trackNumber

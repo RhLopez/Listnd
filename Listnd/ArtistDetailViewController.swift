@@ -21,7 +21,7 @@ class ArtistDetailViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var stack = CoreDataStack.sharedInstance
+    var coreDataStack: CoreDataStack!
     var currentArtist: Artist!
     var sections = [String]()
     var searchItems = [[Album]]()
@@ -222,6 +222,7 @@ extension ArtistDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
         
+        albumDetailVC.coreDataStack = coreDataStack
         albumDetailVC.currentAlbum = searchItems[indexPath.section][indexPath.row]
         selectedRow = indexPath
         navigationController?.pushViewController(albumDetailVC, animated: true)

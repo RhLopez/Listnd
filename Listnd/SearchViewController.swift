@@ -21,6 +21,7 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
+    var coreDataStack: CoreDataStack!
     var artists = [Artist]()
     var tap: UITapGestureRecognizer!
     var isSearching: Bool?
@@ -204,6 +205,7 @@ extension SearchViewController: UITableViewDelegate {
         
         let artist = artists[indexPath.row]
         selectedRow = indexPath
+        detailVC.coreDataStack = coreDataStack
         detailVC.currentArtist = artist
         navigationController?.pushViewController(detailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)

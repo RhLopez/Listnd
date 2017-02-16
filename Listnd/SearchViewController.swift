@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import SVProgressHUD
-import SwiftMessages
 
 // MARK: - Notification key
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"

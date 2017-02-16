@@ -6,7 +6,6 @@ target 'Listnd' do
   use_frameworks!
 
   # Pods for Listnd
-pod 'SwiftMessages'
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
 

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SwiftMessages
+
 
 class CustomDialogView: MessageView {
     var openAppStore: (() -> Void)?

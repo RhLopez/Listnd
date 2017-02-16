@@ -8,7 +8,6 @@
 
 import UIKit
 import CoreData
-import SwiftMessages
 
 class FavoriteAlbumTableView: UIViewController {
     

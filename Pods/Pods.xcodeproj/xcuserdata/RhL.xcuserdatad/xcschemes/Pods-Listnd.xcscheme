@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0820"
+   LastUpgradeVersion = "0700"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9111E321E585684DAA9D89F883CDF7C6"
+               BlueprintIdentifier = "7FA1DC22E851136D9316D1086C0F6595"
                BuildableName = "Pods_Listnd.framework"
                BlueprintName = "Pods-Listnd"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9111E321E585684DAA9D89F883CDF7C6"
+            BlueprintIdentifier = "7FA1DC22E851136D9316D1086C0F6595"
             BuildableName = "Pods_Listnd.framework"
             BlueprintName = "Pods-Listnd"
             ReferencedContainer = "container:Pods.xcodeproj">

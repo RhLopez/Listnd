@@ -18,7 +18,6 @@
 		DD293FF41E0DA14B00F6EB76 /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF31E0DA14B00F6EB76 /* Album+CoreDataProperties.swift */; };
 		DD293FF61E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */; };
 		DD293FF81E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */; };
-		DD2B0F721DEABAA800999C94 /* SMExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2B0F711DEABAA800999C94 /* SMExtension.swift */; };
 		DD324F011DF32217006AC03F /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD324F001DF32217006AC03F /* HeaderView.swift */; };
 		DD324F031DF3367A006AC03F /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD324F021DF3367A006AC03F /* HeaderView.xib */; };
 		DD33B8571DE0041000A9D66F /* ArtistDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */; };
@@ -84,7 +83,6 @@
 		DD293FF31E0DA14B00F6EB76 /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "Listnd/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteArtistTableViewController.swift; sourceTree = "<group>"; };
 		DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteArtistTableViewCell.swift; sourceTree = "<group>"; };
-		DD2B0F711DEABAA800999C94 /* SMExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMExtension.swift; sourceTree = "<group>"; };
 		DD324F001DF32217006AC03F /* HeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		DD324F021DF3367A006AC03F /* HeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
 		DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistDetailViewController.swift; sourceTree = "<group>"; };
@@ -200,7 +198,6 @@
 			children = (
 				DD0A17CD1E051B8C00578E4E /* Reachability.swift */,
 				DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */,
-				DD2B0F711DEABAA800999C94 /* SMExtension.swift */,
 				DD4A6AD31DFE1FFB00465F76 /* CustomDialogView.swift */,
 			);
 			name = Utility;
@@ -606,7 +603,6 @@
 				DDE21A0C1DB4A870000A9318 /* FavoriteAlbumTableView.swift in Sources */,
 				DD5DEF631DAAFC4900BDF98C /* AlbumDetailTableViewCell.swift in Sources */,
 				DD33B8571DE0041000A9D66F /* ArtistDetailViewController.swift in Sources */,
-				DD2B0F721DEABAA800999C94 /* SMExtension.swift in Sources */,
 				DD03388F1DB88BAF00515724 /* FavoriteAlbumDetailTableViewController.swift in Sources */,
 				DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */,
 				DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */,
@@ -777,7 +773,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7F442699709036B52BDD7190 /* Pods-Listnd.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = Listnd/Info.plist;
@@ -793,7 +789,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 014C78A83DCB02A6B8C44340 /* Pods-Listnd.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = Listnd/Info.plist;
@@ -809,7 +805,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5277BD873405892852838BA3 /* Pods-ListndTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = ListndTests/Info.plist;
@@ -825,7 +821,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3C1F2712AF62863EF676AD0B /* Pods-ListndTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = ListndTests/Info.plist;
@@ -841,7 +837,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4C6A26F1CFABF5FB12D7C839 /* Pods-ListndUITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = ListndUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -856,7 +852,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 252EA76BCAAC4E43902CF3F3 /* Pods-ListndUITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
 				INFOPLIST_FILE = ListndUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

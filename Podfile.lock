@@ -1,18 +1,15 @@
 PODS:
-  - GSKStretchyHeaderView (0.12.2)
-  - SVProgressHUD (2.0.4)
-  - SwiftMessages (3.0.3)
+  - GSKStretchyHeaderView (1.0.0)
+  - SVProgressHUD (2.1.2)
 
 DEPENDENCIES:
   - GSKStretchyHeaderView
   - SVProgressHUD
-  - SwiftMessages
 
 SPEC CHECKSUMS:
-  GSKStretchyHeaderView: affdd9f3ae6d6f3cea31dccf604367c617d037ad
-  SVProgressHUD: bfde85ed6c573ea802b9cb37894ed9b629034f1b
-  SwiftMessages: 3c6fd0375009d69ff35a7656bae0e31b4d8a930d
+  GSKStretchyHeaderView: daba8f035eaade6326d05ee2a382be714bb019c0
+  SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
 
-PODFILE CHECKSUM: c725129e0777d629540f52843ae88a6dbf9615f9
+PODFILE CHECKSUM: e3cafe10de738fb9f87771fcc85409fadc167e4e
 
 COCOAPODS: 1.1.1

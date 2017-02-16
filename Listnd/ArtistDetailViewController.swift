@@ -8,7 +8,6 @@
 
 import UIKit
 import CoreData
-import SwiftMessages
 import SVProgressHUD
 import GSKStretchyHeaderView
 

@@ -9,7 +9,6 @@
 import UIKit
 import AVFoundation
 import CoreData
-import SwiftMessages
 import SVProgressHUD
 import GSKStretchyHeaderView
 
@@ -206,7 +205,7 @@ extension AlbumDetailViewController {
                 SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
             }
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save song. Please try again.")
+           SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save song. Please try again.")
         }
     }
     

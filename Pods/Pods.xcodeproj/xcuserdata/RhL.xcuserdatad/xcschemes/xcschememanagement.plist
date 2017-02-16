@@ -29,25 +29,10 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SwiftMessages-SwiftMessages.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>SwiftMessages.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>67394FC5F595D5C6382C6E0CC4C45BEB</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>76A40E637907C67F5938B24A1929C17A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -57,22 +42,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9111E321E585684DAA9D89F883CDF7C6</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>9BC8E869EEB5F037B238CE619AC6F24E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>C2271EEEA57C0EF675A7EA96FE1F3130</key>
+		<key>7FA1DC22E851136D9316D1086C0F6595</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>CD71ED72EACA0156F0B96DDE230F2138</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F8429B49860AD09DCC0B117062E9DCB4</key>
 		<dict>
 			<key>primary</key>
 			<true/>

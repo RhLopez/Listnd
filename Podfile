@@ -6,6 +6,7 @@ target 'Listnd' do
   use_frameworks!
 
   # Pods for Listnd
+pod 'JSSAlertView'
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
 

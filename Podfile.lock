@@ -1,15 +1,18 @@
 PODS:
   - GSKStretchyHeaderView (1.0.0)
+  - JSSAlertView (3.0.4)
   - SVProgressHUD (2.1.2)
 
 DEPENDENCIES:
   - GSKStretchyHeaderView
+  - JSSAlertView
   - SVProgressHUD
 
 SPEC CHECKSUMS:
   GSKStretchyHeaderView: daba8f035eaade6326d05ee2a382be714bb019c0
+  JSSAlertView: 7d8345c88e6fd8b515bc49f0fc8d8c69f6776b9c
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
 
-PODFILE CHECKSUM: e3cafe10de738fb9f87771fcc85409fadc167e4e
+PODFILE CHECKSUM: 35b91a209a70cb61b5a7e694a7f3a7c17999ccf1
 
 COCOAPODS: 1.1.1

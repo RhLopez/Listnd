@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '67394FC5F595D5C6382C6E0CC4C45BEB'
-               BlueprintName = 'Pods-ListndTests'
+               BlueprintIdentifier = 'D368184BEED712B6A15E4767FE420BE5'
+               BlueprintName = 'JSSAlertView'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'Pods-ListndTests.framework'>
+               BuildableName = 'JSSAlertView.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

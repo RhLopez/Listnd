@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
+import JSSAlertView
 
 // MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
@@ -30,6 +31,7 @@ class ArtistDetailViewController: UIViewController {
     var isLoading: Bool?
     var headerView: HeaderView!
     var fetchingAlbums = true
+    var alertView: JSSAlertView!
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +41,7 @@ class ArtistDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureImageViews()
@@ -55,7 +58,8 @@ class ArtistDetailViewController: UIViewController {
             tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
             getAlbums(artistId: currentArtist.id)
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error loading the artist detail. Please try again.")
+            alertView.danger(self, title: "There was an error loading the artist detail", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+            
         }
     }
     
@@ -87,7 +91,8 @@ extension ArtistDetailViewController {
             } else {
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
-                    SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
+                    
+                    self.alertView.danger(self, title: errorMessage, text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
                 }
             }
         }

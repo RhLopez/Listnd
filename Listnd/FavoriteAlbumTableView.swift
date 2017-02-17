@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import JSSAlertView
 
 class FavoriteAlbumTableView: UIViewController {
     
@@ -20,6 +21,7 @@ class FavoriteAlbumTableView: UIViewController {
     var artistImageFrame: UIImageView!
     var headerView: HeaderView!
     var selectedCell: IndexPath?
+    var alertView: JSSAlertView!
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -33,6 +35,7 @@ class FavoriteAlbumTableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
             self.headerView = headerView
             headerView.configureImageViews()
@@ -47,7 +50,7 @@ class FavoriteAlbumTableView: UIViewController {
             tableView.addSubview(headerView)
             getAlbums()
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
+            alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
         
@@ -70,7 +73,7 @@ extension FavoriteAlbumTableView {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load information. Please try again")
+            alertView.danger(self, title: "Unable to load information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -129,7 +132,7 @@ extension FavoriteAlbumTableView {
         if UIApplication.shared.canOpenURL(urlString) {
             UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
         } else {
-            SwiftMessages.sharedInstance.displayCustomMessage()
+            //SwiftMessages.sharedInstance.displayCustomMessage()
         }
     }
     

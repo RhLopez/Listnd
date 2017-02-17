@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-
+import JSSAlertView
 
 protocol AlbumListenedDelegate: class {
     func albumListenedChange()
@@ -23,6 +23,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     let stack = CoreDataStack.sharedInstance
     var currentAlbum: Album!
     weak var albumListenedDelegate: AlbumListenedDelegate?
+    var alertView: JSSAlertView!
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -32,6 +33,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             headerView.configureImageViews()
             if let data = currentAlbum.albumImage {
@@ -45,7 +47,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
             tableView.addSubview(headerView)
             fetchTracks()
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again.")
+            alertView.danger(self, title: "Unable to load album detail", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -73,7 +75,7 @@ extension FavoriteAlbumDetailTableViewController {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to retrieve track information.")
+            alertView.danger(self, title: "Unable to retrieve track information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -133,7 +135,7 @@ extension FavoriteAlbumDetailTableViewController {
         if UIApplication.shared.canOpenURL(uriString) {
             UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
         } else {
-            SwiftMessages.sharedInstance.displayCustomMessage()
+            //SwiftMessages.sharedInstance.displayCustomMessage()
         }
     }
     

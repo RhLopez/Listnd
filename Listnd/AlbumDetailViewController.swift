@@ -11,6 +11,7 @@ import AVFoundation
 import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
+import JSSAlertView
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
@@ -29,6 +30,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     var downloadingSampleClip: Bool?
     var isLoading: Bool?
     var headerView: HeaderView!
+    var alertView: JSSAlertView!
     
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
@@ -38,6 +40,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureImageViews()
@@ -55,7 +58,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
             setAudio()
             getTracks()
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error loading the album detail. Please try again.")
+            alertView.danger(self, title: "There was an error loading the album detail\n.Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -90,7 +93,7 @@ extension AlbumDetailViewController {
         do {
             try audioSession.setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Audio session could not be set")
+            alertView.danger(self, title: "Audio session could not be set", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -109,7 +112,7 @@ extension AlbumDetailViewController {
             } else {
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
-                    SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
+                    self.alertView.danger(self, title: errorMessage, text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
                 }
             }
         }
@@ -168,7 +171,7 @@ extension AlbumDetailViewController {
             
             reloadRows(indexPath: indexPath)
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to preview song")
+            alertView.danger(self, title: "Unable to preview song", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -197,15 +200,15 @@ extension AlbumDetailViewController {
                 if let track = fetchTrack(indexPath: indexPath, album: album) {
                     album.addToTracks(track)
                     coreDataStack.saveContext()
-                    SwiftMessages.sharedInstance.displayConfirmation(message: "Song Saved!")
+                    alertView.show(self, title: "Song Saved", text: nil, noButtons: true, buttonText: nil, cancelButtonText: nil, color: UIColorFromHex(0xD3D2D3, alpha: 1), iconImage: nil, delay: 0.2, timeLeft: nil)
                 } else {
-                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
+                    alertView.danger(self, title: "Song previously saved", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
                 }
             } else {
-                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
+                alertView.danger(self, title: "Song previously saved", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
             }
         } else {
-           SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save song. Please try again.")
+            alertView.danger(self, title: "Unable to save song. Please try again.", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -215,12 +218,12 @@ extension AlbumDetailViewController {
                 artist.addToAlbums(album)
                 saveSongsFromAlbum(album: album)
                 coreDataStack.saveContext()
-                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved!")
+                alertView.show(self, title: "Album Saved", text: nil, noButtons: true, buttonText: nil, cancelButtonText: nil, color: UIColorFromHex(0xD3D2D3, alpha: 1), iconImage: nil, delay: 0.2, timeLeft: nil)
             } else {
-                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
+                alertView.danger(self, title: "Album previously saved", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
             }
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to save album. Please try again.")
+            alertView.danger(self, title: "Unable to save album", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -245,7 +248,7 @@ extension AlbumDetailViewController {
                 coreDataStack.saveContext()
             }
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved artist information")
+            alertView.danger(self, title: "There was an error retrieving saved artist information", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
         
         return currentArtist
@@ -282,7 +285,7 @@ extension AlbumDetailViewController {
                 album!.listenedCount = currentAlbum.listenedCount
             }
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved album information")
+            alertView.danger(self, title: "There was an error retrieving saved album information", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
         return album
     }
@@ -310,7 +313,7 @@ extension AlbumDetailViewController {
                 coreDataStack.saveContext()
             }
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "There was an error retrieving saved song information")
+            alertView.danger(self, title: "There was an error retrieving saved song information", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
         return track
     }
@@ -382,7 +385,7 @@ extension AlbumDetailViewController: UITableViewDelegate {
             previousSelectedCell = currentIndexPath
             playSampleClip(indexPath: indexPath)
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to play song. \nNo internet connection detected.")
+            alertView.danger(self, title: "Unable to play song.\nNo internet connection detected", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }

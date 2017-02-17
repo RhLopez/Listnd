@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import SVProgressHUD
+import JSSAlertView
 
 // MARK: - Notification key
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
@@ -26,6 +27,7 @@ class SearchViewController: UIViewController {
     var isSearching: Bool?
     var hasSearched = false
     var selectedRow: IndexPath?
+    var alertView: JSSAlertView!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -34,6 +36,7 @@ class SearchViewController: UIViewController {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
+        alertView = JSSAlertView()
     }
 }
 
@@ -130,15 +133,15 @@ extension SearchViewController: UISearchBarDelegate {
                             self.artists = searchResults
                             self.tableView.reloadData()
                         } else {
-                            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Invalid results were returned. Please try again.")
+                            self.alertView.danger(self, title: "Invalid result were returned", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
                         }
                     } else {
-                        SwiftMessages.sharedInstance.displayError(title: "Error", message: errorMessage)
+                        self.alertView.danger(self, title: errorMessage, text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
                     }
                 }
             }
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Error", message: "Unable to search. \nNo internet connection detected.")
+            alertView.danger(self, title: "Unable to search.\nNo internet connection detected", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     

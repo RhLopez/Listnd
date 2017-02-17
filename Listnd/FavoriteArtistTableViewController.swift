@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import JSSAlertView
 
 class FavoriteArtistTableViewController: UIViewController {
     
@@ -18,6 +19,7 @@ class FavoriteArtistTableViewController: UIViewController {
     var coreDataStack: CoreDataStack!
     let stack = CoreDataStack.sharedInstance
     var selectedCell: IndexPath?
+    var alertView: JSSAlertView!
     
     // MARK: - View life cycle 
     override func viewWillAppear(_ animated: Bool) {
@@ -29,6 +31,7 @@ class FavoriteArtistTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        alertView = JSSAlertView()
         navigationController?.isNavigationBarHidden = true
         fetchArtist()
     }
@@ -51,7 +54,7 @@ extension FavoriteArtistTableViewController {
         do {
             try self.fetchedResultsController.performFetch()
         } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load saved information.")
+            alertView.danger(self, title: "Unable to load saved information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     

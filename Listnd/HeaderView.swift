@@ -45,5 +45,6 @@ class HeaderView: GSKStretchyHeaderView {
         imageTemplate.clipsToBounds = true
         borderFrame.addSubview(imageTemplate)
         backgroundImage.image = UIImage(named: "backgroundImage")
+        addButton.layer.cornerRadius = 3.0
     }
 }

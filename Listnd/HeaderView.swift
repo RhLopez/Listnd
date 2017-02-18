@@ -29,7 +29,7 @@ class HeaderView: GSKStretchyHeaderView {
         imageView.alpha = alpha
     }
     
-    func configureImageViews<T>(_ ojbect: T) {
+    func configureImageViews() {
         imageView.layer.shadowColor = UIColor.black.cgColor
         imageView.layer.shadowOffset = CGSize(width: 0, height: 5)
         imageView.layer.shadowOpacity = 0.7

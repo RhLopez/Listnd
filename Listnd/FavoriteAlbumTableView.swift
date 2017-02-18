@@ -16,7 +16,7 @@ class FavoriteAlbumTableView: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    let stack = CoreDataStack.sharedInstance
+    var coreDataStack: CoreDataStack!
     var currentArtist: Artist!
     var artistImageFrame: UIImageView!
     var headerView: HeaderView!
@@ -60,7 +60,7 @@ class FavoriteAlbumTableView: UIViewController {
             fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.artist.id), self.currentArtist!.id)
             let sort = NSSortDescriptor(key: #keyPath(Album.name), ascending: true)
             fetchRequest.sortDescriptors = [sort]
-            let fetchedResultsController = NSFetchedResultsController<Album>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+            let fetchedResultsController = NSFetchedResultsController<Album>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
             fetchedResultsController.delegate = self
     
             return fetchedResultsController
@@ -122,8 +122,8 @@ extension FavoriteAlbumTableView {
     
     func deleteAlbum(indexPath: IndexPath) {
         let albumToDelete = fetchedResultsController.object(at: indexPath)
-        stack.managedContext.delete(albumToDelete)
-        stack.saveContext()
+        coreDataStack.managedContext.delete(albumToDelete)
+        coreDataStack.saveContext()
     }
     
     func openSpotify(indexPath: IndexPath) {
@@ -171,6 +171,7 @@ extension FavoriteAlbumTableView: UITableViewDataSource {
 extension FavoriteAlbumTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! FavoriteAlbumDetailTableViewController
+        albumDetailVC.coreDataStack = coreDataStack
         albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
         albumDetailVC.albumListenedDelegate = self
         navigationController?.pushViewController(albumDetailVC, animated: true)
@@ -243,6 +244,6 @@ extension FavoriteAlbumTableView: AlbumListenedDelegate {
             }
         }
         
-        stack.saveContext()
+        coreDataStack.saveContext()
     }
 }

@@ -15,7 +15,7 @@ class HeaderView: GSKStretchyHeaderView {
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
-    @IBOutlet weak var addButton: CustomButton!
+    @IBOutlet weak var addButton: UIButton!
     
     var imageTemplate: UIImageView!
     
@@ -46,5 +46,7 @@ class HeaderView: GSKStretchyHeaderView {
         borderFrame.addSubview(imageTemplate)
         backgroundImage.image = UIImage(named: "backgroundImage")
         addButton.layer.cornerRadius = 3.0
+        addButton.setTitleColor(UIColor.white, for: .normal)
+        addButton.setTitleColor(UIColor.black, for: .highlighted)
     }
 }

@@ -17,7 +17,6 @@ class FavoriteArtistTableViewController: UIViewController {
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
-    let stack = CoreDataStack.sharedInstance
     var selectedCell: IndexPath?
     var alertView: JSSAlertView!
     
@@ -130,6 +129,7 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
 extension FavoriteArtistTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! FavoriteAlbumTableView
+        albumVC.coreDataStack = coreDataStack
         albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
         navigationController?.pushViewController(albumVC, animated: true)
         selectedCell = indexPath

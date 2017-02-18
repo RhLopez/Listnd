@@ -20,7 +20,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    let stack = CoreDataStack.sharedInstance
+    var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
     weak var albumListenedDelegate: AlbumListenedDelegate?
     var alertView: JSSAlertView!
@@ -54,7 +54,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tracksListened()
-        stack.saveContext()
+        coreDataStack.saveContext()
     }
     
     // MARK: - NSFetchedResultsController
@@ -63,7 +63,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
         fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.album.id), self.currentAlbum.id)
         let sortDescriptor = NSSortDescriptor(key: #keyPath(Track.trackNumber), ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        let fetchedResultsController = NSFetchedResultsController<Track>(fetchRequest: fetchRequest, managedObjectContext: self.stack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+        let fetchedResultsController = NSFetchedResultsController<Track>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
         return fetchedResultsController
     }()
@@ -119,14 +119,14 @@ extension FavoriteAlbumDetailTableViewController {
     
     func deleteAction(indexPath: IndexPath) {
         let trackToDelete = fetchedResultsController.object(at: indexPath)
-        stack.managedContext.delete(trackToDelete)
-        stack.saveContext()
+        coreDataStack.managedContext.delete(trackToDelete)
+        coreDataStack.saveContext()
     }
     
     func listenedAction(indexPath: IndexPath)  {
         let track = fetchedResultsController.object(at: indexPath)
         track.listened = !track.listened
-        stack.saveContext()
+        coreDataStack.saveContext()
     }
     
     func openSpotifyAction(indexPath: IndexPath) {

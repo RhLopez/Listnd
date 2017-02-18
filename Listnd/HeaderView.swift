@@ -15,7 +15,7 @@ class HeaderView: GSKStretchyHeaderView {
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
-    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var addButton: CustomButton!
     
     var imageTemplate: UIImageView!
     

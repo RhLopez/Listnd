@@ -42,6 +42,8 @@ class ArtistDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         alertView = JSSAlertView()
+        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
+        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureImageViews()
@@ -192,12 +194,17 @@ extension ArtistDetailViewController: UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if searchItems.isEmpty {
-            return nil
-        } else {
-            return sections[section]
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
+        var title: String?
+        
+        if !searchItems.isEmpty {
+            title = sections[section]
         }
+        
+        header.titleLabel.text = title != nil ? title! : ""
+
+        return header
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -237,8 +244,12 @@ extension ArtistDetailViewController: UITableViewDelegate {
         if searchItems.isEmpty {
             return CGFloat.leastNormalMagnitude
         } else {
-            return 30.0
+            return 28.0
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {

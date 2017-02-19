@@ -9,6 +9,7 @@ target 'Listnd' do
 pod 'JSSAlertView'
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
+pod 'SwipeCellKit'
 
   target 'ListndTests' do
     inherit! :search_paths

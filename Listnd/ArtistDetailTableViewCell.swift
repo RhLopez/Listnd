@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class ArtistDetailTableViewCell: UITableViewCell {
+class ArtistDetailTableViewCell: SwipeTableViewCell {
     
     @IBOutlet weak var albumImageView: UIImageView!
     @IBOutlet weak var albumNameLabel: UILabel!

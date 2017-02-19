@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import JSSAlertView
+import SwipeCellKit
 
 class FavoriteAlbumTableView: UIViewController {
     
@@ -72,6 +73,8 @@ extension FavoriteAlbumTableView {
     
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? FavoriteAlbumTableViewCell else { return }
+        
+        cell.delegate = self
         
         let album = fetchedResultsController.object(at: indexPath)
         cell.albumNameLabel.text = album.name
@@ -182,22 +185,57 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
         selectedCell = indexPath   
         tableView.deselectRow(at: indexPath, animated: true)
     }
+//    
+//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+//        let openSpotifyAction = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
+//            self.openSpotify(indexPath: indexPath)
+//            tableView.setEditing(false, animated: true)
+//        }
+//        
+//        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete") { (action, indexPath) in
+//            self.deleteAlbum(indexPath: indexPath)
+//            tableView.setEditing(false, animated: true)
+//        }
+//        
+//        openSpotifyAction.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
+//        deleteAction.backgroundColor = UIColor.red
+//        
+//        return [deleteAction, openSpotifyAction]
+//    }
+}
+
+// MARK - SwipeTableViewCellDelegate
+extension FavoriteAlbumTableView: SwipeTableViewCellDelegate {
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
+        if orientation == .right {
+            let spotify = SwipeAction(style: .destructive, title: "Spotify") { (action, indexPath) in
+                self.openSpotify(indexPath: indexPath)
+            }
+            
+            let delete = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
+                self.deleteAlbum(indexPath: indexPath)
+            }
+            
+            spotify.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
+            
+            return [delete, spotify]
+        } else {
+            let listndAction = SwipeAction(style: .default, title: "Listnd!", handler: { (action, indexPath) in
+                print("This album was listnd!")
+            })
+            
+            listndAction.backgroundColor = UIColor(red: 0/255, green: 52/255, blue: 96/255, alpha: 1)
+            
+            return [listndAction]
+        }
+    }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let openSpotifyAction = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
-            self.openSpotify(indexPath: indexPath)
-            tableView.setEditing(false, animated: true)
-        }
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+        var options = SwipeTableOptions()
+        options.expansionStyle = .selection
+        options.transitionStyle = .border
         
-        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete") { (action, indexPath) in
-            self.deleteAlbum(indexPath: indexPath)
-            tableView.setEditing(false, animated: true)
-        }
-        
-        openSpotifyAction.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
-        deleteAction.backgroundColor = UIColor.red
-        
-        return [deleteAction, openSpotifyAction]
+        return options
     }
 }
 

@@ -146,16 +146,6 @@ extension FavoriteAlbumTableView {
     func backButtonPressed(_ sender: UIButton) {
         _ = navigationController?.popViewController(animated: true)
     }
-    
-    func albumListnd(indexPath: IndexPath) {
-        let album = fetchedResultsController.object(at: indexPath)
-        for track in album.tracks! {
-            let song = track as! Track
-            song.listened = true
-        }
-        coreDataStack.saveContext()
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-    }
 }
 
 // UIGestureRecognizerDelegate

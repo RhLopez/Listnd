@@ -46,18 +46,13 @@ class ArtistDetailViewController: UIViewController {
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
-            headerView.configureImageViews()
+            headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as? Data, hideButton: true)
             headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
-            if let imageData = currentArtist.artistImage {
-                setArtistImage(imageData: imageData)
-            } else {
+            if currentArtist.artistImage == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
             }
-            headerView.nameLabel.text = currentArtist.name
-            headerView.addButton.isHidden = true
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
-            tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
             getAlbums(artistId: currentArtist.id)
         } else {
             alertView.danger(self, title: "There was an error loading the artist detail", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
@@ -167,14 +162,10 @@ extension ArtistDetailViewController {
     }
     
     func artistImageDownloaded() {
+        print("Downloaded")
         if let imageData = currentArtist.artistImage {
-            setArtistImage(imageData: imageData)
+            headerView.setImage(data: imageData as Data)
         }
-    }
-    
-    func setArtistImage(imageData: NSData) {
-        let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.headerView.imageTemplate, duration: 1, options: .transitionCrossDissolve, animations: { self.headerView.imageTemplate.image = image }, completion: nil)
     }
     
     func backButtonPressed(sender: UIButton) {

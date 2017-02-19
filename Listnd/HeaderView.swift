@@ -29,7 +29,7 @@ class HeaderView: GSKStretchyHeaderView {
         imageView.alpha = alpha
     }
     
-    func configureImageViews() {
+    func configureView(name: String, imageData: Data?, hideButton: Bool) {
         imageView.layer.shadowColor = UIColor.black.cgColor
         imageView.layer.shadowOffset = CGSize(width: 0, height: 5)
         imageView.layer.shadowOpacity = 0.7
@@ -48,5 +48,19 @@ class HeaderView: GSKStretchyHeaderView {
         addButton.layer.cornerRadius = 3.0
         addButton.setTitleColor(UIColor.white, for: .normal)
         addButton.setTitleColor(UIColor.black, for: .highlighted)
+        
+        nameLabel.text = name
+        if let data = imageData {
+            imageTemplate.image = UIImage(data: data)
+        } else {
+            imageTemplate.image = UIImage(named: "headerPlaceHolder")
+        }
+        
+        addButton.isHidden = hideButton
+    }
+    
+    func setImage(data: Data) {
+        let image = UIImage(data: data)
+        UIView.transition(with: self.imageTemplate, duration: 1, options: .transitionCrossDissolve, animations: { self.imageTemplate.image = image }, completion: nil)
     }
 }

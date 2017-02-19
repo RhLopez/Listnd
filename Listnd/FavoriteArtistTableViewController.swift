@@ -149,11 +149,7 @@ extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate 
                 tableView.insertRows(at: [newIndexPath!], with: .automatic)
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)
-            case .update:
-                let cell = tableView.cellForRow(at: indexPath!) as! FavoriteArtistTableViewCell
-                configureCell(cell: cell, indexPath: indexPath!)
-                break
-            case .move:
+            case .update, .move:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)
                 tableView.insertRows(at: [newIndexPath!], with: .automatic)
             }

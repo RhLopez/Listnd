@@ -43,14 +43,10 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
-            headerView.configureImageViews()
-            headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
-            if let imageData = currentAlbum.albumImage {
-                setAlbumImage(imageData: imageData)
-            } else {
+            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as? Data, hideButton: false)
+            if currentAlbum.albumImage == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
             }
-            headerView.nameLabel.text = currentAlbum.name
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             headerView.addButton.addTarget(self, action: #selector(saveAlbum), for: .touchUpInside)
             tableView.addSubview(headerView)
@@ -343,13 +339,8 @@ extension AlbumDetailViewController {
     
     func albumImageDownloaded() {
         if let imageData = currentAlbum.albumImage {
-            setAlbumImage(imageData: imageData)
+            headerView.setImage(data: imageData as Data)
         }
-    }
-    
-    func setAlbumImage(imageData: NSData) {
-        let image = UIImage(data: imageData as Data)
-        UIView.transition(with: self.headerView.imageTemplate, duration: 1, options: .transitionCrossDissolve, animations: { self.headerView.imageTemplate.image = image }, completion: nil)
     }
     
     func backButtonPressed(sender: UIButton) {

@@ -35,14 +35,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
         super.viewDidLoad()
         alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
-            headerView.configureImageViews()
-            if let data = currentAlbum.albumImage {
-               headerView.imageTemplate.image = UIImage(data: data as Data)
-            } else {
-                headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
-            }
-            headerView.nameLabel.text = currentAlbum.name
-            headerView.addButton.isHidden = true
+            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as? Data, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             fetchTracks()

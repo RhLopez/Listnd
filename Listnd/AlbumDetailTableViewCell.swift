@@ -8,8 +8,9 @@
 
 import UIKit
 import AVFoundation
+import SwipeCellKit
 
-class AlbumDetailTableViewCell: UITableViewCell {
+class AlbumDetailTableViewCell: SwipeTableViewCell {
 
     @IBOutlet weak var trackNameLabel: UILabel!
     @IBOutlet weak var trackNumberLabel: UILabel!

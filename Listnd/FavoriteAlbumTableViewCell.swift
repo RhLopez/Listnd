@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class FavoriteAlbumTableViewCell: UITableViewCell {
+class FavoriteAlbumTableViewCell: SwipeTableViewCell {
     
     @IBOutlet weak var albumImageView: UIImageView!
     @IBOutlet weak var albumNameLabel: UILabel!

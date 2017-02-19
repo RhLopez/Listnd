@@ -114,18 +114,6 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
         
         return cell
     }
-    
-//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        return true
-//    }
-    
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete {
-//            let artistToDelete = fetchedResultsController.object(at: indexPath)
-//            coreDataStack.managedContext.delete(artistToDelete)
-//            coreDataStack.saveContext()
-//        }
-//    }
 }
 
 // MARK: - UITableViewDelegate

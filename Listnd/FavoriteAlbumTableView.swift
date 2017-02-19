@@ -125,7 +125,18 @@ extension FavoriteAlbumTableView {
         if UIApplication.shared.canOpenURL(urlString) {
             UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
         } else {
-            //SwiftMessages.sharedInstance.displayCustomMessage()
+            let alertController = UIAlertController(title: "Attention", message: "Spotify application was not found.\nWould you like to install it?", preferredStyle: .alert)
+            let installAction = UIAlertAction(title: "Install", style: .default, handler: { (action) in
+                if let url = URL(string: "https://itunes.apple.com/us/app/spotify-music/id324684580?mt=8") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+            })
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(installAction)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
         }
     }
     

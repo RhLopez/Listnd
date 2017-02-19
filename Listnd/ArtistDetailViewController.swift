@@ -11,6 +11,7 @@ import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
 import JSSAlertView
+import SwipeCellKit
 
 // MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
@@ -125,6 +126,7 @@ extension ArtistDetailViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? ArtistDetailTableViewCell else { return }
         
+        cell.delegate = self
         cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
         
         let album = searchItems[indexPath.section][indexPath.row]
@@ -249,6 +251,20 @@ extension ArtistDetailViewController: UITableViewDelegate {
         } else {
             return indexPath
         }
+    }
+}
+
+// MARK: - SwipeTableViewCellDelegate
+extension ArtistDetailViewController: SwipeTableViewCellDelegate {
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
+        guard orientation == .right else { return [] }
+        let save = SwipeAction(style: .default, title: "Save") { (action, indexPath) in
+            print("Saving album")
+        }
+        
+        save.backgroundColor = UIColor.blue
+        
+        return [save]
     }
 }
 

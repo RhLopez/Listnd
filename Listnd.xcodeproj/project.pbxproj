@@ -272,10 +272,10 @@
 				DD293FF51E0DA16200F6EB76 /* FavoriteArtistTableViewController.swift */,
 				DDE21A0B1DB4A870000A9318 /* FavoriteAlbumTableView.swift */,
 				DD03388E1DB88BAF00515724 /* FavoriteAlbumDetailTableViewController.swift */,
+				DDEEF53F1E5AB99C002602E7 /* AudioPlayer.swift */,
 				DD8F03EF1DA23267000837DE /* SearchViewController.swift */,
 				DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */,
 				DD5DEF601DAAFC0700BDF98C /* AlbumDetailViewController.swift */,
-				DDEEF53F1E5AB99C002602E7 /* AudioPlayer.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";

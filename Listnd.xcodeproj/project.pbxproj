@@ -45,6 +45,7 @@
 		DDEB0BA21E58107C00E70B4A /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEB0BA11E58107C00E70B4A /* CustomButton.swift */; };
 		DDEB0BA81E58354000E70B4A /* TableSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEB0BA71E58354000E70B4A /* TableSectionHeader.swift */; };
 		DDEB0BAC1E58361C00E70B4A /* TableSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = DDEB0BAB1E58361C00E70B4A /* TableSectionHeader.xib */; };
+		DDEEF5401E5AB99C002602E7 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEEF53F1E5AB99C002602E7 /* AudioPlayer.swift */; };
 		DDFF1E631DA9FE7800E8231E /* Album+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFF1E611DA9FE7800E8231E /* Album+CoreDataClass.swift */; };
 		F58D155109D1749AE38E9530 /* Pods_ListndUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A75A151173EEFD4C2A2AB10 /* Pods_ListndUITests.framework */; };
 /* End PBXBuildFile section */
@@ -118,6 +119,7 @@
 		DDEB0BA11E58107C00E70B4A /* CustomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		DDEB0BA71E58354000E70B4A /* TableSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableSectionHeader.swift; sourceTree = "<group>"; };
 		DDEB0BAB1E58361C00E70B4A /* TableSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TableSectionHeader.xib; sourceTree = "<group>"; };
+		DDEEF53F1E5AB99C002602E7 /* AudioPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		DDFF1E611DA9FE7800E8231E /* Album+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataClass.swift"; path = "Listnd/Album+CoreDataClass.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -273,6 +275,7 @@
 				DD8F03EF1DA23267000837DE /* SearchViewController.swift */,
 				DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */,
 				DD5DEF601DAAFC0700BDF98C /* AlbumDetailViewController.swift */,
+				DDEEF53F1E5AB99C002602E7 /* AudioPlayer.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -616,6 +619,7 @@
 				DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */,
 				DD293FF81E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift in Sources */,
 				DD8F03EE1DA23267000837DE /* AppDelegate.swift in Sources */,
+				DDEEF5401E5AB99C002602E7 /* AudioPlayer.swift in Sources */,
 				DDEB0BA81E58354000E70B4A /* TableSectionHeader.swift in Sources */,
 				DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */,
 				DDFF1E631DA9FE7800E8231E /* Album+CoreDataClass.swift in Sources */,

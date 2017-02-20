@@ -176,6 +176,16 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
+extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let audioVC = storyboard?.instantiateViewController(withIdentifier: "AudioPlayer") as! AudioPlayer
+        audioVC.currentAlbum = currentAlbum
+        navigationController?.pushViewController(audioVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
 // MARK: - SwipeTableViewCellDelegate
 extension FavoriteAlbumDetailTableViewController: SwipeTableViewCellDelegate {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {

@@ -181,6 +181,7 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let audioVC = storyboard?.instantiateViewController(withIdentifier: "AudioPlayer") as! AudioPlayer
         audioVC.currentAlbum = currentAlbum
+        audioVC.indexPath = indexPath
         navigationController?.pushViewController(audioVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }

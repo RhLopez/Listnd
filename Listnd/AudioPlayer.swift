@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class AudioPlayer: UIViewController {
     
@@ -21,10 +22,18 @@ class AudioPlayer: UIViewController {
     
     // MARK: - Properties
     var currentAlbum: Album!
+    var player: AVPlayer!
+    var indexPath: IndexPath!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         artistNameLabel.text = currentAlbum.artist.name
         albumNameLabel.text = currentAlbum.name
+        
+        let image = UIImage(data: currentAlbum.albumImage as! Data)
+        albumCoverArt.image = image
+        
+        
+        
     }
 }

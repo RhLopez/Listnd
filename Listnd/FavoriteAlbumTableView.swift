@@ -11,6 +11,10 @@ import CoreData
 import JSSAlertView
 import SwipeCellKit
 
+// Awesome app! My only suggestion is to add more commenting, especially around code
+// using 3rd party libraries as potential future colleagues (who are asked to review
+// your code) might be well versed with Apple frameworks, but not with the libraries.
+
 class FavoriteAlbumTableView: UIViewController {
     
     // MARK: - IBOutlets

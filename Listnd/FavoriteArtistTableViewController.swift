@@ -46,6 +46,13 @@ class FavoriteArtistTableViewController: UIViewController {
     
             return fetchedResultsController
         }()
+
+    @IBAction func settingButtonPressed(_ sender: Any) {
+        let settingVC = storyboard?.instantiateViewController(withIdentifier: "settingViewController") as! SettingViewController
+        settingVC.modalPresentationStyle = .fullScreen
+        settingVC.modalTransitionStyle = .flipHorizontal
+        present(settingVC, animated: true, completion: nil)
+    }
 }
 
 // MARK: - Helper methods
@@ -67,6 +74,17 @@ extension FavoriteArtistTableViewController {
 
         cell.artistNameLabel.text = artist.name
         cell.artistImageView.image = UIImage(named: "headerPlaceHolder")
+        var albumCountMessage = ""
+        if let count = artist.albums?.count {
+            if count > 0 {
+                albumCountMessage = count > 1 ? "\(count) Albums" : "\(count) Album"
+            } else {
+                albumCountMessage = "No Albums"
+            }
+        } else {
+            albumCountMessage = ""
+        }
+        cell.albumCountLabel.text = albumCountMessage
         
         if artist.listened {
             cell.accessoryType = UITableViewCellAccessoryType.checkmark

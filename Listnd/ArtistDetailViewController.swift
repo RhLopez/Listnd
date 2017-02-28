@@ -50,7 +50,10 @@ class ArtistDetailViewController: UIViewController {
             headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as? Data, hideButton: true)
             headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             if currentArtist.artistImage == nil {
-                NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(ArtistDetailViewController.artistImageDownloaded),
+                                                       name: NSNotification.Name(rawValue: artistImageDownloadNotification),
+                                                       object: nil)
             }
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
@@ -164,7 +167,6 @@ extension ArtistDetailViewController {
     }
     
     func artistImageDownloaded() {
-        print("Downloaded")
         if let imageData = currentArtist.artistImage {
             headerView.setImage(data: imageData as Data)
         }

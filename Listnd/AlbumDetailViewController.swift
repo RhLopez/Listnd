@@ -327,6 +327,7 @@ extension AlbumDetailViewController {
                 trackToSave.album = album
                 trackToSave.uri = track.uri
                 trackToSave.listened = track.listened
+                trackToSave.previewURL = track.previewURL
                 album.addToTracks(trackToSave)
             }
         }

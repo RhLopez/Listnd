@@ -33,6 +33,11 @@
 		DD8F04031DA23267000837DE /* ListndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04021DA23267000837DE /* ListndTests.swift */; };
 		DD8F040E1DA23267000837DE /* ListndUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F040D1DA23267000837DE /* ListndUITests.swift */; };
 		DD8F04271DA23910000837DE /* SpotifyAPIConvinience.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */; };
+		DD9109381E616B13004D4E40 /* SpotifyAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD9109371E616B13004D4E40 /* SpotifyAuthentication.framework */; };
+		DD91093A1E616B20004D4E40 /* SpotifyAudioPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD9109391E616B20004D4E40 /* SpotifyAudioPlayback.framework */; };
+		DD9109401E616D06004D4E40 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD91093F1E616D06004D4E40 /* AVFoundation.framework */; };
+		DD9109421E61746C004D4E40 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9109411E61746C004D4E40 /* SettingViewController.swift */; };
+		DD9109441E61807E004D4E40 /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9109431E61807E004D4E40 /* SettingTableViewCell.swift */; };
 		DDAB14911E0E0254004C0F40 /* Artist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB14901E0E0254004C0F40 /* Artist+CoreDataProperties.swift */; };
 		DDAE2FD61DC5CD8400630430 /* ListndPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */; };
 		DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DDB14F9A1DA856D900DE9A4A /* Model.xcdatamodeld */; };
@@ -107,6 +112,12 @@
 		DD8F040D1DA23267000837DE /* ListndUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListndUITests.swift; sourceTree = "<group>"; };
 		DD8F040F1DA23267000837DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPIConvinience.swift; sourceTree = "<group>"; };
+		DD9109371E616B13004D4E40 /* SpotifyAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAuthentication.framework; sourceTree = "<group>"; };
+		DD9109391E616B20004D4E40 /* SpotifyAudioPlayback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAudioPlayback.framework; sourceTree = "<group>"; };
+		DD91093B1E616C6B004D4E40 /* Listnd-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Listnd-Bridging-Header.h"; sourceTree = "<group>"; };
+		DD91093F1E616D06004D4E40 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		DD9109411E61746C004D4E40 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		DD9109431E61807E004D4E40 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		DDAB14901E0E0254004C0F40 /* Artist+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Artist+CoreDataProperties.swift"; path = "Listnd/Artist+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListndPlayerItem.swift; sourceTree = "<group>"; };
 		DDB14F9B1DA856D900DE9A4A /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -128,7 +139,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD9109401E616D06004D4E40 /* AVFoundation.framework in Frameworks */,
 				687C44A104AD8B312BC52D8D /* Pods_Listnd.framework in Frameworks */,
+				DD9109381E616B13004D4E40 /* SpotifyAuthentication.framework in Frameworks */,
+				DD91093A1E616B20004D4E40 /* SpotifyAudioPlayback.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +181,7 @@
 		C6CECDBC76678AF02C228028 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DD91093F1E616D06004D4E40 /* AVFoundation.framework */,
 				94451EF0380236D579DDA8D2 /* Pods_Listnd.framework */,
 				903C6E3F998EE619F0E9288A /* Pods_ListndTests.framework */,
 				3A75A151173EEFD4C2A2AB10 /* Pods_ListndUITests.framework */,
@@ -185,6 +200,7 @@
 				DD5DEF621DAAFC4900BDF98C /* AlbumDetailTableViewCell.swift */,
 				DDEB0B9F1E580EBE00E70B4A /* HeaderView.swift */,
 				DDEB0BA71E58354000E70B4A /* TableSectionHeader.swift */,
+				DD9109431E61807E004D4E40 /* SettingTableViewCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -207,6 +223,7 @@
 				DD0A17CD1E051B8C00578E4E /* Reachability.swift */,
 				DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */,
 				DDEB0BA11E58107C00E70B4A /* CustomButton.swift */,
+				DD91093B1E616C6B004D4E40 /* Listnd-Bridging-Header.h */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -236,6 +253,8 @@
 		DD8F03EC1DA23267000837DE /* Listnd */ = {
 			isa = PBXGroup;
 			children = (
+				DD9109391E616B20004D4E40 /* SpotifyAudioPlayback.framework */,
+				DD9109371E616B13004D4E40 /* SpotifyAuthentication.framework */,
 				DD8F03ED1DA23267000837DE /* AppDelegate.swift */,
 				DDFF1E671DAA249100E8231E /* Model */,
 				DD8F04201DA23549000837DE /* Controllers */,
@@ -276,6 +295,7 @@
 				DD8F03EF1DA23267000837DE /* SearchViewController.swift */,
 				DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */,
 				DD5DEF601DAAFC0700BDF98C /* AlbumDetailViewController.swift */,
+				DD9109411E61746C004D4E40 /* SettingViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -393,6 +413,7 @@
 					DD8F03E91DA23267000837DE = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 7C7E58NWQY;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					DD8F03FD1DA23267000837DE = {
@@ -624,10 +645,12 @@
 				DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */,
 				DDFF1E631DA9FE7800E8231E /* Album+CoreDataClass.swift in Sources */,
 				DDB14FA21DA8592A00DE9A4A /* CoreDataStack.swift in Sources */,
+				DD9109441E61807E004D4E40 /* SettingTableViewCell.swift in Sources */,
 				DD8F04271DA23910000837DE /* SpotifyAPIConvinience.swift in Sources */,
 				DD293FEE1E0DA09700F6EB76 /* Track+CoreDataProperties.swift in Sources */,
 				DD512F001DDED89E00BF76EB /* ArtistDetailTableViewCell.swift in Sources */,
 				DD5DEF611DAAFC0700BDF98C /* AlbumDetailViewController.swift in Sources */,
+				DD9109421E61746C004D4E40 /* SettingViewController.swift in Sources */,
 				DD0338911DB88C0A00515724 /* FavoriteAlbumDetailTableViewCell.swift in Sources */,
 				DDBA01CA1DA4BE7B007FE696 /* SearchTableViewCell.swift in Sources */,
 				DDAE2FD61DC5CD8400630430 /* ListndPlayerItem.swift in Sources */,
@@ -787,11 +810,30 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Listnd",
+				);
 				INFOPLIST_FILE = Listnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"GSKStretchyHeaderView\"",
+					"-framework",
+					"\"JSSAlertView\"",
+					"-framework",
+					"\"SVProgressHUD\"",
+					"-framework",
+					"\"SwipeCellKit\"",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.RhL.Listnd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Listnd/Listnd-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -803,11 +845,29 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Listnd",
+				);
 				INFOPLIST_FILE = Listnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"GSKStretchyHeaderView\"",
+					"-framework",
+					"\"JSSAlertView\"",
+					"-framework",
+					"\"SVProgressHUD\"",
+					"-framework",
+					"\"SwipeCellKit\"",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.RhL.Listnd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Listnd/Listnd-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

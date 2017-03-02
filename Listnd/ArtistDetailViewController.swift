@@ -48,8 +48,8 @@ class ArtistDetailViewController: UIViewController {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as? Data, hideButton: true)
-            headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
             if currentArtist.artistImage == nil {
+                headerView.imageTemplate.image = UIImage(named: "headerPlaceHolder")
                 NotificationCenter.default.addObserver(self,
                                                        selector: #selector(ArtistDetailViewController.artistImageDownloaded),
                                                        name: NSNotification.Name(rawValue: artistImageDownloadNotification),
@@ -69,6 +69,10 @@ class ArtistDetailViewController: UIViewController {
         if isLoading == true {
             SVProgressHUD.dismiss()
         }
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 }
 

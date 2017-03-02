@@ -80,6 +80,10 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
             reloadRows(indexPath: indexPath)
         }
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 }
 
 // Mark: - Helper methods

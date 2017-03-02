@@ -38,6 +38,10 @@ class SearchViewController: UIViewController {
         searchBar.delegate = self
         alertView = JSSAlertView()
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 }
 
 // MARK: - Helper methods

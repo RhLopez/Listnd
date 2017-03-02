@@ -48,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let userDefaults = UserDefaults()
                 let sessionData = NSKeyedArchiver.archivedData(withRootObject: session!) as NSData
                 userDefaults.set(sessionData, forKey: "SpotifySession")
+                userDefaults.set(true, forKey: "PremiumUser")
                 userDefaults.synchronize()
                 NotificationCenter.default.post(name: Notification.Name(rawValue: loginSuccessfullNotification), object: self)
             })

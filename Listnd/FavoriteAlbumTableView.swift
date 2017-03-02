@@ -47,6 +47,10 @@ class FavoriteAlbumTableView: UIViewController {
             alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
         
     // MARK: - NSFetchedResultsController
         lazy var fetchedResultsController: NSFetchedResultsController<Album> = {

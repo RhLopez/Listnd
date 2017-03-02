@@ -25,6 +25,7 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     var currentAlbum: Album!
     weak var albumListenedDelegate: AlbumListenedDelegate?
     var alertView: JSSAlertView!
+    var premiumUser: Bool?
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +36,8 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         alertView = JSSAlertView()
+        let userDefaults = UserDefaults()
+        premiumUser = userDefaults.bool(forKey: "PremiumUser")
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as? Data, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
@@ -49,6 +52,10 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
         super.viewWillDisappear(animated)
         tracksListened()
         coreDataStack.saveContext()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     // MARK: - NSFetchedResultsController
@@ -179,11 +186,17 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let audioVC = storyboard?.instantiateViewController(withIdentifier: "AudioPlayer") as! AudioPlayer
-        audioVC.currentAlbum = currentAlbum
-        audioVC.indexPath = indexPath
-        navigationController?.pushViewController(audioVC, animated: true)
-        tableView.deselectRow(at: indexPath, animated: true)
+        if let _ = premiumUser {
+            let audioVC = storyboard?.instantiateViewController(withIdentifier: "AudioPlayer") as! AudioPlayer
+            audioVC.currentAlbum = currentAlbum
+            audioVC.modalPresentationCapturesStatusBarAppearance = true
+            audioVC.indexPath = indexPath
+            navigationController?.pushViewController(audioVC, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
+        } else {
+            listenedAction(indexPath: indexPath)
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 }
 

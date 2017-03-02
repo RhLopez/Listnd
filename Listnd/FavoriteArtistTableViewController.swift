@@ -36,6 +36,10 @@ class FavoriteArtistTableViewController: UIViewController {
         fetchArtist()
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
      //MARK: - FetchedResultsController
         lazy var fetchedResultsController: NSFetchedResultsController<Artist> = {
             let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()

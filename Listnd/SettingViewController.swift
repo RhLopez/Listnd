@@ -19,6 +19,11 @@ class SettingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let userDefaults = UserDefaults()
+        let premiumSubscriber = userDefaults.bool(forKey: "PremiumUser")
+        if premiumSubscriber {
+            logInButton.setTitle("LOG OUT FROM SPOTIFY", for: .normal)
+        }
         logInButton.layer.cornerRadius = 14
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateAfterLogin),

@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import JSSAlertView
 
-class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
+class AudioPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
     
     // MARK: - IBOutlets
     @IBOutlet weak var artistNameLabel: UILabel!
@@ -21,6 +21,8 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playPauseButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+
     
     // MARK: - Properties
     var currentAlbum: Album!
@@ -34,9 +36,14 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNeedsStatusBarAppearanceUpdate()
+        setUpAudioSession()
+        mediaSlider.setThumbImage(#imageLiteral(resourceName: "scrubberCircle"), for: .normal)
+        activityIndicator.startAnimating()
         spotifyPlayer = SPTAudioStreamingController.sharedInstance()
-        try! spotifyPlayer?.start(withClientId: "8faa83925ca64e5997e01122da55dcf0")
-        spotifyPlayer?.delegate = self
+        if !(spotifyPlayer?.initialized)! {
+            try? spotifyPlayer?.start(withClientId: "8faa83925ca64e5997e01122da55dcf0")
+        }
+        spotifyPlayer!.delegate = self
         let userDefaults = UserDefaults()
         let sessionData = userDefaults.object(forKey: "SpotifySession")
         let authSession: SPTSession = NSKeyedUnarchiver.unarchiveObject(with: sessionData as! Data)! as! SPTSession
@@ -72,27 +79,13 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
                 print("Failed to play: \(error)")
                 return
             }
+            self.activityIndicator.stopAnimating()
             self.playPauseButton.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
         }
     }
-    
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .default
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        mediaSlider.setThumbImage(#imageLiteral(resourceName: "scrubberCircle"), for: .normal)
-    }
-    
-    func setAudio() {
-        let audioSession = AVAudioSession.sharedInstance()
-        
-        do {
-            try audioSession.setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
-        } catch {
-            alertView.danger(self, title: "Audio session could not be set", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
-        }
     }
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {
@@ -103,7 +96,7 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
                     return
                 }
                 
-                self.playPauseButton.setImage(#imageLiteral(resourceName: "mediaPlayButton"), for: .normal)
+                sender.setImage(#imageLiteral(resourceName: "mediaPlayButton"), for: .normal)
             })
         } else {
             spotifyPlayer?.setIsPlaying(true, callback: { (error) in
@@ -112,11 +105,28 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
                     return
                 }
                 
-                self.playPauseButton.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
+                sender.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
             })
         }
     }
+    
     @IBAction func sliderMoved(_ sender: UISlider) {
         player.seek(to: (CMTimeMake(Int64(sender.value), 1)))
+    }
+    
+    func setUpAudioSession() {
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
+            self.becomeFirstResponder()
+            
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            }
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
     }
 }

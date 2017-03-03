@@ -654,7 +654,7 @@
                                     <constraint firstAttribute="width" constant="145.00000000000006" id="rrU-fn-Q5P"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" image="mediaPlayButton"/>
+                                <state key="normal" image="blankPlayPauseButton"/>
                                 <connections>
                                     <action selector="playPauseButtonPressed:" destination="ZaO-nv-yLC" eventType="touchUpInside" id="Dsw-VK-8Lh"/>
                                 </connections>
@@ -677,6 +677,9 @@
                                 <color key="textColor" white="0.33333333333333331" alpha="0.6427386558219178" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="TzT-UC-TON">
+                                <rect key="frame" x="189" y="557" width="37" height="37"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -685,6 +688,7 @@
                             <constraint firstItem="pEo-06-HGr" firstAttribute="top" secondItem="jho-fy-tE1" secondAttribute="bottom" constant="16" id="6uD-o6-5MZ"/>
                             <constraint firstAttribute="leadingMargin" secondItem="pEo-06-HGr" secondAttribute="leading" id="9bA-kU-mcH"/>
                             <constraint firstAttribute="leadingMargin" secondItem="92p-EE-0eK" secondAttribute="leading" id="BwE-nu-hsA"/>
+                            <constraint firstItem="TzT-UC-TON" firstAttribute="centerY" secondItem="Isy-PU-I15" secondAttribute="centerY" id="Ctz-Jc-ben"/>
                             <constraint firstItem="U7y-ly-znu" firstAttribute="leading" secondItem="una-0a-cxo" secondAttribute="leadingMargin" constant="46" id="E2p-34-iaV"/>
                             <constraint firstItem="pEo-06-HGr" firstAttribute="centerX" secondItem="una-0a-cxo" secondAttribute="centerX" id="Fd6-20-ZZU"/>
                             <constraint firstAttribute="trailingMargin" secondItem="3wo-ta-y8g" secondAttribute="trailing" constant="5" id="Fp8-vX-PGX"/>
@@ -695,6 +699,7 @@
                             <constraint firstAttribute="trailingMargin" secondItem="92p-EE-0eK" secondAttribute="trailing" id="Uoa-L2-XPx"/>
                             <constraint firstItem="U7y-ly-znu" firstAttribute="top" secondItem="92p-EE-0eK" secondAttribute="bottom" constant="24" id="WJB-jk-gfv"/>
                             <constraint firstItem="92p-EE-0eK" firstAttribute="centerX" secondItem="una-0a-cxo" secondAttribute="centerX" id="crr-6q-pdy"/>
+                            <constraint firstItem="TzT-UC-TON" firstAttribute="leading" secondItem="Isy-PU-I15" secondAttribute="trailing" constant="-90.666666666666742" id="d4x-Dk-quN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="pEo-06-HGr" secondAttribute="trailing" id="dEE-HA-kHJ"/>
                             <constraint firstItem="hYA-99-an0" firstAttribute="top" secondItem="3wo-ta-y8g" secondAttribute="bottom" constant="51" id="g5f-R6-AwV"/>
                             <constraint firstItem="Isy-PU-I15" firstAttribute="leading" secondItem="hYA-99-an0" secondAttribute="trailing" constant="14" id="gRa-GD-cE9"/>
@@ -709,6 +714,7 @@
                     </view>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="TzT-UC-TON" id="q6K-cV-a4v"/>
                         <outlet property="albumCoverArt" destination="jho-fy-tE1" id="KaK-eO-gvA"/>
                         <outlet property="albumNameLabel" destination="j7K-by-adE" id="GIp-FL-zhm"/>
                         <outlet property="artistNameLabel" destination="GzR-IP-oi5" id="5pT-Te-Cjc"/>
@@ -892,9 +898,9 @@
     </scenes>
     <resources>
         <image name="backButton" width="36" height="40"/>
+        <image name="blankPlayPauseButton" width="145" height="145"/>
         <image name="exitButton" width="39" height="44"/>
         <image name="forwardButton" width="36" height="40"/>
         <image name="gearIcon" width="30" height="30"/>
-        <image name="mediaPlayButton" width="145" height="145"/>
     </resources>
 </document>

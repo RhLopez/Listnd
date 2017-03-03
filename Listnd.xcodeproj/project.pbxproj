@@ -213,6 +213,7 @@
 				DDEB0BAB1E58361C00E70B4A /* TableSectionHeader.xib */,
 				DD4A6AD11DFE1C8800465F76 /* CustomMessage.xib */,
 				DD8F03F61DA23267000837DE /* LaunchScreen.storyboard */,
+				DD8F03F41DA23267000837DE /* Assets.xcassets */,
 			);
 			name = Storyboards;
 			sourceTree = "<group>";
@@ -222,8 +223,8 @@
 			children = (
 				DD0A17CD1E051B8C00578E4E /* Reachability.swift */,
 				DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */,
-				DDEB0BA11E58107C00E70B4A /* CustomButton.swift */,
 				DD91093B1E616C6B004D4E40 /* Listnd-Bridging-Header.h */,
+				DDEB0BA11E58107C00E70B4A /* CustomButton.swift */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -261,7 +262,6 @@
 				DD6BA3A91DD7AC8B0077AACA /* Views */,
 				DD6BA3AB1DD7ADDA0077AACA /* Utility */,
 				DD6BA3AA1DD7ACFC0077AACA /* Storyboards */,
-				DD8F03F41DA23267000837DE /* Assets.xcassets */,
 				DD8F03F91DA23267000837DE /* Info.plist */,
 			);
 			path = Listnd;
@@ -415,6 +415,11 @@
 						DevelopmentTeam = 7C7E58NWQY;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					DD8F03FD1DA23267000837DE = {
 						CreatedOnToolsVersion = 8.0;

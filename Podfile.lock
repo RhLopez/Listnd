@@ -1,21 +1,24 @@
 PODS:
   - GSKStretchyHeaderView (1.0.0)
+  - Hero (0.3.1)
   - JSSAlertView (3.0.4)
   - SVProgressHUD (2.1.2)
   - SwipeCellKit (1.1.1)
 
 DEPENDENCIES:
   - GSKStretchyHeaderView
+  - Hero (~> 0.3)
   - JSSAlertView
   - SVProgressHUD
   - SwipeCellKit
 
 SPEC CHECKSUMS:
   GSKStretchyHeaderView: daba8f035eaade6326d05ee2a382be714bb019c0
+  Hero: 278045543e7e8fcbf331e6493a51f97469a2ff08
   JSSAlertView: 7d8345c88e6fd8b515bc49f0fc8d8c69f6776b9c
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
   SwipeCellKit: 2b78bda95f5b7dfa7db6756d8b0980ca2ab27695
 
-PODFILE CHECKSUM: 4c14e0561e73b116e5c3b42771a9622609e4e14c
+PODFILE CHECKSUM: 1cc38a5cca39c767b6f8139bd6cc379c3dba539d
 
 COCOAPODS: 1.1.1

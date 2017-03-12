@@ -10,6 +10,7 @@ pod 'JSSAlertView'
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
 pod 'SwipeCellKit'
+pod 'Hero', '~> 0.3'
 
   target 'ListndTests' do
     inherit! :search_paths

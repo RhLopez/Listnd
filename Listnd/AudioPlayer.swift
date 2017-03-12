@@ -9,8 +9,13 @@
 import UIKit
 import AVFoundation
 import JSSAlertView
+import Hero
 
-class AudioPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
+protocol AudioPlayerControllerDelegate: class {
+    func trackDidUpdate(track: Track)
+}
+
+class AudioPlayer: UIViewController, SPTAudioStreamingDelegate {
     
     // MARK: - IBOutlets
     @IBOutlet weak var artistNameLabel: UILabel!
@@ -22,65 +27,102 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamin
     @IBOutlet weak var playPauseButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var currentPosition: UILabel!
+    @IBOutlet weak var timeRemaining: UILabel!
 
     
     // MARK: - Properties
     var currentAlbum: Album!
-    var player = AVPlayer()
     var indexPath: IndexPath!
-    var currentTrack: Track!
+    var currentTrack: Track?
     var alertView: JSSAlertView!
-    var playerItem: ListndPlayerItem?
-    var spotifyPlayer: SPTAudioStreamingController?
+    var dateComponentsFormatter: DateComponentsFormatter!
+    var player: SPTAudioStreamingController?
+    
+    weak var delegate: AudioPlayerControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setNeedsStatusBarAppearanceUpdate()
-        setUpAudioSession()
+        dateComponentsFormatter = DateComponentsFormatter()
+        dateComponentsFormatter.allowedUnits = [.minute, .second]
+        dateComponentsFormatter.zeroFormattingBehavior = .pad
+        setUpSpotify()
         mediaSlider.setThumbImage(#imageLiteral(resourceName: "scrubberCircle"), for: .normal)
-        activityIndicator.startAnimating()
-        spotifyPlayer = SPTAudioStreamingController.sharedInstance()
-        if !(spotifyPlayer?.initialized)! {
-            try? spotifyPlayer?.start(withClientId: "8faa83925ca64e5997e01122da55dcf0")
-        }
-        spotifyPlayer!.delegate = self
-        let userDefaults = UserDefaults()
-        let sessionData = userDefaults.object(forKey: "SpotifySession")
-        let authSession: SPTSession = NSKeyedUnarchiver.unarchiveObject(with: sessionData as! Data)! as! SPTSession
-        if !authSession.isValid(){
-            SPTAuth.defaultInstance().tokenRefreshURL = URL(string: "https://pacific-spire-64693.herokuapp.com/refresh")
-            SPTAuth.defaultInstance().renewSession(authSession, callback: { (error, renewedSession) in
-                if error != nil {
-                    print("Error resfreshing session: \(error)")
-                    return
-                }
-                
-                let sessionData = NSKeyedArchiver.archivedData(withRootObject: renewedSession!) as NSData
-                userDefaults.set(sessionData, forKey: "SpotifySession")
-                userDefaults.synchronize()
-                self.spotifyPlayer?.login(withAccessToken: renewedSession!.accessToken!)
-            })
-        } else {
-            spotifyPlayer?.login(withAccessToken: authSession.accessToken!)
-        }
-        currentTrack = currentAlbum.tracks!.object(at: indexPath.row) as! Track
         alertView = JSSAlertView()
-        artistNameLabel.text = currentAlbum.artist.name
-        albumNameLabel.text = currentAlbum.name
-        songNameLabel.text = currentTrack.name
-        let image = UIImage(data: currentAlbum.albumImage as! Data)
+        artistNameLabel.text = currentTrack?.album!.artist.name
+        albumNameLabel.text = currentTrack?.album!.name
+        songNameLabel.text = currentTrack?.name
+        let image = UIImage(data: currentTrack?.album!.albumImage as! Data)
         albumCoverArt.image = image
-        print("\(authSession.isValid())")
+        playPauseButton.setImage(#imageLiteral(resourceName: "blankPlayPauseButton"), for: .normal)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if SpotifyPlayer.isPlaying {
+            playPauseButton.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
+        }
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        UIView.animate(withDuration: 0.1) {
+            self.mediaSlider.alpha = 0
+        }
+    }
+    
+    func setUpSpotify() {
+        if !SpotifyPlayer.isPlaying {
+            activityIndicator.startAnimating()
+            let userDefaults = UserDefaults()
+            let sessionData = userDefaults.object(forKey: "SpotifySession")
+            let authSession: SPTSession = NSKeyedUnarchiver.unarchiveObject(with: sessionData as! Data)! as! SPTSession
+            if !authSession.isValid(){
+                SPTAuth.defaultInstance().tokenRefreshURL = URL(string: "https://pacific-spire-64693.herokuapp.com/refresh")
+                SPTAuth.defaultInstance().renewSession(authSession, callback: { (error, renewedSession) in
+                    if error != nil {
+                        print("Error resfreshing session: \(error)")
+                        return
+                    }
+                    
+                    let sessionData = NSKeyedArchiver.archivedData(withRootObject: renewedSession!) as NSData
+                    userDefaults.set(sessionData, forKey: "SpotifySession")
+                    userDefaults.synchronize()
+                    SPTAudioStreamingController.sharedInstance().login(withAccessToken: renewedSession!.accessToken!)
+                })
+            } else {
+                SPTAudioStreamingController.sharedInstance().login(withAccessToken: authSession.accessToken!)
+            }
+        } else {
+            let duration = SPTAudioStreamingController.sharedInstance().metadata.currentTrack!.duration
+            let position = SPTAudioStreamingController.sharedInstance().playbackState.position
+            mediaSlider.value = Float(position/duration)
+            let timeLeft = position - duration
+            currentPosition.text = dateComponentsFormatter.string(from: position)
+            timeRemaining.text = dateComponentsFormatter.string(from: timeLeft)
+        }
+        SPTAudioStreamingController.sharedInstance().delegate = self
+        SPTAudioStreamingController.sharedInstance().playbackDelegate = self
+        playPauseButton.setImage(#imageLiteral(resourceName: "mediaPlayButton"), for: .normal)
     }
     
     func audioStreamingDidLogin(_ audioStreaming: SPTAudioStreamingController!) {
-        spotifyPlayer?.playSpotifyURI("\(currentTrack.uri)", startingWith: 0, startingWithPosition: 0) { (error) in
-            if error != nil {
-                print("Failed to play: \(error)")
-                return
+        if !SpotifyPlayer.isPlaying {
+            SPTAudioStreamingController.sharedInstance().playSpotifyURI("\(currentTrack!.uri)", startingWith: 0, startingWithPosition: 0) { (error) in
+                if error != nil {
+                    print("Failed to play: \(error)")
+                    return
+                }
+                self.activityIndicator.stopAnimating()
+                self.playPauseButton.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
+                SpotifyPlayer.isPlaying = true
+                SpotifyPlayer.trackURI = (self.currentTrack?.uri)!
+                self.delegate?.trackDidUpdate(track: self.currentTrack!)
             }
-            self.activityIndicator.stopAnimating()
-            self.playPauseButton.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
         }
     }
 
@@ -89,44 +131,56 @@ class AudioPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamin
     }
     
     @IBAction func playPauseButtonPressed(_ sender: UIButton) {
-        if (spotifyPlayer?.playbackState.isPlaying)! {
-            spotifyPlayer?.setIsPlaying(false, callback: { (error) in
+        if SPTAudioStreamingController.sharedInstance().playbackState.isPlaying {
+            SPTAudioStreamingController.sharedInstance().setIsPlaying(false, callback: { (error) in
                 if error != nil {
                     print("There was an error pausing: \(error)")
                     return
                 }
-                
+                SpotifyPlayer.isPaused = true
                 sender.setImage(#imageLiteral(resourceName: "mediaPlayButton"), for: .normal)
             })
         } else {
-            spotifyPlayer?.setIsPlaying(true, callback: { (error) in
+            SPTAudioStreamingController.sharedInstance().setIsPlaying(true, callback: { (error) in
                 if error != nil {
                     print("There was an error playing: \(error)")
                     return
                 }
-                
+                SpotifyPlayer.isPaused = false
                 sender.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
             })
         }
     }
     
     @IBAction func sliderMoved(_ sender: UISlider) {
-        player.seek(to: (CMTimeMake(Int64(sender.value), 1)))
+        // TODO: Implement scrubbing
     }
     
-    func setUpAudioSession() {
-        UIApplication.shared.beginReceivingRemoteControlEvents()
-        do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
-            self.becomeFirstResponder()
-            
-            do {
-                try AVAudioSession.sharedInstance().setActive(true)
-            } catch let error as NSError {
-                print(error.localizedDescription)
-            }
-        } catch let error as NSError {
-            print(error.localizedDescription)
+    func activateAudioSession() {
+        try? AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .duckOthers)
+        try? AVAudioSession.sharedInstance().setActive(true)
+    }
+    
+    func deactivateAudioSession() {
+        try? AVAudioSession.sharedInstance().setActive(false)
+    }
+}
+
+extension AudioPlayer: SPTAudioStreamingPlaybackDelegate {
+    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
+        let duration = SPTAudioStreamingController.sharedInstance().metadata.currentTrack!.duration
+        mediaSlider.value = Float(position/duration)
+
+        let timeLeft = position - duration
+        currentPosition.text = dateComponentsFormatter.string(from: position)
+        timeRemaining.text = dateComponentsFormatter.string(from: timeLeft)
+    }
+    
+    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePlaybackStatus isPlaying: Bool) {
+        if isPlaying {
+            activateAudioSession()
+        } else {
+            deactivateAudioSession()
         }
     }
 }

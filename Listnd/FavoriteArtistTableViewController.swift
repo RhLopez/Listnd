@@ -10,16 +10,32 @@ import UIKit
 import CoreData
 import JSSAlertView
 import SwipeCellKit
+import Hero
 
 class FavoriteArtistTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var nowPlayingButton: UIButton!
+    @IBOutlet weak var nowPlayingView: UIView!
+    @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var playPauseButton: UIButton!
+    @IBOutlet weak var mediaSlider: UISlider!
+    @IBOutlet weak var songTitleLabel: UILabel!
+    @IBOutlet weak var artistNameLabel: UILabel!
+
+    
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
     var selectedCell: IndexPath?
     var alertView: JSSAlertView!
+    var premiumUser: Bool?
+    public var heroNavigationAnimationType = HeroDefaultAnimationType.fade
+    
+    var nowPlayingTrack: Track?
+    var nowPlaying: NowPlaying!
+
     
     // MARK: - View life cycle 
     override func viewWillAppear(_ animated: Bool) {
@@ -27,13 +43,38 @@ class FavoriteArtistTableViewController: UIViewController {
         if let indexPath = selectedCell {
             tableView.reloadRows(at: [indexPath], with: .automatic)
         }
+        if SpotifyPlayer.isPlaying {
+            tableViewBottomConstraint.constant = 0.0
+//            if let view = Bundle.main.loadNibNamed("NowPlaying", owner: self, options: nil)?.first as? NowPlaying {
+//                nowPlayingView.addSubview(view)
+//                nowPlayingView.isHidden = false
+//            }
+        } else {
+            nowPlayingView.isHidden = true
+            tableViewBottomConstraint.constant = CGFloat(-76)
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if SpotifyPlayer.isPlaying {
+            print("Time: \(SPTAudioStreamingController.sharedInstance().playbackState.position)")
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         alertView = JSSAlertView()
-        navigationController?.isNavigationBarHidden = true
         fetchArtist()
+        let userDefaults = UserDefaults()
+        premiumUser = userDefaults.bool(forKey: "PremiumUser")
+        if premiumUser! {
+            try? SPTAudioStreamingController.sharedInstance().start(withClientId: "8faa83925ca64e5997e01122da55dcf0")
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -54,8 +95,30 @@ class FavoriteArtistTableViewController: UIViewController {
     @IBAction func settingButtonPressed(_ sender: Any) {
         let settingVC = storyboard?.instantiateViewController(withIdentifier: "settingViewController") as! SettingViewController
         settingVC.modalPresentationStyle = .fullScreen
-        settingVC.modalTransitionStyle = .flipHorizontal
+        settingVC.modalTransitionStyle = .coverVertical
         present(settingVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func playPauseButtonPressed(_ sender: UIButton) {
+        if SPTAudioStreamingController.sharedInstance().playbackState.isPlaying {
+            SPTAudioStreamingController.sharedInstance().setIsPlaying(false, callback: { (error) in
+                if error != nil {
+                    print("There was an error pausing: \(error)")
+                    return
+                }
+                sender.setImage(#imageLiteral(resourceName: "mediaPlayButton"), for: .normal)
+                SpotifyPlayer.isPaused = true
+            })
+        } else {
+            SPTAudioStreamingController.sharedInstance().setIsPlaying(true, callback: { (error) in
+                if error != nil {
+                    print("There was an error playing: \(error)")
+                    return
+                }
+                sender.setImage(#imageLiteral(resourceName: "mediaPauseButton"), for: .normal)
+                SpotifyPlayer.isPaused = false
+            })
+        }
     }
 }
 
@@ -121,6 +184,13 @@ extension FavoriteArtistTableViewController {
             completetionHandlerForAlbumImage(data as NSData)
         }
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? AudioPlayer, let sender = sender as? UIButton {
+            sender.heroID = "nowPlaying"
+            vc.view.heroModifiers = [.source(heroID: "nowPlaying")]
+        }
+    }
 }
 
 // MARK: - UITableViewDataSouce
@@ -142,8 +212,8 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
 extension FavoriteArtistTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! FavoriteAlbumTableView
-        albumVC.coreDataStack = coreDataStack
         albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
+        albumVC.coreDataStack = coreDataStack
         navigationController?.pushViewController(albumVC, animated: true)
         selectedCell = indexPath
         tableView.deselectRow(at: indexPath, animated: true)
@@ -193,4 +263,11 @@ extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate 
         func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
             tableView.endUpdates()
         }
+}
+
+extension FavoriteArtistTableViewController: SPTAudioStreamingPlaybackDelegate {
+    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
+        let duration = SPTAudioStreamingController.sharedInstance().metadata.currentTrack!.duration
+        mediaSlider.value = Float(position/duration)
+    }
 }

@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Hero.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>JSSAlertView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -42,12 +47,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>382AFCFF0DD51390AB488283DCAFC9A8</key>
+		<key>0E2C70E7719F0F58F605484165CE9810</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>48DA388ACFDC84E730AE86511689B384</key>
+		<key>130C2FE4C827483D35EFAF65322C5A01</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>143D559E5E3C6028A1CCCCED29A6D85E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -67,12 +77,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D368184BEED712B6A15E4767FE420BE5</key>
+		<key>D23014B0F09F8C53FD4F0E4582A831AD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EC985E1384311F0EB61698368F0C5C36</key>
+		<key>D368184BEED712B6A15E4767FE420BE5</key>
 		<dict>
 			<key>primary</key>
 			<true/>

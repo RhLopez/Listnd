@@ -24,9 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let secondTabController = secondNavController.topViewController as? SearchViewController else {
                 return true
         }
-        
+
         firstTabController.coreDataStack = coreDataStack
         secondTabController.coreDataStack = coreDataStack
+        
         return true
     }
     

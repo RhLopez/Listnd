@@ -19,6 +19,7 @@ class SearchViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
@@ -32,11 +33,22 @@ class SearchViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
         // Change searchBar Cancel button font color to white
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
         alertView = JSSAlertView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if SpotifyPlayer.isPlaying {
+            print("ISplaying")
+            tableViewBottomConstraint.constant = CGFloat(-76)
+        } else {
+            tableViewBottomConstraint.constant = 0.0
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

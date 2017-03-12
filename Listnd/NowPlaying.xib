@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner">
+            <connections>
+                <outlet property="view" destination="OzT-FE-1r3" id="ZeY-L8-eWn"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="OzT-FE-1r3" customClass="NowPlaying" customModule="Listnd" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="76"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="albumArt" translatesAutoresizingMaskIntoConstraints="NO" id="VEt-6k-8dy">
+                    <rect key="frame" x="0.0" y="0.0" width="76" height="76"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="76" id="AuY-a3-gvp"/>
+                        <constraint firstAttribute="width" secondItem="VEt-6k-8dy" secondAttribute="height" multiplier="1:1" id="QC1-fx-toQ"/>
+                        <constraint firstAttribute="width" constant="76" id="syG-NQ-SAc"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="heroID" value="albumArt"/>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wnf-zn-npJ">
+                    <rect key="frame" x="84" y="7" width="233" height="28"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="heroID" value="songNameLabel"/>
+                    </userDefinedRuntimeAttributes>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BjU-IQ-mqC">
+                    <rect key="frame" x="83" y="37" width="39.666666666666671" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="heroID" value="artistNameLabel"/>
+                    </userDefinedRuntimeAttributes>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IRd-tl-OQB">
+                    <rect key="frame" x="322" y="13" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="SBH-oN-cza"/>
+                    </constraints>
+                    <state key="normal" image="mediaPlayButton"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="heroID" value="playPauseButton"/>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="playPauseButtonPressed:" destination="OzT-FE-1r3" eventType="touchUpInside" id="7If-ZI-q4C"/>
+                    </connections>
+                </button>
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="4Gs-X1-V0m">
+                    <rect key="frame" x="81" y="51" width="238" height="31"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="234" id="8QE-2d-0T5"/>
+                        <constraint firstAttribute="height" constant="30" id="rWg-hh-KO3"/>
+                    </constraints>
+                    <color key="minimumTrackTintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="thumbTintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </slider>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QuM-Kn-R9k">
+                    <rect key="frame" x="0.0" y="0.0" width="317" height="76"/>
+                    <connections>
+                        <action selector="nowPlayingButtonPressed:" destination="OzT-FE-1r3" eventType="touchUpInside" id="tbJ-uI-p33"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="BjU-IQ-mqC" secondAttribute="bottom" constant="18" id="2Sj-5L-wnE"/>
+                <constraint firstItem="VEt-6k-8dy" firstAttribute="leading" secondItem="OzT-FE-1r3" secondAttribute="leading" id="5JN-Zc-JK8"/>
+                <constraint firstItem="4Gs-X1-V0m" firstAttribute="top" secondItem="Wnf-zn-npJ" secondAttribute="bottom" constant="16" id="6jF-aB-duK"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="leading" secondItem="BjU-IQ-mqC" secondAttribute="trailing" constant="199.33333333333331" id="7AB-rj-b4c"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="leading" secondItem="4Gs-X1-V0m" secondAttribute="trailing" constant="5" id="88g-tP-CeF"/>
+                <constraint firstAttribute="bottom" secondItem="4Gs-X1-V0m" secondAttribute="bottom" constant="-5" id="GFS-pC-1BR"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="leading" secondItem="Wnf-zn-npJ" secondAttribute="trailing" constant="5" id="H60-iO-hgd"/>
+                <constraint firstAttribute="bottom" secondItem="IRd-tl-OQB" secondAttribute="bottom" constant="13" id="IQ8-SQ-Mfx"/>
+                <constraint firstItem="QuM-Kn-R9k" firstAttribute="leading" secondItem="OzT-FE-1r3" secondAttribute="leading" id="NVf-cB-rUi"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="trailing" secondItem="OzT-FE-1r3" secondAttribute="trailing" constant="-3" id="NqA-Gg-LTv"/>
+                <constraint firstItem="Wnf-zn-npJ" firstAttribute="leading" secondItem="VEt-6k-8dy" secondAttribute="trailing" constant="8" id="P3w-kA-sxg"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="trailing" secondItem="OzT-FE-1r3" secondAttribute="trailing" constant="-3" id="QRh-VF-bmu"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="top" secondItem="OzT-FE-1r3" secondAttribute="top" constant="13" id="XhR-W9-cne"/>
+                <constraint firstItem="4Gs-X1-V0m" firstAttribute="top" secondItem="Wnf-zn-npJ" secondAttribute="bottom" constant="16" id="biS-1o-JOc"/>
+                <constraint firstItem="BjU-IQ-mqC" firstAttribute="leading" secondItem="VEt-6k-8dy" secondAttribute="trailing" constant="7" id="dZd-j5-49L"/>
+                <constraint firstItem="4Gs-X1-V0m" firstAttribute="leading" secondItem="VEt-6k-8dy" secondAttribute="trailing" constant="7" id="i19-ek-LMT"/>
+                <constraint firstAttribute="bottom" secondItem="QuM-Kn-R9k" secondAttribute="bottom" id="ivD-y9-Qqf"/>
+                <constraint firstItem="BjU-IQ-mqC" firstAttribute="top" secondItem="OzT-FE-1r3" secondAttribute="top" constant="37" id="lAj-Jz-akE"/>
+                <constraint firstAttribute="bottom" secondItem="VEt-6k-8dy" secondAttribute="bottom" id="lOq-im-oXA"/>
+                <constraint firstItem="Wnf-zn-npJ" firstAttribute="top" secondItem="OzT-FE-1r3" secondAttribute="top" constant="7" id="m5z-d6-vSO"/>
+                <constraint firstItem="IRd-tl-OQB" firstAttribute="leading" secondItem="QuM-Kn-R9k" secondAttribute="trailing" constant="5" id="tJ5-tb-AB9"/>
+                <constraint firstItem="VEt-6k-8dy" firstAttribute="top" secondItem="OzT-FE-1r3" secondAttribute="top" id="tjg-Ej-EHO"/>
+                <constraint firstItem="QuM-Kn-R9k" firstAttribute="top" secondItem="OzT-FE-1r3" secondAttribute="top" id="zYp-gh-OKM"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="artistNameLabel" destination="BjU-IQ-mqC" id="Vcm-Az-PSp"/>
+                <outlet property="imageView" destination="VEt-6k-8dy" id="w7J-Ln-bOz"/>
+                <outlet property="playPauseButton" destination="IRd-tl-OQB" id="Xz9-hY-0ch"/>
+                <outlet property="scrubber" destination="4Gs-X1-V0m" id="RsA-4r-kUs"/>
+                <outlet property="songNameLabel" destination="Wnf-zn-npJ" id="JLA-3g-H5a"/>
+            </connections>
+            <point key="canvasLocation" x="55.5" y="-254"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="albumArt" width="1024" height="1024"/>
+        <image name="mediaPlayButton" width="145" height="145"/>
+    </resources>
+</document>

@@ -14,8 +14,10 @@ class FavoriteArtistTableViewCell: SwipeTableViewCell {
     @IBOutlet weak var artistImageView: UIImageView!
     @IBOutlet weak var artistNameLabel: UILabel!
     @IBOutlet weak var albumCountLabel: UILabel!
+    @IBOutlet weak var imageTemplate: UIImageView!
     
-    var cell = FavoriteAlbumTableViewCell.self {
+    
+    var cell = FavoriteArtistTableViewCell.self {
         didSet {
             layoutIfNeeded()
         }
@@ -23,8 +25,8 @@ class FavoriteArtistTableViewCell: SwipeTableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        artistImageView.layer.cornerRadius = 6.5
-        artistImageView.clipsToBounds = true
+        artistImageView.layer.cornerRadius = 4.0
+        artistImageView.layer.masksToBounds = true
     }
     
 }

@@ -11,10 +11,13 @@ import CoreData
 import JSSAlertView
 import SwipeCellKit
 
+private let kTableHeaderHeight: CGFloat = 175.0
+
 class FavoriteAlbumTableView: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var artistImage: UIImageView!
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!

@@ -19,6 +19,8 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var nowPlayingView: UIView!
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
@@ -26,11 +28,19 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     weak var albumListenedDelegate: AlbumListenedDelegate?
     var alertView: JSSAlertView!
     var premiumUser: Bool?
+    var currentTrack: Track?
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        print(SpotifyPlayer.isPlaying)
+        if SpotifyPlayer.isPlaying {
+            
+        } else {
+            nowPlayingView.isHidden = true
+            tableViewBottomConstraint.constant = CGFloat(-76)
+        }
     }
     
     override func viewDidLoad() {
@@ -46,6 +56,10 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
         } else {
             alertView.danger(self, title: "Unable to load album detail", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -188,10 +202,11 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let _ = premiumUser {
             let audioVC = storyboard?.instantiateViewController(withIdentifier: "AudioPlayer") as! AudioPlayer
-            audioVC.currentAlbum = currentAlbum
+            audioVC.currentTrack = currentAlbum.tracks!.object(at: indexPath.row) as? Track
             audioVC.modalPresentationCapturesStatusBarAppearance = true
             audioVC.indexPath = indexPath
-            navigationController?.pushViewController(audioVC, animated: true)
+//            audioVC.delegate = self
+            present(audioVC, animated: true, completion: nil)
             tableView.deselectRow(at: indexPath, animated: true)
         } else {
             listenedAction(indexPath: indexPath)
@@ -259,3 +274,16 @@ extension FavoriteAlbumDetailTableViewController: NSFetchedResultsControllerDele
         tableView.endUpdates()
     }
 }
+
+//extension FavoriteAlbumDetailTableViewController: AudioPlayerControllerDelegate {
+//    func trackDidUpdate(track: Track) {
+//        tableViewBottomConstraint.constant = CGFloat(-76)
+//        if let nowPlaying = Bundle.main.loadNibNamed("NowPlaying", owner: self, options: nil)?.first as? NowPlaying {
+////            nowPlaying.frame = nowPlayingView.bounds
+//            nowPlaying.track = track
+//            print(track.name)
+////            nowPlayingView.addSubview(nowPlaying.view)
+//            nowPlayingView.isHidden = false
+//        }
+//    }
+//}

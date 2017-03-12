@@ -15,26 +15,28 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="L2x-nf-dKc">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
+                    <color key="backgroundColor" red="0.34275600309999998" green="0.63499593730000004" blue="0.83895778659999998" alpha="1" colorSpace="calibratedRGB"/>
+                </imageView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
-                    <rect key="frame" x="64" y="170" width="246" height="26"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ibP-yv-wpX">
+                    <rect key="frame" x="64" y="166" width="246" height="29"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="26" id="hAn-RE-OrZ"/>
+                        <constraint firstAttribute="height" constant="29" id="hK1-lL-5hG"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U6I-GU-L5A">
-                    <rect key="frame" x="11" y="32" width="17" height="22"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="22" id="ItB-Rg-VKB"/>
-                        <constraint firstAttribute="width" constant="17" id="pLC-G5-gRS"/>
-                    </constraints>
-                    <state key="normal" image="backArrow"/>
-                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
+                    <rect key="frame" x="64" y="132" width="246" height="33.5"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5H-6q-HO4" customClass="CustomButton" customModule="Listnd" customModuleProvider="target">
                     <rect key="frame" x="312" y="26" width="53" height="35"/>
                     <color key="backgroundColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -47,29 +49,35 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g4T-3e-XNG">
-                    <rect key="frame" x="95" y="26" width="185" height="135"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U6I-GU-L5A">
+                    <rect key="frame" x="11" y="32" width="17" height="22"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="185" id="ikY-lA-xd8"/>
-                        <constraint firstAttribute="height" constant="135" id="rAT-g6-z2E"/>
+                        <constraint firstAttribute="height" constant="22" id="ItB-Rg-VKB"/>
+                        <constraint firstAttribute="width" constant="17" id="pLC-G5-gRS"/>
                     </constraints>
-                </imageView>
+                    <state key="normal" image="backArrow"/>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="Y5H-6q-HO4" secondAttribute="bottom" constant="-61" id="2wx-TB-6PF"/>
                 <constraint firstAttribute="trailing" secondItem="EfM-OS-SPM" secondAttribute="trailing" constant="65" id="5m8-23-Te7"/>
+                <constraint firstAttribute="trailing" secondItem="L2x-nf-dKc" secondAttribute="trailing" id="9lD-FZ-oyT"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="D0R-LW-Hzm"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="U6I-GU-L5A" secondAttribute="bottom" constant="-54" id="FNB-I0-BwR"/>
+                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-68" id="Kwp-zs-Mgu"/>
                 <constraint firstItem="U6I-GU-L5A" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="11" id="QiD-3R-Cmd"/>
                 <constraint firstAttribute="trailing" secondItem="fZw-Kc-yOJ" secondAttribute="trailing" id="RRg-N3-9xn"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-30" id="Uns-TV-hcg"/>
+                <constraint firstItem="L2x-nf-dKc" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="TdO-q3-qcE"/>
+                <constraint firstAttribute="trailing" secondItem="ibP-yv-wpX" secondAttribute="trailing" constant="65" id="V6I-ck-9m0"/>
+                <constraint firstAttribute="bottom" secondItem="ibP-yv-wpX" secondAttribute="bottom" constant="5" id="WbM-h1-JdZ"/>
                 <constraint firstAttribute="bottom" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" id="XVu-2K-WAH"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="Z8B-PC-UI1"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="Zqo-3x-toR"/>
+                <constraint firstItem="L2x-nf-dKc" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="bjG-WI-jyr"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hMk-DA-TVU"/>
-                <constraint firstItem="g4T-3e-XNG" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="jh6-ig-eCi"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="g4T-3e-XNG" secondAttribute="bottom" constant="9" id="pDR-8l-ZgJ"/>
+                <constraint firstAttribute="bottom" secondItem="L2x-nf-dKc" secondAttribute="bottom" id="jIA-B0-EMb"/>
+                <constraint firstItem="ibP-yv-wpX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="jXu-56-0rg"/>
                 <constraint firstAttribute="trailing" secondItem="Y5H-6q-HO4" secondAttribute="trailing" constant="10" id="uW0-m8-EtC"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -84,14 +92,15 @@
             <connections>
                 <outlet property="addButton" destination="Y5H-6q-HO4" id="fN3-qg-adJ"/>
                 <outlet property="backButton" destination="U6I-GU-L5A" id="KKB-Ol-Svn"/>
+                <outlet property="backgroundColorView" destination="L2x-nf-dKc" id="lJQ-cj-aac"/>
                 <outlet property="backgroundImage" destination="fZw-Kc-yOJ" id="Ggo-2X-7gL"/>
-                <outlet property="imageView" destination="g4T-3e-XNG" id="BFC-cK-Rx1"/>
                 <outlet property="nameLabel" destination="EfM-OS-SPM" id="7hE-XC-8a4"/>
+                <outlet property="navigationLabel" destination="ibP-yv-wpX" id="GCt-BN-u6s"/>
             </connections>
             <point key="canvasLocation" x="29.5" y="-152"/>
         </view>
     </objects>
     <resources>
-        <image name="backArrow" width="75" height="138"/>
+        <image name="backArrow" width="15" height="25"/>
     </resources>
 </document>

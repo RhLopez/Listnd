@@ -39,7 +39,7 @@ class FavoriteAlbumTableView: UIViewController {
         alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
             self.headerView = headerView
-            headerView.configureView(name: artist.name, imageData: artist.artistImage as? Data, hideButton: true)
+            headerView.configureView(name: artist.name, imageData: artist.artistImage as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             getAlbums()

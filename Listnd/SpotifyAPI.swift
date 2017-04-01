@@ -31,7 +31,7 @@ class SpotifyAPI {
                 return
             }
             
-            if let error = error as? NSError, error.code == -999 {
+            if let error = error as NSError?, error.code == -999 {
                 return
             }
             

@@ -44,7 +44,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
-            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as? Data, hideButton: false)
+            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: false)
             if currentAlbum.albumImage == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
             }

@@ -11,6 +11,8 @@ import CoreData
 
 class CoreDataStack {
     
+    static let sharedInstance = CoreDataStack(modelName: "Model")
+    
     private let modelName: String
     
     init(modelName: String) {

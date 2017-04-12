@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import JSSAlertView
-import SwipeCellKit
 
 class FavoriteArtistTableViewController: UIViewController {
     
@@ -60,8 +59,6 @@ extension FavoriteArtistTableViewController {
     
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? FavoriteArtistTableViewCell else { return }
-        
-        cell.delegate = self
         
         let artist = fetchedResultsController.object(at: indexPath)
 
@@ -126,27 +123,21 @@ extension FavoriteArtistTableViewController: UITableViewDelegate {
         selectedCell = indexPath
         tableView.deselectRow(at: indexPath, animated: true)
     }
-}
-
-// MARK: - SwipeTableViewCellDelegate
-extension FavoriteArtistTableViewController: SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
-        guard orientation == .right else { return [] }
-        
-        let delete = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let delete = UITableViewRowAction(style: .default, title: "Delete") { (action, indexPath) in
             let artistToDelete = self.fetchedResultsController.object(at: indexPath)
             self.coreDataStack.managedContext.delete(artistToDelete)
             self.coreDataStack.saveContext()
         }
         
-        return [delete]
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
-        var options = SwipeTableOptions()
-        options.transitionStyle = .drag
+        delete.backgroundColor = .red
         
-        return options
+        return [delete]
     }
 }
 

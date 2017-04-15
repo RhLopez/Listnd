@@ -20,6 +20,7 @@
 		DD293FF81E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */; };
 		DD324F031DF3367A006AC03F /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD324F021DF3367A006AC03F /* HeaderView.xib */; };
 		DD33B8571DE0041000A9D66F /* ArtistDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */; };
+		DD3F434C1EA1FC46002F0BB1 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3F434B1EA1FC46002F0BB1 /* CustomTabBar.swift */; };
 		DD4A6AD21DFE1C8800465F76 /* CustomMessage.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD4A6AD11DFE1C8800465F76 /* CustomMessage.xib */; };
 		DD512F001DDED89E00BF76EB /* ArtistDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD512EFF1DDED89E00BF76EB /* ArtistDetailTableViewCell.swift */; };
 		DD5DEF611DAAFC0700BDF98C /* AlbumDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5DEF601DAAFC0700BDF98C /* AlbumDetailViewController.swift */; };
@@ -87,6 +88,7 @@
 		DD293FF71E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteArtistTableViewCell.swift; sourceTree = "<group>"; };
 		DD324F021DF3367A006AC03F /* HeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
 		DD33B8561DE0041000A9D66F /* ArtistDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistDetailViewController.swift; sourceTree = "<group>"; };
+		DD3F434B1EA1FC46002F0BB1 /* CustomTabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		DD4A6AD11DFE1C8800465F76 /* CustomMessage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomMessage.xib; sourceTree = "<group>"; };
 		DD512EFF1DDED89E00BF76EB /* ArtistDetailTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistDetailTableViewCell.swift; sourceTree = "<group>"; };
 		DD5DEF601DAAFC0700BDF98C /* AlbumDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumDetailViewController.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				DD0A17CD1E051B8C00578E4E /* Reachability.swift */,
 				DDAE2FD51DC5CD8400630430 /* ListndPlayerItem.swift */,
 				DDEB0BA11E58107C00E70B4A /* CustomButton.swift */,
+				DD3F434B1EA1FC46002F0BB1 /* CustomTabBar.swift */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -615,6 +618,7 @@
 				DDB14F9F1DA858E900DE9A4A /* Artist+CoreDataClass.swift in Sources */,
 				DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */,
 				DD293FF81E0DA17000F6EB76 /* FavoriteArtistTableViewCell.swift in Sources */,
+				DD3F434C1EA1FC46002F0BB1 /* CustomTabBar.swift in Sources */,
 				DD8F03EE1DA23267000837DE /* AppDelegate.swift in Sources */,
 				DDEB0BA81E58354000E70B4A /* TableSectionHeader.swift in Sources */,
 				DDB14F9C1DA856D900DE9A4A /* Model.xcdatamodeld in Sources */,

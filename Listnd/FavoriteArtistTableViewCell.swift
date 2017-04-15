@@ -12,6 +12,7 @@ class FavoriteArtistTableViewCell: UITableViewCell {
     
     @IBOutlet weak var artistImageView: UIImageView!
     @IBOutlet weak var artistNameLabel: UILabel!
+    @IBOutlet weak var albumCountLabel: UILabel!
     
     var cell = FavoriteAlbumTableViewCell.self {
         didSet {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,15 +15,16 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
-                    <rect key="frame" x="64" y="170" width="246" height="26"/>
+                    <rect key="frame" x="64" y="110" width="246" height="33"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.72749779929577463" colorSpace="calibratedWhite"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="26" id="hAn-RE-OrZ"/>
+                        <constraint firstAttribute="height" constant="33" id="hAn-RE-OrZ"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="26"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -47,13 +48,6 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g4T-3e-XNG">
-                    <rect key="frame" x="95" y="26" width="185" height="135"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="185" id="ikY-lA-xd8"/>
-                        <constraint firstAttribute="height" constant="135" id="rAT-g6-z2E"/>
-                    </constraints>
-                </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -63,13 +57,11 @@
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="U6I-GU-L5A" secondAttribute="bottom" constant="-54" id="FNB-I0-BwR"/>
                 <constraint firstItem="U6I-GU-L5A" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="11" id="QiD-3R-Cmd"/>
                 <constraint firstAttribute="trailing" secondItem="fZw-Kc-yOJ" secondAttribute="trailing" id="RRg-N3-9xn"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-30" id="Uns-TV-hcg"/>
+                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-90" id="Uns-TV-hcg"/>
                 <constraint firstAttribute="bottom" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" id="XVu-2K-WAH"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="Z8B-PC-UI1"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="Zqo-3x-toR"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hMk-DA-TVU"/>
-                <constraint firstItem="g4T-3e-XNG" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="jh6-ig-eCi"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="g4T-3e-XNG" secondAttribute="bottom" constant="9" id="pDR-8l-ZgJ"/>
                 <constraint firstAttribute="trailing" secondItem="Y5H-6q-HO4" secondAttribute="trailing" constant="10" id="uW0-m8-EtC"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -85,7 +77,6 @@
                 <outlet property="addButton" destination="Y5H-6q-HO4" id="fN3-qg-adJ"/>
                 <outlet property="backButton" destination="U6I-GU-L5A" id="KKB-Ol-Svn"/>
                 <outlet property="backgroundImage" destination="fZw-Kc-yOJ" id="Ggo-2X-7gL"/>
-                <outlet property="imageView" destination="g4T-3e-XNG" id="BFC-cK-Rx1"/>
                 <outlet property="nameLabel" destination="EfM-OS-SPM" id="7hE-XC-8a4"/>
             </connections>
             <point key="canvasLocation" x="29.5" y="-152"/>

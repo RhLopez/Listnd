@@ -15,14 +15,18 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AAI-nx-fqO">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
+                    <color key="backgroundColor" red="0.2784313725" green="0.63529411759999999" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
-                    <rect key="frame" x="64" y="110" width="246" height="33"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.72749779929577463" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="64" y="119" width="246" height="40"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.76672535211267601" colorSpace="calibratedWhite"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="33" id="hAn-RE-OrZ"/>
+                        <constraint firstAttribute="height" constant="40" id="hAn-RE-OrZ"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="26"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -48,6 +52,15 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eg4-OI-gtq">
+                    <rect key="frame" x="64" y="167" width="246" height="29"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="29" id="vKy-fO-1ur"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -57,12 +70,19 @@
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="U6I-GU-L5A" secondAttribute="bottom" constant="-54" id="FNB-I0-BwR"/>
                 <constraint firstItem="U6I-GU-L5A" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="11" id="QiD-3R-Cmd"/>
                 <constraint firstAttribute="trailing" secondItem="fZw-Kc-yOJ" secondAttribute="trailing" id="RRg-N3-9xn"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-90" id="Uns-TV-hcg"/>
+                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-81" id="Uns-TV-hcg"/>
                 <constraint firstAttribute="bottom" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" id="XVu-2K-WAH"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="Z8B-PC-UI1"/>
                 <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="Zqo-3x-toR"/>
+                <constraint firstAttribute="bottom" secondItem="eg4-OI-gtq" secondAttribute="bottom" constant="4" id="dga-1Z-9Ab"/>
+                <constraint firstItem="AAI-nx-fqO" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="frD-bn-44Q"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hMk-DA-TVU"/>
+                <constraint firstItem="AAI-nx-fqO" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="lOV-DN-r7E"/>
+                <constraint firstItem="eg4-OI-gtq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="li5-jG-Llc"/>
+                <constraint firstAttribute="trailing" secondItem="eg4-OI-gtq" secondAttribute="trailing" constant="65" id="mOp-e5-N3j"/>
+                <constraint firstAttribute="bottom" secondItem="AAI-nx-fqO" secondAttribute="bottom" id="pcQ-rL-2Sb"/>
                 <constraint firstAttribute="trailing" secondItem="Y5H-6q-HO4" secondAttribute="trailing" constant="10" id="uW0-m8-EtC"/>
+                <constraint firstAttribute="trailing" secondItem="AAI-nx-fqO" secondAttribute="trailing" id="vfX-kn-ty6"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <userDefinedRuntimeAttributes>
@@ -78,11 +98,12 @@
                 <outlet property="backButton" destination="U6I-GU-L5A" id="KKB-Ol-Svn"/>
                 <outlet property="backgroundImage" destination="fZw-Kc-yOJ" id="Ggo-2X-7gL"/>
                 <outlet property="nameLabel" destination="EfM-OS-SPM" id="7hE-XC-8a4"/>
+                <outlet property="navigationLabel" destination="eg4-OI-gtq" id="9dA-to-HJL"/>
             </connections>
             <point key="canvasLocation" x="29.5" y="-152"/>
         </view>
     </objects>
     <resources>
-        <image name="backArrow" width="75" height="138"/>
+        <image name="backArrow" width="15" height="25"/>
     </resources>
 </document>

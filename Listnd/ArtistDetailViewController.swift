@@ -48,7 +48,6 @@ class ArtistDetailViewController: UIViewController {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as Data?, hideButton: true)
-            headerView.backgroundImage.image = UIImage(named: "headerPlaceHolder")
             if currentArtist.artistImage == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
             }

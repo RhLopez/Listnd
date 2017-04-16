@@ -16,6 +16,7 @@ class HeaderView: GSKStretchyHeaderView {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var navigationLabel: UILabel!
     
     var imageTemplate: UIImageView!
     var gradientView: UIView!
@@ -32,16 +33,16 @@ class HeaderView: GSKStretchyHeaderView {
         }
         
         let navTitleFactor: CGFloat = 0.4
-        //var navTitleAlpha: CGFloat = 0
+        var navTitleAlpha: CGFloat = 0
         if stretchFactor < navTitleFactor {
-            //navTitleAlpha = CGFloatTranslateRange(stretchFactor, 0, navTitleFactor, 1, 0)
+            navTitleAlpha = CGFloatTranslateRange(stretchFactor, 0, navTitleFactor, 1, 0)
         }
         
         alpha = max(0, alpha)
         backgroundImage.alpha = alpha
         nameLabel.alpha = alpha
         gradientView.alpha = gradientAlpha
-        //navigationLabel.alpha = navTitleAlpha
+        navigationLabel.alpha = navTitleAlpha
     }
     
     func configureView(name: String, imageData: Data?, hideButton: Bool) {
@@ -55,6 +56,7 @@ class HeaderView: GSKStretchyHeaderView {
         nameLabel.layer.cornerRadius = 4.0
         nameLabel.layer.masksToBounds = true
         nameLabel.text = name
+        navigationLabel.text = name
         if let data = imageData {
             backgroundImage.image = UIImage(data: data)
         } else {

@@ -7,9 +7,8 @@
 //
 
 import UIKit
-import SwipeCellKit
 
-class FavoriteAlbumDetailTableViewcCell: SwipeTableViewCell {
+class FavoriteAlbumDetailTableViewcCell: UITableViewCell {
     
     @IBOutlet weak var trackNumber: UILabel!
     @IBOutlet weak var trackNameLabel: UILabel!

@@ -20,7 +20,7 @@ class ArtistDetailViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
-    
+//    
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
     var currentArtist: Artist!

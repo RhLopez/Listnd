@@ -506,7 +506,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLb-VI-By1">
-                                                    <rect key="frame" x="50" y="13" width="297" height="27"/>
+                                                    <rect key="frame" x="50" y="13" width="264" height="27"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -527,8 +527,8 @@
                                                 <constraint firstAttribute="bottomMargin" secondItem="rLb-VI-By1" secondAttribute="bottom" constant="1.5" id="Keb-vQ-qL3"/>
                                                 <constraint firstItem="rLb-VI-By1" firstAttribute="top" secondItem="FMd-BD-Z9W" secondAttribute="topMargin" constant="5" id="aZR-E6-m9G"/>
                                                 <constraint firstItem="rLb-VI-By1" firstAttribute="leading" secondItem="UzK-l9-hki" secondAttribute="trailing" constant="6" id="fC5-zf-v18"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="rLb-VI-By1" secondAttribute="trailing" constant="53" id="jVc-dZ-rYD"/>
                                                 <constraint firstItem="UzK-l9-hki" firstAttribute="baseline" secondItem="rLb-VI-By1" secondAttribute="baseline" constant="-2.5" id="x80-NZ-fc8"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="rLb-VI-By1" secondAttribute="trailing" constant="20" id="zrt-pK-YPJ"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>

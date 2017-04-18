@@ -74,7 +74,7 @@ extension FavoriteAlbumTableView {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? FavoriteAlbumTableViewCell else { return }
         
-        cell.delegate = self
+        //cell.delegate = self
         
         let album = fetchedResultsController.object(at: indexPath)
         cell.albumNameLabel.text = album.name
@@ -185,18 +185,13 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
         selectedCell = indexPath   
         tableView.deselectRow(at: indexPath, animated: true)
     }
-}
-
-// MARK - SwipeTableViewCellDelegate
-extension FavoriteAlbumTableView: SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
-        guard orientation == .right else { return [] }
-        
-        let spotify = SwipeAction(style: .destructive, title: "Spotify") { (action, indexPath) in
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let spotify = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
             self.openSpotify(indexPath: indexPath)
         }
         
-        let delete = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
             self.deleteAlbum(indexPath: indexPath)
         }
         
@@ -204,15 +199,34 @@ extension FavoriteAlbumTableView: SwipeTableViewCellDelegate {
         
         return [delete, spotify]
     }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
-        var options = SwipeTableOptions()
-        options.expansionStyle = .selection
-        options.transitionStyle = .border
-        
-        return options
-    }
 }
+
+//// MARK - SwipeTableViewCellDelegate
+//extension FavoriteAlbumTableView: SwipeTableViewCellDelegate {
+//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
+//        guard orientation == .right else { return [] }
+//        
+//        let spotify = SwipeAction(style: .destructive, title: "Spotify") { (action, indexPath) in
+//            self.openSpotify(indexPath: indexPath)
+//        }
+//        
+//        let delete = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
+//            self.deleteAlbum(indexPath: indexPath)
+//        }
+//        
+//        spotify.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
+//        
+//        return [delete, spotify]
+//    }
+//    
+//    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+//        var options = SwipeTableOptions()
+//        options.expansionStyle = .selection
+//        options.transitionStyle = .border
+//        
+//        return options
+//    }
+//}
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {

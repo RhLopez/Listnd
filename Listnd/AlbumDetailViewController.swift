@@ -12,7 +12,6 @@ import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
 import JSSAlertView
-import SwipeCellKit
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
@@ -118,7 +117,6 @@ extension AlbumDetailViewController {
     func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
         guard let cell = cell as? AlbumDetailTableViewCell else { return }
         
-        cell.delegate = self
         let track = tracks[indexPath.row]
         cell.trackNameLabel.text = track.name
         cell.trackDurationLabel.text = timeConversion(duration: Int(track.duration))
@@ -382,19 +380,13 @@ extension AlbumDetailViewController: UITableViewDelegate {
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
-}
-
-
-// MARK: - SwipeTableViewCellDelegate
-extension AlbumDetailViewController: SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
-        guard orientation == .right else { return [] }
-        
-        let save = SwipeAction(style: .default, title: "Save") { (action, indexPath) in
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let save = UITableViewRowAction(style: .default, title: "Save") { (action, indexPath) in
             self.saveSong(indexPath: indexPath)
         }
         
-        save.backgroundColor = UIColor.blue
+        save.backgroundColor = .blue
         
         return [save]
     }

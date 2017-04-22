@@ -14,10 +14,33 @@ extension SpotifyAPI {
         task?.cancel()
     }
     
+    func search(_ userInput: String, completionHanderForSearch: @escaping (_ sucess: Bool, _ results: [AnyObject]?, _ errorMessage: String) -> Void) {
+        let parameters = [
+            Constants.ParametersKeys.Query: userInput,
+            Constants.ParametersKeys.SearchType: Constants.ParameterValues.All,
+            Constants.ParametersKeys.Market: Constants.ParameterValues.US,
+            Constants.ParametersKeys.Limit: Constants.ParameterValues.LimitAmount
+        ]
+        
+        taskForGetMethod(parameters as [String: AnyObject], path: Constants.ParametersKeys.Search) { (success, errorMessage, data) in
+            if success {
+               self.parseSearchResult(data as AnyObject, completionHandlerForSearchResult: { (success, result, errorMessage) in
+                if success {
+                    completionHanderForSearch(true, result, "")
+                } else {
+                    completionHanderForSearch(false, nil, errorMessage)
+                }
+               })
+            } else {
+                completionHanderForSearch(false, nil, "")
+            }
+        }
+    }
+    
     func searchArtist(_ userInput: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
         let parameters = [
             Constants.ParametersKeys.Query: userInput,
-            Constants.ParametersKeys.SearchType: Constants.ParameterValues.Artist,
+            Constants.ParametersKeys.SearchType: Constants.ParameterValues.All,
             Constants.ParametersKeys.Market: Constants.ParameterValues.US,
             Constants.ParametersKeys.Limit: Constants.ParameterValues.LimitAmount
         ]
@@ -84,13 +107,11 @@ extension SpotifyAPI {
         }
     }
     
-    func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
-
-        var imageURL: String?
-        var artists = [Artist]()
+    func parseSearchResult(_ data: AnyObject?, completionHandlerForSearchResult: @escaping (_ success: Bool, _ results: [AnyObject]?, _ errorMessage: String) -> Void) {
+        var results = [AnyObject]()
         
         func parsingFailed() {
-            completionHandlerForParseArtistSearch(false, nil, "Unable to process data from Spotify. Please try again.")
+            completionHandlerForSearchResult(false, nil, "Unable to process search data from Spotify. Please try again.")
             return
         }
         
@@ -99,30 +120,74 @@ extension SpotifyAPI {
             return
         }
         
-        guard let artistDictionary = data["artists"] as? [String:AnyObject] else {
+        let albumResult = data["albums"]
+        let artistResult = data["artists"]
+        let trackResult = data["tracks"]
+        
+        self.parseAlbums(albumResult as AnyObject) { (success, result, errorMessage) in
+            if success {
+                results.append(result! as AnyObject)
+            } else {
+                completionHandlerForSearchResult(false, nil, errorMessage)
+            }
+        }
+        
+        self.parseArtistSearch(artistResult as AnyObject) { (success, result, errorMessage) in
+            if success {
+                results.append(result! as AnyObject)
+            } else {
+                completionHandlerForSearchResult(false, nil, errorMessage)
+            }
+        }
+        
+        self.parseTracks(trackResult as AnyObject) { (success, result, errorMessage) in
+            if success {
+                results.append(result! as AnyObject)
+            } else {
+                completionHandlerForSearchResult(false, nil, errorMessage)
+            }
+        }
+        
+        completionHandlerForSearchResult(true, results, "")
+    }
+    
+    func parseArtistSearch(_ data: AnyObject?, completionHandlerForParseArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
+
+        var imageURL: String?
+        var artists = [Artist]()
+        
+        func parsingFailed() {
+            completionHandlerForParseArtistSearch(false, nil, "Unable to process artist data from Spotify. Please try again.")
+            return
+        }
+        
+        guard let data = data else {
             parsingFailed()
             return
         }
         
-        guard let items = artistDictionary["items"] as? [[String:AnyObject]] else {
+//        guard let artistDictionary = data["artists"] as? [String:AnyObject] else {
+//            parsingFailed()
+//            return
+//        }
+        
+        guard let items = data["items"] as? [[String:AnyObject]] else {
             parsingFailed()
             return
         }
         
         for item in items {
             guard let artistName = item["name"] as? String else {
-                parsingFailed()
-                return
+                continue
+
             }
             
             guard let artistId = item["id"] as? String else {
-                parsingFailed()
-                return
+                continue
             }
             
             guard let images = item["images"] as? [[String:AnyObject]] else {
-                parsingFailed()
-                return
+                continue
             }
             
             if images.isEmpty {
@@ -154,7 +219,7 @@ extension SpotifyAPI {
         var albums = [Album]()
         
         func parsingFailed() {
-            completionHandlerforAlbumParsing(false, nil, "Unable to process data from Spotify. Please try again")
+            completionHandlerforAlbumParsing(false, nil, "Unable to process album data from Spotify. Please try again")
             return
         }
         
@@ -232,7 +297,7 @@ extension SpotifyAPI {
         var previewURL: String?
 
         func parsingFailed() {
-            completionHandlerForTrackParsing(false, nil, "Unable to process data from Spotify. Please try again")
+            completionHandlerForTrackParsing(false, nil, "Unable to process track data from Spotify. Please try again")
             return
         }
         

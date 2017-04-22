@@ -19,6 +19,7 @@ class SearchViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var topTableViewConstraint: NSLayoutConstraint!
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
@@ -37,6 +38,9 @@ class SearchViewController: UIViewController {
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         searchBar.delegate = self
         alertView = JSSAlertView()
+        if !hasSearched {
+            topTableViewConstraint.constant = 0
+        }
     }
 }
 
@@ -98,6 +102,7 @@ extension SearchViewController {
     func deleteObjects() {
         artists.removeAll()
         hasSearched = false
+        topTableViewConstraint.constant = 0
         tableView.reloadData()
     }
     
@@ -124,22 +129,34 @@ extension SearchViewController: UISearchBarDelegate {
             hasSearched = true
             SVProgressHUD.setDefaultStyle(.dark)
             SVProgressHUD.show(withStatus: "Loading...")
-            SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
+//            SpotifyAPI.sharedInstance.searchArtist(searchBar.text!) { (success, results, errorMessage) in
+//                DispatchQueue.main.async {
+//                    self.isSearching = false
+//                    SVProgressHUD.dismiss()
+//                    if success {
+//                        if let searchResults = results {
+//                            self.artists = searchResults
+//                            self.topTableViewConstraint.constant = 40
+//                            self.tableView.reloadData()
+//                        } else {
+//                            self.alertView.danger(self, title: "Invalid result were returned", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+//                        }
+//                    } else {
+//                        self.alertView.danger(self, title: errorMessage, text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+//                    }
+//                }
+//            }
+            SpotifyAPI.sharedInstance.search(searchBar.text!, completionHanderForSearch: { (success, results, errorMessage) in
                 DispatchQueue.main.async {
                     self.isSearching = false
                     SVProgressHUD.dismiss()
                     if success {
-                        if let searchResults = results {
-                            self.artists = searchResults
-                            self.tableView.reloadData()
-                        } else {
-                            self.alertView.danger(self, title: "Invalid result were returned", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
-                        }
+                        print(results)
                     } else {
-                        self.alertView.danger(self, title: errorMessage, text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+                        print(errorMessage)
                     }
                 }
-            }
+            })
         } else {
             alertView.danger(self, title: "Unable to search.\nNo internet connection detected", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }

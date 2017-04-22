@@ -10,7 +10,6 @@ import UIKit
 import CoreData
 import JSSAlertView
 
-
 protocol AlbumListenedDelegate: class {
     func albumListenedChange()
 }
@@ -197,7 +196,6 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
         return [deleteAction, spotifyAction]
     }
 }
-
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension FavoriteAlbumDetailTableViewController: NSFetchedResultsControllerDelegate {

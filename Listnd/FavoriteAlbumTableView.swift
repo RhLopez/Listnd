@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import JSSAlertView
-import SwipeCellKit
 
 class FavoriteAlbumTableView: UIViewController {
     
@@ -200,33 +199,6 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
         return [delete, spotify]
     }
 }
-
-//// MARK - SwipeTableViewCellDelegate
-//extension FavoriteAlbumTableView: SwipeTableViewCellDelegate {
-//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction] {
-//        guard orientation == .right else { return [] }
-//        
-//        let spotify = SwipeAction(style: .destructive, title: "Spotify") { (action, indexPath) in
-//            self.openSpotify(indexPath: indexPath)
-//        }
-//        
-//        let delete = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
-//            self.deleteAlbum(indexPath: indexPath)
-//        }
-//        
-//        spotify.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
-//        
-//        return [delete, spotify]
-//    }
-//    
-//    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
-//        var options = SwipeTableOptions()
-//        options.expansionStyle = .selection
-//        options.transitionStyle = .border
-//        
-//        return options
-//    }
-//}
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {

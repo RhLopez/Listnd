@@ -12,7 +12,6 @@ class ArtistDetailTableViewCell: UITableViewCell {
     
     @IBOutlet weak var albumImageView: UIImageView!
     @IBOutlet weak var albumNameLabel: UILabel!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var cell = ArtistDetailTableViewCell.self {
         didSet {

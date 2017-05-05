@@ -161,7 +161,6 @@ extension ArtistDetailViewController {
     }
     
     func artistImageDownloaded() {
-        print("Downloaded")
         if let imageData = currentArtist.artistImage {
             headerView.setImage(data: imageData as Data)
         }
@@ -234,7 +233,7 @@ extension ArtistDetailViewController: UITableViewDelegate {
         if searchItems.isEmpty {
             return CGFloat.leastNormalMagnitude
         } else {
-            return 28.0
+            return 24.0
         }
     }
     

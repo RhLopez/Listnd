@@ -21,7 +21,7 @@ extension SpotifyAPI {
             static let Search = "/search"
             static let Query = "q"
             static let SearchType = "type"
-            static let Albums = "/albums"
+            static let Albums = "/albums/{id}"
             static let AlbumTracks = "/albums/{id}/tracks"
             static let Artist = "/artist"
             static let ArtistAlbums = "/artists/{id}/albums"

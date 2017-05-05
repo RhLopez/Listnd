@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="74.5" id="dzF-Vz-PDk" customClass="SongCell" customModule="Listnd" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="74.5"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dzF-Vz-PDk" id="i7s-Pz-inn">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="74"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bl8-30-i5W">
+                        <rect key="frame" x="17" y="14" width="350" height="25"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yi1-23-nR3">
+                        <rect key="frame" x="17" y="42" width="350" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.33333333329999998" green="0.33333333329999998" blue="0.33333333329999998" alpha="0.79000000000000004" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailingMargin" secondItem="Yi1-23-nR3" secondAttribute="trailing" id="6rB-uL-HnL"/>
+                    <constraint firstItem="bl8-30-i5W" firstAttribute="top" secondItem="i7s-Pz-inn" secondAttribute="topMargin" constant="6" id="EH1-0C-3uw"/>
+                    <constraint firstAttribute="leadingMargin" secondItem="Yi1-23-nR3" secondAttribute="leading" constant="-9" id="KW6-wv-rGG"/>
+                    <constraint firstItem="Yi1-23-nR3" firstAttribute="top" secondItem="bl8-30-i5W" secondAttribute="bottom" constant="3" id="XGw-NC-oXT"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="bl8-30-i5W" secondAttribute="trailing" id="Y2n-Wp-jdf"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="bl8-30-i5W" secondAttribute="bottom" constant="27" id="cbl-ZB-X65"/>
+                    <constraint firstAttribute="leadingMargin" secondItem="bl8-30-i5W" secondAttribute="leading" constant="-9" id="hAT-JN-bl8"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="songDetailLabel" destination="Yi1-23-nR3" id="wx5-PW-Wh0"/>
+                <outlet property="songNameLabel" destination="bl8-30-i5W" id="zhu-fe-jeO"/>
+            </connections>
+            <point key="canvasLocation" x="-20.5" y="61.5"/>
+        </tableViewCell>
+    </objects>
+</document>

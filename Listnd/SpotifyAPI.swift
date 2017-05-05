@@ -68,7 +68,7 @@ class SpotifyAPI {
         completionHandlerForSerialization(true, "", serializedData)
     }
     
-    fileprivate func spotifyURL(_ parameters: [String:AnyObject], path: String) -> URL {
+    func spotifyURL(_ parameters: [String:AnyObject], path: String) -> URL {
         var components = URLComponents()
         components.scheme = Constants.API.APIScheme
         components.host = Constants.API.BaseURL

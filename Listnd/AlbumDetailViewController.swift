@@ -21,6 +21,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
+    var albumId: String?
     var currentArtist: Artist!
     var tracks = [Track]()
     var savedTrackIds = [String]()
@@ -40,6 +41,59 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let id = albumId {
+            getMissingAlbum(albumId: id)
+        } else {
+            configureUI()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+        if isLoading == true {
+            SVProgressHUD.dismiss()
+        }
+    }
+    
+    func getMissingAlbum(albumId id: String) {
+        getAlbum(albumId: id, completionHander: { (success, errorMessage) in
+            if success {
+                DispatchQueue.main.async {
+                    self.configureUI()
+                }
+            } else {
+                print(errorMessage!)
+            }
+        })
+    }
+    
+    func getAlbum(albumId id:String, completionHander: @escaping(_ success: Bool, _ errorMessage: String?) -> Void) {
+        SpotifyAPI.sharedInstance.getAlbum(id) { (result, errorMessage) in
+            if let album = result {
+                self.currentAlbum = album
+                self.getAlbumImage(withURL: self.currentAlbum.imageURL)
+                completionHander(true, nil)
+            } else {
+                completionHander(false, errorMessage)
+            }
+        }
+    }
+    
+    func getAlbumImage(withURL url: String?) {
+        SpotifyAPI.sharedInstance.getImage(url) { (data) in
+            if let imageData = data {
+                self.currentAlbum.albumImage = NSData(data: imageData)
+            } else {
+                let image = UIImage(named: "headerPlaceHolder")
+                let data = UIImagePNGRepresentation(image!)!
+                self.currentAlbum.albumImage = NSData(data: data)
+            }
+        }
+    }
+    
+    func configureUI() {
         alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
@@ -55,15 +109,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
             getTracks()
         } else {
             alertView.danger(self, title: "There was an error loading the album detail\n.Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
-        if isLoading == true {
-            SVProgressHUD.dismiss()
         }
     }
     

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C67" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="12141" systemVersion="16E195" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Album" representedClassName=".Album" syncable="YES">
         <attribute name="albumImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
+        <attribute name="artistString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
@@ -21,6 +22,9 @@
         <relationship name="albums" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Album" inverseName="artist" inverseEntity="Album" syncable="YES"/>
     </entity>
     <entity name="Track" representedClassName=".Track" syncable="YES">
+        <attribute name="albumId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="albumNameString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artistString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="duration" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listened" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
@@ -31,8 +35,8 @@
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="tracks" inverseEntity="Album" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Album" positionX="-45" positionY="36" width="128" height="195"/>
+        <element name="Album" positionX="-45" positionY="36" width="128" height="210"/>
         <element name="Artist" positionX="-45" positionY="0" width="128" height="135"/>
-        <element name="Track" positionX="-36" positionY="63" width="128" height="165"/>
+        <element name="Track" positionX="-36" positionY="63" width="128" height="210"/>
     </elements>
 </model>

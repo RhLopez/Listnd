@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-import JSSAlertView
+
 
 class FavoriteArtistTableViewController: UIViewController {
     

@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import SVProgressHUD
-import JSSAlertView
 
 // MARK: - Notification key
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
@@ -98,7 +97,6 @@ extension SearchViewController {
     }
     
     func configureAlbumCell(_ cell: UITableViewCell, forIndexPath indexPath: IndexPath) {
-       // TODO: Implement album cell configuration
         guard let cell = cell as? AlbumCell else { return }
         
         cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
@@ -121,7 +119,6 @@ extension SearchViewController {
     }
     
     func configureSongCell(_ cell: UITableViewCell, forIndexPath indexPath: IndexPath) {
-        // TODO: Implement song cell configuration
         guard let cell = cell as? SongCell else { return }
         
         let song = tracks[indexPath.row]

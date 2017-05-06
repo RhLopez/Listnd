@@ -11,7 +11,6 @@ import AVFoundation
 import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
-import JSSAlertView
 
 class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     

@@ -6,11 +6,8 @@ target 'Listnd' do
   use_frameworks!
 
   # Pods for Listnd
-pod 'JSSAlertView'
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
-pod 'SwipeCellKit'
-
   target 'ListndTests' do
     inherit! :search_paths
     # Pods for testing

@@ -8,7 +8,6 @@
 
 import UIKit
 import CoreData
-import JSSAlertView
 
 protocol AlbumListenedDelegate: class {
     func albumListenedChange()
@@ -185,6 +184,7 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let spotifyAction = UITableViewRowAction(style: .normal, title: "Spotify") { (action, indexPath) in
             self.openSpotifyAction(indexPath: indexPath)
+            self.tableView.isEditing = false
         }
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in

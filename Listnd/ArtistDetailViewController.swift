@@ -10,7 +10,6 @@ import UIKit
 import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
-import JSSAlertView
 
 // MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"

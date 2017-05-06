@@ -8,6 +8,7 @@ target 'Listnd' do
   # Pods for Listnd
 pod 'SVProgressHUD'
 pod 'GSKStretchyHeaderView'
+pod 'NotificationBannerSwift'
   target 'ListndTests' do
     inherit! :search_paths
     # Pods for testing

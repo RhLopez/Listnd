@@ -20,7 +20,6 @@ class FavoriteAlbumTableView: UIViewController {
     var artistImageFrame: UIImageView!
     var headerView: HeaderView!
     var selectedCell: IndexPath?
-    var alertView: JSSAlertView!
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -34,7 +33,6 @@ class FavoriteAlbumTableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
             self.headerView = headerView
             headerView.configureView(name: artist.name, imageData: artist.artistImage as Data?, hideButton: true)
@@ -42,7 +40,8 @@ class FavoriteAlbumTableView: UIViewController {
             tableView.addSubview(headerView)
             getAlbums()
         } else {
-            alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            //alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+
         }
     }
         
@@ -59,58 +58,13 @@ class FavoriteAlbumTableView: UIViewController {
         }()
 }
 
-// MARK: - Helper method
+// MARK: - Helper methods
 extension FavoriteAlbumTableView {
     func getAlbums() {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            alertView.danger(self, title: "Unable to load information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
-        }
-    }
-    
-    func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
-        guard let cell = cell as? FavoriteAlbumTableViewCell else { return }
-        
-        //cell.delegate = self
-        
-        let album = fetchedResultsController.object(at: indexPath)
-        cell.albumNameLabel.text = album.name
-        cell.albumImageView.image = UIImage(named: "headerPlaceHolder")
-        
-        if let data = album.albumImage {
-            cell.albumImageView.image = UIImage(data: data as Data)
-        } else {
-            // Get album image if the album was saved prior to image being saved due to slow connetcion
-            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data as Data)
-                    UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
-                    album.albumImage = data
-                }
-            })
-        }
-        
-        cell.albumDetailLabel.text = "\(album.listenedCount) of \(album.tracks!.count) Tracks Lisntd"
-        
-        if album.listened {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
-        }
-    }
-    
-    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
-        if let urlString = url {
-            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
-                if let data = result {
-                    completetionHandlerForAlbumImage(data as NSData)
-                }
-            })
-        } else {
-            let image = UIImage(named: "headerPlaceHolder")
-            let data = UIImagePNGRepresentation(image!)!
-            completetionHandlerForAlbumImage(data as NSData)
+            //alertView.danger(self, title: "Unable to load information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -165,9 +119,9 @@ extension FavoriteAlbumTableView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "albumCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        configureCell(cell: cell, indexPath: indexPath)
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! FavoriteAlbumTableViewCell
+        let album = fetchedResultsController.object(at: indexPath)
+        cell.configure(with: album)
         return cell
     }
 }
@@ -214,7 +168,8 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
             tableView.deleteRows(at: [indexPath!], with: .automatic)
         case .update:
             let cell = tableView.cellForRow(at: indexPath!) as! FavoriteAlbumTableViewCell
-            configureCell(cell: cell, indexPath: indexPath!)
+            let album = fetchedResultsController.object(at: indexPath!)
+            cell.configure(with: album)
             break
         case .move:
             tableView.deleteRows(at: [indexPath!], with: .automatic)

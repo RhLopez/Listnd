@@ -1,24 +1,18 @@
 PODS:
   - GSKStretchyHeaderView (1.0.0)
-  - MarqueeLabel/Swift (3.0.4)
-  - NotificationBannerSwift (1.1.0):
-    - MarqueeLabel/Swift
-    - SnapKit (~> 3.2.0)
-  - SnapKit (3.2.0)
   - SVProgressHUD (2.1.2)
+  - SwiftMessages (3.3.3)
 
 DEPENDENCIES:
   - GSKStretchyHeaderView
-  - NotificationBannerSwift
   - SVProgressHUD
+  - SwiftMessages
 
 SPEC CHECKSUMS:
   GSKStretchyHeaderView: daba8f035eaade6326d05ee2a382be714bb019c0
-  MarqueeLabel: 9dbd9aeaa01dd73dbc4b986b2cc945007bb480d5
-  NotificationBannerSwift: a80965dd87c39a15edc38a3adba352c4aa778088
-  SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
+  SwiftMessages: 09cea3336e3fb63c3578983c8aac65acaa6d884a
 
-PODFILE CHECKSUM: e2f7179403c94bb7d82485f81d489ac6a36c0038
+PODFILE CHECKSUM: a9df8fcf39d71064fa2a61a4cda0d8bcfb1ffb97
 
 COCOAPODS: 1.2.1

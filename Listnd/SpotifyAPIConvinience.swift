@@ -37,6 +37,20 @@ extension SpotifyAPI {
         }
     }
     
+    func getImageURL(_ artistId: String, completionHandler: @escaping (_ urlString: String?) -> Void) {
+        let path = Constants.ParametersKeys.Artist.replacingOccurrences(of: "{id}", with: artistId)
+        
+        taskForGetMethod([:], path: path) { (success, errorMessage, result) in
+            if success {
+                self.parseArtistImageUrl(result, completionHandler: { (urlString) in
+                    completionHandler(urlString)
+                })
+            } else {
+                completionHandler(nil)
+            }
+        }
+    }
+    
     func searchArtist(_ userInput: String, completionHandlerForArtistSearch: @escaping (_ success: Bool, _ results: [Artist]?, _ errorMessage: String) -> Void) {
         let parameters = [
             Constants.ParametersKeys.Query: userInput,
@@ -184,51 +198,12 @@ extension SpotifyAPI {
             return
         }
         
-//        guard let artistDictionary = data["artists"] as? [String:AnyObject] else {
-//            parsingFailed()
-//            return
-//        }
-        
         guard let items = data["items"] as? [[String:AnyObject]] else {
             parsingFailed()
             return
         }
         
-        for item in items {
-            guard let artistName = item["name"] as? String else {
-                continue
-
-            }
-            
-            guard let artistId = item["id"] as? String else {
-                continue
-            }
-            
-            guard let images = item["images"] as? [[String:AnyObject]] else {
-                continue
-            }
-            
-            
-            if images.isEmpty {
-                imageURL = nil
-            } else {
-                let item = images.first!
-                guard let url = item["url"] as? String else {
-                    parsingFailed()
-                    return
-                }
-                
-                imageURL = url
-            }
-            
-            let artist = Artist(entity: self.artistEntity!, insertInto: nil)
-            artist.name = artistName
-            artist.id = artistId
-            artist.imageURL = imageURL
-            artist.listened = false
-            artists.append(artist)
-        }
-        
+        artists = items.flatMap { Artist(json: $0, context: nil) }
         completionHandlerForParseArtistSearch(true, artists, "")
     }
     
@@ -253,74 +228,18 @@ extension SpotifyAPI {
             return
         }
         
-        for item in items {
-            guard let albumName = item["name"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            let name = albumName.folding(options: .diacriticInsensitive, locale: NSLocale.current)
-            
-            if albumNames.contains(name) {
+        for jsonDictionary in items {
+            guard let albumName = jsonDictionary["name"] as? String else {
                 continue
             }
             
-            guard let albumId = item["id"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let uri = item["uri"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let album_type = item["album_type"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let images = item["images"] as? [[String:AnyObject]] else {
-                parsingFailed()
-                return
-            }
-            
-            guard let artistDictionary = item["artists"] as? [[String:AnyObject]] else {
-                parsingFailed()
-                return
-            }
-            
-            for item in artistDictionary {
-                guard let name = item["name"] as? String else {
-                    parsingFailed()
-                    return
+            // Prevent duplicate albums from being parsed
+            if !albumNames.contains(albumName) {
+                if let album = Album(json: jsonDictionary) {
+                    albums.append(album)
+                    albumNames.append(albumName)
                 }
-                artistName = name
             }
-            
-            if images.isEmpty {
-                imageURL = nil
-            } else {
-                let image = images.first!
-                guard let url = image["url"] as? String else {
-                    parsingFailed()
-                    return
-                }
-                
-                imageURL = url
-            }
-            
-            let album = Album(entity: albumEntity!, insertInto: nil)
-            album.name = albumName
-            album.id = albumId
-            album.uri = uri
-            album.type = album_type
-            album.imageURL = imageURL
-            albums.append(album)
-            album.listened = false
-            album.listenedCount = 0
-            album.artistString = artistName
-            albumNames.append(albumName)
         }
         
         completionHandlerforAlbumParsing(true, albums, "")
@@ -328,7 +247,6 @@ extension SpotifyAPI {
     
     func parseAlbum(_ data: AnyObject?, completionHandlerforAlbumParsing: @escaping (_ success: Bool, _ results: Album?,_ errorMessage: String) -> Void) {
         var imageURL: String?
-        var artistName = ""
         
         func parsingFailed() {
             completionHandlerforAlbumParsing(false, nil, "Unable to process album data from Spotify. Please try again")
@@ -339,71 +257,13 @@ extension SpotifyAPI {
             parsingFailed()
             return
         }
-    
-        guard let dictionary = data as? [String: AnyObject] else {
+        
+        guard let json = data as? [String: AnyObject] else {
             parsingFailed()
             return
         }
         
-        guard let albumName = dictionary["name"] as? String else {
-            parsingFailed()
-            return
-        }
-        
-        guard let albumId = dictionary["id"] as? String else {
-            parsingFailed()
-            return
-        }
-        
-        guard let uri = dictionary["uri"] as? String else {
-            parsingFailed()
-            return
-        }
-        
-        guard let album_type = dictionary["album_type"] as? String else {
-            parsingFailed()
-            return
-        }
-        
-        guard let images = dictionary["images"] as? [[String:AnyObject]] else {
-            parsingFailed()
-            return
-        }
-        
-        guard let artistDictionary = dictionary["artists"] as? [[String:AnyObject]] else {
-            parsingFailed()
-            return
-        }
-        
-        for item in artistDictionary {
-            guard let name = item["name"] as? String else {
-                parsingFailed()
-                return
-            }
-            artistName = name
-        }
-        
-        if images.isEmpty {
-            imageURL = nil
-        } else {
-            let image = images.first!
-            guard let url = image["url"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            imageURL = url
-        }
-        
-        let album = Album(entity: albumEntity!, insertInto: nil)
-        album.name = albumName
-        album.id = albumId
-        album.uri = uri
-        album.type = album_type
-        album.imageURL = imageURL
-        album.listened = false
-        album.listenedCount = 0
-        album.artistString = artistName
+        let album = Album(json: json)
         
         completionHandlerforAlbumParsing(true, album, "")
     }
@@ -577,6 +437,32 @@ extension SpotifyAPI {
         }
         
         completionHandlerForTrackParsing(true, tracks, "")
+    }
+    
+    func parseArtistImageUrl(_ data: Any?, completionHandler: @escaping (_ imageURL: String?) -> Void) {
+        var imageURL: String?
+        
+        guard let data = data as? [String: AnyObject] else {
+            completionHandler(nil)
+            return
+        }
+        
+        guard let images = data["images"] as? [[String: AnyObject]] else {
+            completionHandler(nil)
+            return
+        }
+        
+        for item in images {
+            guard let url = item["url"] as? String else {
+                completionHandler(nil)
+                return
+            }
+            
+            imageURL = url
+            break
+        }
+        
+        completionHandler(imageURL)
     }
     
     func getImage(_ urlString: String?, completionHandlerForImage: @escaping (_ data: Data?) -> Void) {

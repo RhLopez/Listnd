@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import SVProgressHUD
+import SwiftMessages
 
 // MARK: - Notification key
 let artistImageDownloadNotification = "com.RhL.artistImageNotificationKey"
@@ -30,14 +31,12 @@ class SearchViewController: UIViewController {
     var isSearching: Bool?
     var hasSearched = false
     var selectedRow: IndexPath?
-    var alertView: JSSAlertView!
     var isFiltered = false
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        alertView = JSSAlertView()
         setupUI()
     }
     
@@ -100,9 +99,9 @@ extension SearchViewController {
         guard let cell = cell as? AlbumCell else { return }
         
         cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
-        let album = albums[indexPath.row]
+        let album = searchResults[indexPath.section][indexPath.row] as! Album
         cell.albumNameLabel.text = album.name
-        cell.albumDetailLabel.text = album.artistString
+        cell.albumDetailLabel.text = album.artist.name
         
         if let data = album.albumImage {
             let image = UIImage(data: data as Data)
@@ -209,7 +208,7 @@ extension SearchViewController: UISearchBarDelegate {
                 }
             })
         } else {
-            alertView.danger(self, title: "Unable to search.\nNo internet connection detected", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to search\nNo internet connection detected")
         }
     }
     
@@ -368,7 +367,7 @@ extension SearchViewController: UITableViewDelegate {
         switch selectedCell {
         case 0: break
         case 1: let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
-            let album = albums[indexPath.row]
+            let album = searchResults[indexPath.section][indexPath.row] as! Album
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.currentAlbum = album

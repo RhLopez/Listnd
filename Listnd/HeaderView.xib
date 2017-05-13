@@ -22,9 +22,12 @@
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZw-Kc-yOJ">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
-                    <rect key="frame" x="64" y="119" width="246" height="31.5"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.83665272887323938" colorSpace="calibratedWhite"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EfM-OS-SPM">
+                    <rect key="frame" x="6" y="152" width="363" height="32"/>
+                    <color key="backgroundColor" red="0.46444064008139574" green="0.46444064008139574" blue="0.46444064008139574" alpha="0.900940801056338" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="32" id="cZH-93-8Xs"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="26"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -62,24 +65,23 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="Y5H-6q-HO4" secondAttribute="bottom" constant="-61" id="2wx-TB-6PF"/>
-                <constraint firstAttribute="trailing" secondItem="EfM-OS-SPM" secondAttribute="trailing" constant="65" id="5m8-23-Te7"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="D0R-LW-Hzm"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="U6I-GU-L5A" secondAttribute="bottom" constant="-54" id="FNB-I0-BwR"/>
+                <constraint firstAttribute="bottom" secondItem="EfM-OS-SPM" secondAttribute="bottom" constant="16" id="JbJ-FJ-e4x"/>
                 <constraint firstItem="U6I-GU-L5A" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="11" id="QiD-3R-Cmd"/>
                 <constraint firstAttribute="trailing" secondItem="fZw-Kc-yOJ" secondAttribute="trailing" id="RRg-N3-9xn"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="top" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" constant="-81" id="Uns-TV-hcg"/>
                 <constraint firstAttribute="bottom" secondItem="fZw-Kc-yOJ" secondAttribute="bottom" id="XVu-2K-WAH"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="centerX" secondItem="fZw-Kc-yOJ" secondAttribute="centerX" id="Z8B-PC-UI1"/>
-                <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="Zqo-3x-toR"/>
                 <constraint firstAttribute="bottom" secondItem="eg4-OI-gtq" secondAttribute="bottom" constant="4" id="dga-1Z-9Ab"/>
                 <constraint firstItem="AAI-nx-fqO" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="frD-bn-44Q"/>
                 <constraint firstItem="fZw-Kc-yOJ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hMk-DA-TVU"/>
                 <constraint firstItem="AAI-nx-fqO" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="lOV-DN-r7E"/>
                 <constraint firstItem="eg4-OI-gtq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="64" id="li5-jG-Llc"/>
                 <constraint firstAttribute="trailing" secondItem="eg4-OI-gtq" secondAttribute="trailing" constant="65" id="mOp-e5-N3j"/>
+                <constraint firstAttribute="trailing" secondItem="EfM-OS-SPM" secondAttribute="trailing" constant="6" id="oAs-qv-EAv"/>
                 <constraint firstAttribute="bottom" secondItem="AAI-nx-fqO" secondAttribute="bottom" id="pcQ-rL-2Sb"/>
                 <constraint firstAttribute="trailing" secondItem="Y5H-6q-HO4" secondAttribute="trailing" constant="10" id="uW0-m8-EtC"/>
                 <constraint firstAttribute="trailing" secondItem="AAI-nx-fqO" secondAttribute="trailing" id="vfX-kn-ty6"/>
+                <constraint firstItem="EfM-OS-SPM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="6" id="yNn-At-83T"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <userDefinedRuntimeAttributes>

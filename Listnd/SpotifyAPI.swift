@@ -80,6 +80,7 @@ class SpotifyAPI {
             components.queryItems!.append(queryItem)
         }
 
+        print(components.url!)
         return components.url!
     }
 }

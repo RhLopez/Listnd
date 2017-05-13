@@ -30,7 +30,6 @@ class ArtistDetailViewController: UIViewController {
     var isLoading: Bool?
     var headerView: HeaderView!
     var fetchingAlbums = true
-    var alertView: JSSAlertView!
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -40,7 +39,7 @@ class ArtistDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertView = JSSAlertView()
+        //alertView = JSSAlertView()
         let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
@@ -53,7 +52,7 @@ class ArtistDetailViewController: UIViewController {
             tableView.addSubview(headerView)
             getAlbums(artistId: currentArtist.id)
         } else {
-            alertView.danger(self, title: "There was an error loading the artist detail", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+            //alertView.danger(self, title: "There was an error loading the artist detail", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
             
         }
     }
@@ -87,7 +86,7 @@ extension ArtistDetailViewController {
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
                     
-                    self.alertView.danger(self, title: errorMessage, text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+                    //self.alertView.danger(self, title: errorMessage, text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
                 }
             }
         }

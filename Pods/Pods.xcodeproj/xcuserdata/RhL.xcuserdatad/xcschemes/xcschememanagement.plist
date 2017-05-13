@@ -9,16 +9,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>MarqueeLabel.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>NotificationBannerSwift.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Listnd.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -39,7 +29,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SnapKit.xcscheme</key>
+		<key>SwiftMessages-SwiftMessages.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SwiftMessages.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -47,22 +42,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>120EF956E0CEAA31BC7F9F67B69519A0</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>320AD47B0C6BA014D301395D3BFC8FB6</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>40B762028683A20C89F8A11EB2AEB6E4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>67394FC5F595D5C6382C6E0CC4C45BEB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>76A40E637907C67F5938B24A1929C17A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,17 +57,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AEFC260D4B0912D774835D70CD16E21B</key>
+		<key>9111E321E585684DAA9D89F883CDF7C6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9BC8E869EEB5F037B238CE619AC6F24E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C2271EEEA57C0EF675A7EA96FE1F3130</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>CD71ED72EACA0156F0B96DDE230F2138</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>D7A321E20F9660C4CE795190B286594F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

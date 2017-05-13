@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-
+import SwiftMessages
 
 class FavoriteArtistTableViewController: UIViewController {
     
@@ -18,19 +18,17 @@ class FavoriteArtistTableViewController: UIViewController {
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
     var selectedCell: IndexPath?
-    var alertView: JSSAlertView!
     
     // MARK: - View life cycle 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let indexPath = selectedCell {
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
+//        if let indexPath = selectedCell {
+//            tableView.reloadRows(at: [indexPath], with: .automatic)
+//        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertView = JSSAlertView()
         navigationController?.isNavigationBarHidden = true
         fetchArtist()
     }
@@ -53,59 +51,7 @@ extension FavoriteArtistTableViewController {
         do {
             try self.fetchedResultsController.performFetch()
         } catch {
-            alertView.danger(self, title: "Unable to load saved information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
-        }
-    }
-    
-    func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
-        guard let cell = cell as? FavoriteArtistTableViewCell else { return }
-        
-        let artist = fetchedResultsController.object(at: indexPath)
-
-        cell.artistNameLabel.text = artist.name
-        cell.artistImageView.image = UIImage(named: "headerPlaceHolder")
-        
-        var albumCountMessage = ""
-        if let count = artist.albums?.count {
-            if count > 0 {
-                albumCountMessage = count > 1 ? "\(count) Albums" : "\(count) Album"
-            } else {
-                albumCountMessage = "No Albums"
-            }
-        } else {
-            albumCountMessage = ""
-        }
-        cell.albumCountLabel.text = albumCountMessage
-        
-        if artist.listened {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
-        }
-        
-        // Get album image if the album was saved prior to image being saved due to slow connetcion
-        if let data = artist.artistImage {
-            cell.artistImageView.image = UIImage(data: data as Data)
-        } else {
-            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
-                let image = UIImage(data: data as Data)
-                UIView.transition(with: cell.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.artistImageView.image = image }, completion: nil)
-                artist.artistImage = data
-            })
-        }
-    }
-    
-    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
-        if let urlString = url {
-            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
-                if let data = result {
-                    completetionHandlerForAlbumImage(data as NSData)
-                }
-            })
-        } else {
-            let image = UIImage(named: "headerPlaceHolder")
-            let data = UIImagePNGRepresentation(image!)!
-            completetionHandlerForAlbumImage(data as NSData)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load saved information")
         }
     }
 }
@@ -118,9 +64,9 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifer = "artistCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath)
-        configureCell(cell: cell, indexPath: indexPath)
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath) as! FavoriteArtistTableViewCell
+        let artist = fetchedResultsController.object(at: indexPath)
+        cell.configure(with: artist)
         return cell
     }
 }
@@ -165,7 +111,12 @@ extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate 
                 tableView.insertRows(at: [newIndexPath!], with: .automatic)
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)
-            case .update, .move:
+            case .update:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath!) as! FavoriteArtistTableViewCell
+                let artist = fetchedResultsController.object(at: indexPath!)
+                cell.configure(with: artist)
+                break
+            case .move:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)
                 tableView.insertRows(at: [newIndexPath!], with: .automatic)
             }

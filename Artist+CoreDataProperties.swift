@@ -23,7 +23,34 @@ extension Artist {
     @NSManaged public var name: String
     @NSManaged public var albumCount: Int16
     @NSManaged public var albums: NSOrderedSet?
-
+    
+    convenience init?(json: [String: AnyObject], context: NSManagedObjectContext?) {
+        let entity = NSEntityDescription.entity(forEntityName: "Artist", in: CoreDataStack.sharedInstance.managedContext)
+        self.init(entity: entity!, insertInto: nil)
+        guard let id = json["id"] as? String,
+            let name = json["name"] as? String else { return nil }
+        
+        self.id = id
+        self.name = name
+        self.listened = false
+        
+        if let images = json["images"] as? [[String: AnyObject]] {
+            imageURL = parseImageUrl(data: images)
+        }
+    }
+    
+    func parseImageUrl(data: [[String: AnyObject]]) -> String? {
+        if data.isEmpty {
+            return nil
+        }
+        
+        let item = data.first!
+        guard let url = item["url"] as? String else {
+            return nil
+        }
+        
+        return url
+    }
 }
 
 // MARK: Generated accessors for albums

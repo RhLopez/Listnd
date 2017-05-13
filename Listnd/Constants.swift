@@ -23,7 +23,7 @@ extension SpotifyAPI {
             static let SearchType = "type"
             static let Albums = "/albums/{id}"
             static let AlbumTracks = "/albums/{id}/tracks"
-            static let Artist = "/artist"
+            static let Artist = "/artists/{id}"
             static let ArtistAlbums = "/artists/{id}/albums"
             static let Track = "/tracks/{id}"
             static let Market = "market"

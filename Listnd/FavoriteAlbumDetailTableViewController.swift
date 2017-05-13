@@ -22,7 +22,6 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
     weak var albumListenedDelegate: AlbumListenedDelegate?
-    var alertView: JSSAlertView!
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -32,14 +31,14 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertView = JSSAlertView()
+       // alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             fetchTracks()
         } else {
-            alertView.danger(self, title: "Unable to load album detail", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            //alertView.danger(self, title: "Unable to load album detail", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -67,7 +66,7 @@ extension FavoriteAlbumDetailTableViewController {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            alertView.danger(self, title: "Unable to retrieve track information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            //alertView.danger(self, title: "Unable to retrieve track information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
         }
     }
     
@@ -91,23 +90,6 @@ extension FavoriteAlbumDetailTableViewController {
                 currentAlbum.listened = false
                 albumListenedDelegate?.albumListenedChange()
             }
-        }
-    }
-    
-    func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
-        guard let cell = cell as? FavoriteAlbumDetailTableViewcCell else { return }
-        
-        //cell.delegate = self
-        
-        let track = fetchedResultsController.object(at: indexPath)
-        cell.trackNameLabel.text = track.name
-        
-        let trackNumberText = track.trackNumber < 10 ? " \(track.trackNumber)." : "\(track.trackNumber)."
-        cell.trackNumber.text = trackNumberText
-        if track.listened {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
         }
     }
     
@@ -168,8 +150,9 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "trackCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        configureCell(cell: cell, indexPath: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! FavoriteAlbumDetailTableViewcCell
+        let track = fetchedResultsController.object(at: indexPath)
+        cell.configure(with: track)
         return cell
     }
 }
@@ -211,7 +194,8 @@ extension FavoriteAlbumDetailTableViewController: NSFetchedResultsControllerDele
             tableView.deleteRows(at: [indexPath!], with: .automatic)
         case .update:
             let cell = tableView.cellForRow(at: indexPath!) as! FavoriteAlbumDetailTableViewcCell
-            configureCell(cell: cell, indexPath: indexPath!)
+            let track = fetchedResultsController.object(at: indexPath!)
+            cell.configure(with: track)
             break
         case .move:
             tableView.deleteRows(at: [indexPath!], with: .automatic)

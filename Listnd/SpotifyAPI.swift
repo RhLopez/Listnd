@@ -12,9 +12,6 @@ import CoreData
 class SpotifyAPI {
     
     static let sharedInstance = SpotifyAPI()
-    let stack = CoreDataStack.sharedInstance
-    let artistEntity = NSEntityDescription.entity(forEntityName: "Artist", in: CoreDataStack.sharedInstance.managedContext)
-    let albumEntity = NSEntityDescription.entity(forEntityName: "Album", in: CoreDataStack.sharedInstance.managedContext)
     let trackEntity = NSEntityDescription.entity(forEntityName: "Track", in: CoreDataStack.sharedInstance.managedContext)
 
     let session = URLSession.shared

@@ -50,7 +50,6 @@ class FavoriteArtistTableViewCell: UITableViewCell {
         
         // Get album image if the album was saved prior to image being saved due to slow connetcion
         if let data = artist.artistImage {
-            print(artist.name)
             self.artistImageView.image = UIImage(data: data as Data)
         } else {
             getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in

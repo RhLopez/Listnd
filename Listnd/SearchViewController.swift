@@ -22,7 +22,7 @@ class SearchViewController: UIViewController {
     
     // MARK: - Properties
     var coreDataStack: CoreDataStack!
-    var searchResults = [[AnyObject]]()
+    var searchResults = [AnyObject]()
     var filteredResult = [AnyObject]()
     var artists = [Artist]()
     var albums = [Album]()
@@ -50,9 +50,9 @@ class SearchViewController: UIViewController {
     func registerNibs() {
         let artistNib = UINib(nibName: "SearchArtistCell", bundle: nil)
         tableView.register(artistNib, forCellReuseIdentifier: "artistCell")
-        let albumNib = UINib(nibName: "AlbumCell", bundle: nil)
+        let albumNib = UINib(nibName: "SearchAlbumCell", bundle: nil)
         tableView.register(albumNib, forCellReuseIdentifier: "albumCell")
-        let songNib = UINib(nibName: "SongCell", bundle: nil)
+        let songNib = UINib(nibName: "SearchSongCell", bundle: nil)
         tableView.register(songNib, forCellReuseIdentifier: "songCell")
         let noResultNib = UINib(nibName: "NoSearchResultCell", bundle: nil)
         tableView.register(noResultNib, forCellReuseIdentifier: "noResultCell")
@@ -70,75 +70,6 @@ class SearchViewController: UIViewController {
 
 // MARK: - Helper methods
 extension SearchViewController {
-    func configureArtistCell(_ cell: UITableViewCell, forIndextPath indexPath: IndexPath) {
-        guard let cell = cell as? SearchArtistCell else { return }
-        
-        cell.artistImageView.image = UIImage(named: "thumbnailPlaceHolder")
-        let artist = artists[indexPath.row]
-        cell.artistNameLabel.text = artist.name
- 
-        if let data = artist.artistImage {
-            let image = UIImage(data: data as Data)
-            cell.artistImageView?.image = image
-        } else {
-            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
-                artist.artistImage = NSData(data: data as Data)
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data as Data)
-                    UIView.transition(with: cell.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.artistImageView.image = image }, completion: nil)
-                    // Post notification if cell was selected before image was downloaded
-                    if self.selectedRow == indexPath {
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: artistImageDownloadNotification), object: self)
-                    }
-                }
-            })
-        }
-    }
-    
-    func configureAlbumCell(_ cell: UITableViewCell, forIndexPath indexPath: IndexPath) {
-        guard let cell = cell as? AlbumCell else { return }
-        
-        cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
-        let album = searchResults[indexPath.section][indexPath.row] as! Album
-        cell.albumNameLabel.text = album.name
-        cell.albumDetailLabel.text = album.artist.name
-        
-        if let data = album.albumImage {
-            let image = UIImage(data: data as Data)
-            cell.albumImageView.image = image
-        } else {
-            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
-                album.albumImage = NSData(data: data as Data)
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data as Data)
-                    UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
-                }
-            })
-        }
-    }
-    
-    func configureSongCell(_ cell: UITableViewCell, forIndexPath indexPath: IndexPath) {
-        guard let cell = cell as? SongCell else { return }
-        
-        let song = tracks[indexPath.row]
-        cell.songNameLabel.text = song.name
-        cell.songDetailLabel.text = "\(song.artistString) • \(song.albumNameString)"
-    }
-    
-    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
-        if let urlString = url {
-            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
-                if let data = result {
-                    completetionHandlerForAlbumImage(data as NSData)
-                }
-            })
-        } else {
-            let image = UIImage(named: "headerPlaceHolder")
-            let data = UIImagePNGRepresentation(image!)!
-            completetionHandlerForAlbumImage(data as NSData)
-        }
-    }
-    
     // Enable UISearchBar cancel button after calling resignFirstResponder
     // from stackoverflow post http://stackoverflow.com/questions/27020452/enable-cancel-button-with-uisearchbar-in-ios8
     func enableCancelButton(searchBar: UISearchBar) {
@@ -166,6 +97,38 @@ extension SearchViewController {
         searchBar.endEditing(true)
         searchBar.resignFirstResponder()
     }
+    
+    func filterSearch(forIndex index: Int) {
+        isFiltered = true
+        switch index {
+        case 0: isFiltered = false
+        filteredResult.removeAll()
+        tableView.reloadData()
+        case 1: filteredResult.removeAll()
+        for item in searchResults {
+            if let _ = item as? Album {
+                filteredResult.append(item)
+            }
+        }
+        tableView.reloadData()
+        case 2: filteredResult.removeAll()
+        for item in searchResults {
+            if let _ = item as? Artist {
+                filteredResult.append(item)
+            }
+        }
+        tableView.reloadData()
+        case 3: filteredResult.removeAll()
+        for item in searchResults {
+            if let _ = item as? Track {
+                filteredResult.append(item)
+            }
+        }
+        tableView.reloadData()
+        default: break
+        }
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: UITableViewScrollPosition.top, animated: false)
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -187,21 +150,15 @@ extension SearchViewController: UISearchBarDelegate {
                 DispatchQueue.main.async {
                     self.isSearching = false
                     SVProgressHUD.dismiss()
-                    if success {
+                    if let results = results {
                         self.searchResults.removeAll()
-                        for item in results! {
-                            if let albumArray = item as? Array<Album> {
-                                self.albums = albumArray
-                                self.searchResults.append(self.albums)
-                            } else if let artistArray = item as? Array<Artist> {
-                                self.artists = artistArray
-                                self.searchResults.append(self.artists)
-                            } else if let trackArray = item as? Array<Track> {
-                                self.tracks = trackArray
-                                self.searchResults.append(self.tracks)
+                        DispatchQueue.main.async {
+                            self.searchResults = results
+                            if self.isFiltered {
+                                self.filterSearch(forIndex: self.searchBar.selectedScopeButtonIndex)
                             }
+                            self.tableView.reloadData()
                         }
-                        self.tableView.reloadData()
                     } else {
                         print(errorMessage)
                     }
@@ -246,22 +203,7 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        isFiltered = true
-        switch selectedScope {
-        case 0: isFiltered = false
-            filteredResult.removeAll()
-            tableView.reloadData()
-        case 1: filteredResult.removeAll()
-            filteredResult = albums
-            tableView.reloadData()
-        case 2: filteredResult.removeAll()
-            filteredResult = artists
-            tableView.reloadData()
-        case 3: filteredResult.removeAll()
-            filteredResult = tracks
-            tableView.reloadData()
-        default: break
-        }
+        filterSearch(forIndex: selectedScope)
     }
 }
 
@@ -270,139 +212,89 @@ extension SearchViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         if hasSearched == false {
             return 0
-        } else if artists.isEmpty && albums.isEmpty && tracks.isEmpty || isFiltered {
-            return 1
         } else {
-            return 3
+            return 1
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if !hasSearched {
             return 0
-        } else if artists.isEmpty && albums.isEmpty && tracks.isEmpty || (isFiltered && filteredResult.isEmpty) {
+        } else if searchResults.isEmpty || (isFiltered && filteredResult.isEmpty) {
             return 1
         } else {
             if isFiltered {
                 return filteredResult.count
             } else {
-                return searchResults[section].count
+                return searchResults.count
             }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if searchResults[indexPath.section].isEmpty || (isFiltered && filteredResult.isEmpty) {
+        if searchResults.isEmpty || (isFiltered && filteredResult.isEmpty) {
             return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
         } else {
-            var identifer = ""
-            if isFiltered {
-                switch searchBar.selectedScopeButtonIndex {
-                case 0: break
-                case 1: identifer = "albumCell"
-                case 2: identifer = "artistCell"
-                case 3: identifer = "songCell"
-                default: break
-                }
-            } else {
-                switch indexPath.section {
-                case 0: identifer = "albumCell"
-                case 1: identifer = "artistCell"
-                case 2: identifer = "songCell"
-                default: break
-                }
-            }
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath)
+            let selectedItem = isFiltered ? filteredResult[indexPath.row] : searchResults[indexPath.row]
             
-            if isFiltered {
-                switch searchBar.selectedScopeButtonIndex {
-                case 0: break
-                case 1: configureAlbumCell(cell, forIndexPath: indexPath)
-                case 2: configureArtistCell(cell, forIndextPath: indexPath)
-                case 3: configureSongCell(cell, forIndexPath: indexPath)
-                default: break
-                }
-            } else {
-                switch indexPath.section {
-                case 0: configureAlbumCell(cell, forIndexPath: indexPath)
-                case 1: configureArtistCell(cell, forIndextPath: indexPath)
-                case 2: configureSongCell(cell, forIndexPath: indexPath)
-                default: break
-                }
+            if selectedItem is Artist {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath) as! SearchArtistCell
+                cell.configure(withArtist: selectedItem)
+                return cell
+            } else if selectedItem is Album {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "albumCell", for: indexPath) as! SearchAlbumCell
+                cell.configure(withAlbum: selectedItem)
+                return cell
+            } else if selectedItem is Track {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "songCell", for: indexPath) as! SearchSongCell
+                cell.configure(withTrack: selectedItem)
+                return cell
             }
-            return cell
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
-        if isFiltered { return nil }
-        var title = ""
-        
-        switch section {
-        case 0: title = "Albums"
-        case 1: title = "Artists"
-        case 2: title = "Songs"
-        default: break
         }
         
-        header.titleLabel.text = title
-        
-        return header
+        return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
     }
 }
 
 // MARK: - UITableViewDelegate
 extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var selectedCell = 0
         
-        if isFiltered {
-            selectedCell = searchBar.selectedScopeButtonIndex
-        } else {
-            selectedCell = indexPath.section + 1 // Add one to match searchBar scope button indexes
-        }
+        let selectedItem = isFiltered ? filteredResult[indexPath.row] : searchResults[indexPath.row]
         
-        switch selectedCell {
-        case 0: break
-        case 1: let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
-            let album = searchResults[indexPath.section][indexPath.row] as! Album
-            selectedRow = indexPath
-            detailVC.coreDataStack = coreDataStack
-            detailVC.currentAlbum = album
-            navigationController?.pushViewController(detailVC, animated: true)
-        case 2: let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailViewController") as! ArtistDetailViewController
-            let artist = artists[indexPath.row]
+        if selectedItem is Artist {
+            let artist = selectedItem as! Artist
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailViewController") as! ArtistDetailViewController
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.currentArtist = artist
             navigationController?.pushViewController(detailVC, animated: true)
-        case 3: let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
-            let song = tracks[indexPath.row]
+        } else if selectedItem is Album {
+            let album = selectedItem as! Album
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
-            detailVC.albumId = song.albumId
+            detailVC.currentAlbum = album
+            detailVC.albumId = album.id
             navigationController?.pushViewController(detailVC, animated: true)
-        default: break
+        } else if selectedItem is Track {
+            let song = selectedItem as! Track
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
+            selectedRow = indexPath
+            detailVC.coreDataStack = coreDataStack
+            detailVC.albumId = song.album?.id
+            navigationController?.pushViewController(detailVC, animated: true)
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if searchResults[indexPath.section].isEmpty {
+        if searchResults.isEmpty {
             return nil
         } else {
             return indexPath
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if isFiltered || searchResults[section].isEmpty {
-            return CGFloat.leastNormalMagnitude
-        } else {
-            return 24.0
         }
     }
 }

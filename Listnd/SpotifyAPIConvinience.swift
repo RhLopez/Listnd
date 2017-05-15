@@ -151,29 +151,35 @@ extension SpotifyAPI {
             return
         }
         
-        let albumResult = data["albums"]
         let artistResult = data["artists"]
+        let albumResult = data["albums"]
         let trackResult = data["tracks"]
-        
-        self.parseAlbums(albumResult as AnyObject) { (success, result, errorMessage) in
-            if success {
-                results.append(result! as AnyObject)
-            } else {
-                completionHandlerForSearchResult(false, nil, errorMessage)
-            }
-        }
         
         self.parseArtistSearch(artistResult as AnyObject) { (success, result, errorMessage) in
             if success {
-                results.append(result! as AnyObject)
+                for item in result! {
+                    results.append(item)
+                }
             } else {
                 completionHandlerForSearchResult(false, nil, errorMessage)
             }
         }
         
-        self.parseTracksFromSearch(trackResult as AnyObject) { (success, result, errorMessage) in
+        self.parseAlbums(albumResult as AnyObject) { (success, result, errorMessage) in
             if success {
-                results.append(result! as AnyObject)
+                for item in result! {
+                    results.append(item)
+                }
+            } else {
+                completionHandlerForSearchResult(false, nil, errorMessage)
+            }
+        }
+        
+        self.parseTracks(trackResult as AnyObject) { (success, result, errorMessage) in
+            if success {
+                for item in result! {
+                    results.append(item)
+                }
             } else {
                 completionHandlerForSearchResult(false, nil, errorMessage)
             }
@@ -270,10 +276,6 @@ extension SpotifyAPI {
     
     func parseTracks(_ data: AnyObject?, completionHandlerForTrackParsing: @escaping (_ success: Bool, _ results: [Track]?, _ errorMessage: String) -> Void) {
         var tracks = [Track]()
-        var previewURL: String?
-        var artistName = ""
-        var albumId = ""
-        var albumName = ""
 
         func parsingFailed() {
             completionHandlerForTrackParsing(false, nil, "Unable to process track data from Spotify. Please try again")
@@ -285,54 +287,13 @@ extension SpotifyAPI {
             return
         }
         
-        guard let items = data["items"] as? [[String:AnyObject]] else {
+        guard let items = data["items"] as? [[String: AnyObject]] else {
             parsingFailed()
             return
         }
-        
-        for item in items {
-            guard let trackName = item["name"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let trackId = item["id"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let trackNumber = item["track_number"] as? Int else {
-                parsingFailed()
-                return
-            }
-            
-            guard let uri = item["uri"] as? String else {
-                parsingFailed()
-                return
-            }
-            
-            guard let duration = item["duration_ms"] as? Int else {
-                parsingFailed()
-                return
-            }
-            
-            if let url = item["preview_url"] as? String {
-                previewURL = url
-            } else {
-                previewURL = nil
-            }
-            
-            let track = Track(entity: trackEntity!, insertInto: nil)
-            track.name = trackName
-            track.id = trackId
-            track.trackNumber = Int16(trackNumber)
-            track.previewURL = previewURL
-            track.uri = uri
-            track.duration = Int32(duration)
-            track.listened = false
-            tracks.append(track)
-        }
-        
+
+        tracks = items.flatMap { Track(json: $0, context: nil) }
+
         completionHandlerForTrackParsing(true, tracks, "")
     }
     

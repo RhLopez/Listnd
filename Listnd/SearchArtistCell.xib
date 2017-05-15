@@ -27,24 +27,33 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NOl-hG-PcY">
-                        <rect key="frame" x="84" y="17" width="283" height="40"/>
+                        <rect key="frame" x="84" y="15" width="283" height="22"/>
                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HEh-P4-yL1">
+                        <rect key="frame" x="84" y="40" width="283" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.46444064010000002" green="0.46444064010000002" blue="0.46444064010000002" alpha="0.90094080109999997" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="NOl-hG-PcY" firstAttribute="top" secondItem="BSL-nP-nMk" secondAttribute="topMargin" constant="7" id="3Z8-7Y-Inf"/>
                     <constraint firstItem="jav-u3-Kw4" firstAttribute="leading" secondItem="BSL-nP-nMk" secondAttribute="leading" constant="8" id="Bc6-FG-29z"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="NOl-hG-PcY" secondAttribute="bottom" constant="9" id="HqR-jS-Pa8"/>
+                    <constraint firstItem="HEh-P4-yL1" firstAttribute="leading" secondItem="jav-u3-Kw4" secondAttribute="trailing" constant="8" id="HDx-Fx-KZa"/>
+                    <constraint firstItem="HEh-P4-yL1" firstAttribute="trailing" secondItem="BSL-nP-nMk" secondAttribute="trailingMargin" id="Y6t-tw-hC3"/>
                     <constraint firstItem="jav-u3-Kw4" firstAttribute="top" secondItem="BSL-nP-nMk" secondAttribute="top" constant="6" id="YZY-Zd-amW"/>
                     <constraint firstAttribute="bottom" secondItem="jav-u3-Kw4" secondAttribute="bottom" constant="7" id="bBj-Mg-qKg"/>
+                    <constraint firstItem="HEh-P4-yL1" firstAttribute="top" secondItem="NOl-hG-PcY" secondAttribute="bottom" constant="3" id="hZA-FX-CxF"/>
                     <constraint firstItem="NOl-hG-PcY" firstAttribute="leading" secondItem="jav-u3-Kw4" secondAttribute="trailing" constant="8" id="kz0-81-aud"/>
                     <constraint firstItem="NOl-hG-PcY" firstAttribute="trailing" secondItem="BSL-nP-nMk" secondAttribute="trailingMargin" id="qhM-q4-JZu"/>
-                    <constraint firstItem="NOl-hG-PcY" firstAttribute="top" secondItem="BSL-nP-nMk" secondAttribute="topMargin" constant="9" id="vg8-f0-7gp"/>
                     <constraint firstItem="NOl-hG-PcY" firstAttribute="leading" secondItem="jav-u3-Kw4" secondAttribute="trailing" constant="8" id="w8g-dX-pX5"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="artistDetailLabel" destination="HEh-P4-yL1" id="MHQ-dV-Mkb"/>
                 <outlet property="artistImageView" destination="jav-u3-Kw4" id="1Zc-71-nVg"/>
                 <outlet property="artistNameLabel" destination="NOl-hG-PcY" id="rhV-UM-epD"/>
             </connections>

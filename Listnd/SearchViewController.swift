@@ -232,10 +232,7 @@ extension SearchViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if searchResults.isEmpty || (isFiltered && filteredResult.isEmpty) {
-            return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
-        } else {
-            
+        if !searchResults.isEmpty || (isFiltered && filteredResult.isEmpty) {
             let selectedItem = isFiltered ? filteredResult[indexPath.row] : searchResults[indexPath.row]
             
             if selectedItem is Artist {
@@ -265,14 +262,14 @@ extension SearchViewController: UITableViewDelegate {
         
         if selectedItem is Artist {
             let artist = selectedItem as! Artist
-            let detailVC = storyboard?.instantiateViewController(withIdentifier: "ArtistDetailViewController") as! ArtistDetailViewController
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchArtistDetailViewController") as! SearchArtistDetailViewController
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.currentArtist = artist
             navigationController?.pushViewController(detailVC, animated: true)
         } else if selectedItem is Album {
             let album = selectedItem as! Album
-            let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.currentAlbum = album
@@ -280,7 +277,7 @@ extension SearchViewController: UITableViewDelegate {
             navigationController?.pushViewController(detailVC, animated: true)
         } else if selectedItem is Track {
             let song = selectedItem as! Track
-            let detailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
+            let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.albumId = song.album?.id

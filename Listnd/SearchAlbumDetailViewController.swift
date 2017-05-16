@@ -1,5 +1,5 @@
 //
-//  AlbumDetailViewController.swift
+//  SearchAlbumDetailViewController.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 10/9/16.
@@ -13,7 +13,7 @@ import SVProgressHUD
 import GSKStretchyHeaderView
 import SwiftMessages
 
-class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
+class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -99,15 +99,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
         SpotifyAPI.sharedInstance.getImageURL(currentAlbum.artist.id) { (url) in
             if let imageURL = url {
                 self.currentAlbum.artist.imageURL = imageURL
-                //self.getArtistImage(imageURL)
-            }
-        }
-    }
-    
-    func getArtistImage(_ url: String) {
-        SpotifyAPI.sharedInstance.getImage(url) { (data) in
-            if let data = data {
-                self.currentAlbum.artist.artistImage = NSData(data: data)
             }
         }
     }
@@ -117,7 +108,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
             self.headerView = headerView
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: false)
             if currentAlbum.albumImage == nil {
-                NotificationCenter.default.addObserver(self, selector: #selector(AlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(SearchAlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
             }
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             headerView.addButton.addTarget(self, action: #selector(saveAlbum), for: .touchUpInside)
@@ -145,7 +136,7 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
 }
 
 // Mark: - Helper methods
-extension AlbumDetailViewController {
+extension SearchAlbumDetailViewController {
     func setAudio() {
         let audioSession = AVAudioSession.sharedInstance()
         
@@ -260,15 +251,15 @@ extension AlbumDetailViewController {
                 if let track = fetchTrack(indexPath: indexPath, album: album) {
                     album.addToTracks(track)
                     coreDataStack.saveContext()
-                    //alertView.show(self, title: "Song Saved", text: nil, noButtons: true, buttonText: nil, cancelButtonText: nil, color: UIColorFromHex(0xD3D2D3, alpha: 1), iconImage: nil, delay: 0.2, timeLeft: nil)
+                    SwiftMessages.sharedInstance.displayConfirmation(message: "Song saved")
                 } else {
-                    //alertView.danger(self, title: "Song previously saved", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
                 }
             } else {
-                //alertView.danger(self, title: "Song previously saved", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
             }
         } else {
-            //alertView.danger(self, title: "Unable to save song. Please try again.", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to save song")
         }
     }
     
@@ -283,7 +274,7 @@ extension AlbumDetailViewController {
                 SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
             }
         } else {
-           // alertView.danger(self, title: "Unable to save album", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to save album")
         }
     }
     
@@ -299,15 +290,12 @@ extension AlbumDetailViewController {
             } else {
                 let entity = NSEntityDescription.entity(forEntityName: "Artist", in: coreDataStack.managedContext)
                 currentArtist = Artist(entity: entity!, insertInto: coreDataStack.managedContext)
-                print("Artist created to save")
                 let artistSelected = currentAlbum.artist
                 currentArtist!.name = artistSelected.name
                 currentArtist!.id = artistSelected.id
                 if let imageURL = artistSelected.imageURL {
                     currentArtist!.imageURL = imageURL
-                    print(imageURL)
                 }
-                //coreDataStack.saveContext()
             }
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error retrieving saved artist information")
@@ -335,17 +323,7 @@ extension AlbumDetailViewController {
                     }
                 }
             } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Album", in: coreDataStack.managedContext)!
-                album = Album(entity: entity, insertInto: coreDataStack.managedContext)
-                print("Album created to save")
-                album!.name = currentAlbum.name
-                album!.id = currentAlbum.id
-                album!.imageURL = currentAlbum.imageURL
-                album!.uri = currentAlbum.uri
-                album!.albumImage = currentAlbum.albumImage
-                album!.artist = currentArtist
-                album!.listened = currentAlbum.listened
-                album!.listenedCount = currentAlbum.listenedCount
+                album = Album.cloneAlbum(currentAlbum, artist: currentArtist, context: coreDataStack.managedContext)
             }
         } catch {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error retrieving saved album information")
@@ -365,14 +343,7 @@ extension AlbumDetailViewController {
             if results.count > 0 {
                 track = nil
             } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Track", in: coreDataStack.managedContext)!
-                track = Track(entity: entity, insertInto: coreDataStack.managedContext)
-                track!.name = currentTrack.name
-                track!.id = currentTrack.id
-                track!.trackNumber = currentTrack.trackNumber
-                track!.uri = currentTrack.uri
-                track!.listened = currentTrack.listened
-                track!.album = album
+                track = Track.cloneTrack(currentTrack, forAlbum: album, inContext: coreDataStack.managedContext)
                 coreDataStack.saveContext()
             }
         } catch {
@@ -384,18 +355,10 @@ extension AlbumDetailViewController {
     func saveSongsFromAlbum(album: Album) {
         for track in tracks {
             if !savedTrackIds.contains(track.id) {
-                let entity = NSEntityDescription.entity(forEntityName: "Track", in: coreDataStack.managedContext)!
-                let trackToSave = Track(entity: entity, insertInto: coreDataStack.managedContext)
-                trackToSave.name = track.name
-                trackToSave.id = track.id
-                trackToSave.trackNumber = track.trackNumber
-                trackToSave.album = album
-                trackToSave.uri = track.uri
-                trackToSave.listened = track.listened
-                album.addToTracks(trackToSave)
+                let savedTrack = Track.cloneTrack(track, forAlbum: album, inContext: coreDataStack.managedContext)
+                album.addToTracks(savedTrack)
             }
         }
-        print("Tracks saved")
     }
     
     func timeConversion(duration: Int) -> String {
@@ -417,14 +380,14 @@ extension AlbumDetailViewController {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension AlbumDetailViewController: UIGestureRecognizerDelegate {
+extension SearchAlbumDetailViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 }
 
 // MARK: - UITableViewDataSource
-extension AlbumDetailViewController: UITableViewDataSource {    
+extension SearchAlbumDetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tracks.count
     }
@@ -438,7 +401,7 @@ extension AlbumDetailViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension AlbumDetailViewController: UITableViewDelegate {
+extension SearchAlbumDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if Reachability.sharedInstance.isConnectedToNetwork() {
             previousSelectedCell = currentIndexPath

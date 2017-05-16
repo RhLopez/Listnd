@@ -1,5 +1,5 @@
 //
-//  FavoriteTableViewController.swift
+//  ArtistTableViewController.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 10/2/16.
@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 import SwiftMessages
 
-class FavoriteArtistTableViewController: UIViewController {
+class ArtistTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -47,7 +47,7 @@ class FavoriteArtistTableViewController: UIViewController {
 }
 
 // MARK: - Helper methods
-extension FavoriteArtistTableViewController {
+extension ArtistTableViewController {
     func registerNib() {
         let artistNib = UINib(nibName: "ArtistCell", bundle: nil)
         tableView.register(artistNib, forCellReuseIdentifier: "artistCell")
@@ -63,7 +63,7 @@ extension FavoriteArtistTableViewController {
 }
 
 // MARK: - UITableViewDataSouce
-extension FavoriteArtistTableViewController: UITableViewDataSource {
+extension ArtistTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
@@ -78,9 +78,9 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension FavoriteArtistTableViewController: UITableViewDelegate {
+extension ArtistTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! FavoriteAlbumTableView
+        let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! AlbumTableViewController
         albumVC.coreDataStack = coreDataStack
         albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
         navigationController?.pushViewController(albumVC, animated: true)
@@ -106,7 +106,7 @@ extension FavoriteArtistTableViewController: UITableViewDelegate {
 }
 
 // MARK: - NSFecthedResultsControllerDelegate
-extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate {
+extension ArtistTableViewController: NSFetchedResultsControllerDelegate {
         func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
             tableView.beginUpdates()
         }

@@ -1,5 +1,5 @@
 //
-//  AlbumTableView.swift
+//  AlbumTableViewController.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 10/16/16.
@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import SwiftMessages
 
-class AlbumTableView: UIViewController {
+class AlbumTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -41,8 +42,7 @@ class AlbumTableView: UIViewController {
             registerNib()
             getAlbums()
         } else {
-            //alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
-
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again")
         }
     }
         
@@ -60,7 +60,7 @@ class AlbumTableView: UIViewController {
 }
 
 // MARK: - Helper methods
-extension AlbumTableView {
+extension AlbumTableViewController {
     func registerNib() {
         let albumNib = UINib(nibName: "AlbumCell", bundle: nil)
         tableView.register(albumNib, forCellReuseIdentifier: "albumCell")
@@ -70,7 +70,7 @@ extension AlbumTableView {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            //alertView.danger(self, title: "Unable to load information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load information")
         }
     }
     
@@ -107,14 +107,14 @@ extension AlbumTableView {
 }
 
 // UIGestureRecognizerDelegate
-extension AlbumTableView: UIGestureRecognizerDelegate {
+extension AlbumTableViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 }
 
 // MARK: - UITableViewDataSource
-extension AlbumTableView: UITableViewDataSource {
+extension AlbumTableViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
     }
@@ -133,9 +133,9 @@ extension AlbumTableView: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension AlbumTableView: UITableViewDelegate {
+extension AlbumTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! FavoriteAlbumDetailTableViewController
+        let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! AlbumDetailTableViewController
         albumDetailVC.coreDataStack = coreDataStack
         albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
         albumDetailVC.albumListenedDelegate = self
@@ -161,7 +161,7 @@ extension AlbumTableView: UITableViewDelegate {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension AlbumTableView: NSFetchedResultsControllerDelegate {
+extension AlbumTableViewController: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
@@ -188,7 +188,7 @@ extension AlbumTableView: NSFetchedResultsControllerDelegate {
     }
 }
 
-extension AlbumTableView: AlbumListenedDelegate {
+extension AlbumTableViewController: AlbumListenedDelegate {
     func albumListenedChange() {
         var listenedCount = 0
         let albums = fetchedResultsController.fetchedObjects!

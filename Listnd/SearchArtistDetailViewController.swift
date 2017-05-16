@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import SVProgressHUD
 import GSKStretchyHeaderView
+import SwiftMessages
 
 // MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
@@ -39,22 +40,7 @@ class SearchArtistDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //alertView = JSSAlertView()
-        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
-        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
-        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
-            self.headerView = headerView
-            headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as Data?, hideButton: true)
-            if currentArtist.artistImage == nil {
-                NotificationCenter.default.addObserver(self, selector: #selector(ArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
-            }
-            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
-            tableView.addSubview(headerView)
-            getAlbums(artistId: currentArtist.id)
-        } else {
-            //alertView.danger(self, title: "There was an error loading the artist detail", text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
-            
-        }
+        configureUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -66,7 +52,32 @@ class SearchArtistDetailViewController: UIViewController {
 }
 
 //MARK: - Helper methods
-extension ArtistDetailViewController {
+extension SearchArtistDetailViewController {
+    func configureUI() {
+        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
+        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
+        if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
+            self.headerView = headerView
+            headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as Data?, hideButton: true)
+            if currentArtist.artistImage == nil {
+                NotificationCenter.default.addObserver(self, selector: #selector(SearchArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
+            }
+            headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
+            tableView.addSubview(headerView)
+            registerNib()
+            getAlbums(artistId: currentArtist.id)
+        } else {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error loading the artist detail")
+        }
+    }
+    
+    func registerNib() {
+        let albumNib = UINib(nibName: "SearchAlbumCell", bundle: nil)
+        tableView.register(albumNib, forCellReuseIdentifier: "albumCell")
+        let noResultNib = UINib(nibName: "NoSearchResultCell", bundle: nil)
+        tableView.register(noResultNib, forCellReuseIdentifier: "noResultCell")
+    }
+    
     func getAlbums(artistId: String) {
         isLoading = true
         SVProgressHUD.setDefaultStyle(.dark)
@@ -85,8 +96,7 @@ extension ArtistDetailViewController {
             } else {
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
-                    
-                    //self.alertView.danger(self, title: errorMessage, text: nil, buttonText: nil, cancelButtonText: nil, delay: nil, timeLeft: nil)
+                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
                 }
             }
         }
@@ -119,45 +129,6 @@ extension ArtistDetailViewController {
         }
     }
     
-    func configureCell(cell: UITableViewCell, indexPath: IndexPath) {
-        guard let cell = cell as? ArtistDetailTableViewCell else { return }
-        
-        cell.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
-        
-        let album = searchItems[indexPath.section][indexPath.row]
-        cell.albumNameLabel.text = album.name
-        
-        if let data = album.albumImage {
-            let image = UIImage(data: data as Data)
-            cell.albumImageView.image = image
-        } else {
-            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
-                album.albumImage = NSData(data: data as Data)
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data as Data)
-                    UIView.transition(with: cell.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { cell.albumImageView.image = image }, completion: nil)
-                    if self.selectedRow == indexPath {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: self)
-                    }
-                }
-            })
-        }
-    }
-    
-    func getAlbumImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
-        if let urlString = url {
-            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
-                if let data = result {
-                    completetionHandlerForAlbumImage(data as NSData)
-                }
-            })
-        } else {
-            let image = UIImage(named: "headerPlaceHolder")
-            let data = UIImagePNGRepresentation(image!)!
-            completetionHandlerForAlbumImage(data as NSData)
-        }
-    }
-    
     func artistImageDownloaded() {
         if let imageData = currentArtist.artistImage {
             headerView.setImage(data: imageData as Data)
@@ -170,7 +141,7 @@ extension ArtistDetailViewController {
 }
 
 // MARK: - UITableViewDataSource
-extension ArtistDetailViewController: UITableViewDataSource {
+extension SearchArtistDetailViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         if fetchingAlbums {
             return 0
@@ -204,21 +175,21 @@ extension ArtistDetailViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if searchItems.count == 0 {
-            return tableView.dequeueReusableCell(withIdentifier: "noAlbumsResultCell", for: indexPath)
+            return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
         } else {
-            let identifier = "artistCell"
-            let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-            configureCell(cell: cell, indexPath: indexPath)
-            
+            let identifier = "albumCell"
+            let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SearchAlbumCell
+            let album = searchItems[indexPath.section][indexPath.row]
+            cell.configure(withAlbum: album)
             return cell
         }
     }
 }
 
 // MARK: - UITableViewDelegate
-extension ArtistDetailViewController: UITableViewDelegate {
+extension SearchArtistDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "AlbumDetailViewController") as! AlbumDetailViewController
+        let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
         
         albumDetailVC.coreDataStack = coreDataStack
         albumDetailVC.currentAlbum = searchItems[indexPath.section][indexPath.row]
@@ -249,7 +220,7 @@ extension ArtistDetailViewController: UITableViewDelegate {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension ArtistDetailViewController: UIGestureRecognizerDelegate {
+extension SearchArtistDetailViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

@@ -1,5 +1,5 @@
 //
-//  ArtistDetailViewController.swift
+//  SearchArtistDetailViewController.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 11/17/16.
@@ -14,7 +14,7 @@ import GSKStretchyHeaderView
 // MARK: - Notification key
 let albumImageDownloadNotification = "com.RhL.albumImageNotificationKey"
 
-class ArtistDetailViewController: UIViewController {
+class SearchArtistDetailViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!

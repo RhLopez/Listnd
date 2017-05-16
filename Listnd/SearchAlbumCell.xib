@@ -33,8 +33,8 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w7v-8h-2O7">
-                        <rect key="frame" x="84" y="30" width="283" height="17"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <rect key="frame" x="84" y="29" width="283" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.33333333329999998" green="0.33333333329999998" blue="0.33333333329999998" alpha="0.79000000000000004" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -49,7 +49,7 @@
                     <constraint firstItem="w7v-8h-2O7" firstAttribute="leading" secondItem="zlU-uG-C7J" secondAttribute="trailing" constant="8" id="9CZ-By-fmV"/>
                     <constraint firstAttribute="trailingMargin" secondItem="w7v-8h-2O7" secondAttribute="trailing" id="Lhg-WG-jUG"/>
                     <constraint firstItem="TD1-qX-mkx" firstAttribute="top" secondItem="w7v-8h-2O7" secondAttribute="bottom" constant="2" id="TeB-R9-j2q"/>
-                    <constraint firstItem="w7v-8h-2O7" firstAttribute="top" secondItem="jWe-3P-Kae" secondAttribute="bottom" constant="2" id="Ysh-ou-5xO"/>
+                    <constraint firstItem="w7v-8h-2O7" firstAttribute="top" secondItem="jWe-3P-Kae" secondAttribute="bottom" constant="1" id="Ysh-ou-5xO"/>
                     <constraint firstItem="zlU-uG-C7J" firstAttribute="leading" secondItem="DEt-Yk-dNn" secondAttribute="leading" constant="8" id="hrm-52-Dy1"/>
                     <constraint firstAttribute="trailingMargin" secondItem="TD1-qX-mkx" secondAttribute="trailing" id="i0v-2d-68I"/>
                     <constraint firstItem="jWe-3P-Kae" firstAttribute="top" secondItem="DEt-Yk-dNn" secondAttribute="topMargin" constant="-2" id="kAg-kZ-R8n"/>

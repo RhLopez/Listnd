@@ -1,5 +1,5 @@
 //
-//  FavoriteAlbumDetailTableViewController.swift
+//  AlbumDetailTableViewController.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 10/19/16.
@@ -8,12 +8,13 @@
 
 import UIKit
 import CoreData
+import SwiftMessages
 
 protocol AlbumListenedDelegate: class {
     func albumListenedChange()
 }
 
-class FavoriteAlbumDetailTableViewController: UIViewController {
+class AlbumDetailTableViewController: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -31,14 +32,14 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       // alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
+            registerNib()
             fetchTracks()
         } else {
-            //alertView.danger(self, title: "Unable to load album detail", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load album detail")
         }
     }
     
@@ -61,12 +62,16 @@ class FavoriteAlbumDetailTableViewController: UIViewController {
 }
 
 // MARK: - Helper methods
-extension FavoriteAlbumDetailTableViewController {
+extension AlbumDetailTableViewController {
+    func registerNib() {
+        let songNib = UINib(nibName: "SongCell", bundle: nil)
+        tableView.register(songNib, forCellReuseIdentifier: "songCell")
+    }
     func fetchTracks() {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            //alertView.danger(self, title: "Unable to retrieve track information", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to retrieve track information")
         }
     }
     
@@ -132,14 +137,14 @@ extension FavoriteAlbumDetailTableViewController {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension FavoriteAlbumDetailTableViewController: UIGestureRecognizerDelegate {
+extension AlbumDetailTableViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 }
 
 // MARK: - UITableViewDataSource
-extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
+extension AlbumDetailTableViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
     }
@@ -149,8 +154,8 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let identifier = "trackCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! FavoriteAlbumDetailTableViewcCell
+        let identifier = "songCell"
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SongCell
         let track = fetchedResultsController.object(at: indexPath)
         cell.configure(with: track)
         return cell
@@ -158,7 +163,7 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDataSource {
 }
 
 // MArk: - UITableViewDelegate
-extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
+extension AlbumDetailTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         listenedAction(indexPath: indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
@@ -181,7 +186,7 @@ extension FavoriteAlbumDetailTableViewController: UITableViewDelegate {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension FavoriteAlbumDetailTableViewController: NSFetchedResultsControllerDelegate {
+extension AlbumDetailTableViewController: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
@@ -193,7 +198,7 @@ extension FavoriteAlbumDetailTableViewController: NSFetchedResultsControllerDele
         case .delete:
             tableView.deleteRows(at: [indexPath!], with: .automatic)
         case .update:
-            let cell = tableView.cellForRow(at: indexPath!) as! FavoriteAlbumDetailTableViewcCell
+            let cell = tableView.cellForRow(at: indexPath!) as! SongCell
             let track = fetchedResultsController.object(at: indexPath!)
             cell.configure(with: track)
             break

@@ -113,7 +113,6 @@ class AlbumDetailViewController: UIViewController, ListndPlayerItemDelegate {
     }
     
     func configureUI() {
-        //alertView = JSSAlertView()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: false)

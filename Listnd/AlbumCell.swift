@@ -1,20 +1,20 @@
 //
-//  FavoriteAlbumTableViewCell.swift
+//  AlbumCell.swift
 //  Listnd
 //
-//  Created by Ramiro H. Lopez on 10/16/16.
-//  Copyright © 2016 Ramiro H. Lopez. All rights reserved.
+//  Created by Ramiro H Lopez on 5/15/17.
+//  Copyright © 2017 Ramiro H. Lopez. All rights reserved.
 //
 
 import UIKit
 
-class FavoriteAlbumTableViewCell: UITableViewCell {
+class AlbumCell: UITableViewCell {
     
-    @IBOutlet weak var albumImageView: UIImageView!
+    @IBOutlet weak var artworkImageVIew: UIImageView!
     @IBOutlet weak var albumNameLabel: UILabel!
     @IBOutlet weak var albumDetailLabel: UILabel!
     
-    var cell = FavoriteAlbumTableViewCell.self {
+    var cell = AlbumCell.self {
         didSet {
             layoutIfNeeded()
         }
@@ -22,22 +22,22 @@ class FavoriteAlbumTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        albumImageView.layer.cornerRadius = 6.5
-        albumImageView.clipsToBounds = true
+        artworkImageVIew.layer.cornerRadius = 6.5
+        artworkImageVIew.clipsToBounds = true
     }
     
     func configure(with album: Album) {
         self.albumNameLabel.text = album.name
-        self.albumImageView.image = UIImage(named: "headerPlaceHolder")
+        self.artworkImageVIew.image = UIImage(named: "headerPlaceHolder")
         
         if let data = album.albumImage {
-            self.albumImageView.image = UIImage(data: data as Data)
+            self.artworkImageVIew.image = UIImage(data: data as Data)
         } else {
             // Get album image if the album was saved prior to image being saved due to slow connetcion
             getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
                 DispatchQueue.main.async {
                     let image = UIImage(data: data as Data)
-                    UIView.transition(with: self.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImageView.image = image }, completion: nil)
+                    UIView.transition(with: self.artworkImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { self.artworkImageVIew.image = image }, completion: nil)
                     album.albumImage = data
                 }
             })

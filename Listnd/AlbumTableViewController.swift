@@ -1,5 +1,5 @@
 //
-//  FavoriteAlbumTableView.swift
+//  AlbumTableView.swift
 //  Listnd
 //
 //  Created by Ramiro H. Lopez on 10/16/16.
@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class FavoriteAlbumTableView: UIViewController {
+class AlbumTableView: UIViewController {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -38,6 +38,7 @@ class FavoriteAlbumTableView: UIViewController {
             headerView.configureView(name: artist.name, imageData: artist.artistImage as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
             tableView.addSubview(headerView)
+            registerNib()
             getAlbums()
         } else {
             //alertView.danger(self, title: "Unable to load. Please try again", text: nil, buttonText: "Ok", cancelButtonText: nil, delay: nil, timeLeft: nil)
@@ -59,7 +60,12 @@ class FavoriteAlbumTableView: UIViewController {
 }
 
 // MARK: - Helper methods
-extension FavoriteAlbumTableView {
+extension AlbumTableView {
+    func registerNib() {
+        let albumNib = UINib(nibName: "AlbumCell", bundle: nil)
+        tableView.register(albumNib, forCellReuseIdentifier: "albumCell")
+    }
+    
     func getAlbums() {
         do {
             try fetchedResultsController.performFetch()
@@ -101,14 +107,14 @@ extension FavoriteAlbumTableView {
 }
 
 // UIGestureRecognizerDelegate
-extension FavoriteAlbumTableView: UIGestureRecognizerDelegate {
+extension AlbumTableView: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 }
 
 // MARK: - UITableViewDataSource
-extension FavoriteAlbumTableView: UITableViewDataSource {
+extension AlbumTableView: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
     }
@@ -119,7 +125,7 @@ extension FavoriteAlbumTableView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "albumCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! FavoriteAlbumTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! AlbumCell
         let album = fetchedResultsController.object(at: indexPath)
         cell.configure(with: album)
         return cell
@@ -127,7 +133,7 @@ extension FavoriteAlbumTableView: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension FavoriteAlbumTableView: UITableViewDelegate {
+extension AlbumTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! FavoriteAlbumDetailTableViewController
         albumDetailVC.coreDataStack = coreDataStack
@@ -155,7 +161,7 @@ extension FavoriteAlbumTableView: UITableViewDelegate {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
+extension AlbumTableView: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
@@ -167,7 +173,7 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
         case .delete:
             tableView.deleteRows(at: [indexPath!], with: .automatic)
         case .update:
-            let cell = tableView.cellForRow(at: indexPath!) as! FavoriteAlbumTableViewCell
+            let cell = tableView.cellForRow(at: indexPath!) as! AlbumCell
             let album = fetchedResultsController.object(at: indexPath!)
             cell.configure(with: album)
             break
@@ -182,7 +188,7 @@ extension FavoriteAlbumTableView: NSFetchedResultsControllerDelegate {
     }
 }
 
-extension FavoriteAlbumTableView: AlbumListenedDelegate {
+extension AlbumTableView: AlbumListenedDelegate {
     func albumListenedChange() {
         var listenedCount = 0
         let albums = fetchedResultsController.fetchedObjects!

@@ -30,6 +30,7 @@ class FavoriteArtistTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
+        registerNib()
         fetchArtist()
     }
     
@@ -47,6 +48,11 @@ class FavoriteArtistTableViewController: UIViewController {
 
 // MARK: - Helper methods
 extension FavoriteArtistTableViewController {
+    func registerNib() {
+        let artistNib = UINib(nibName: "ArtistCell", bundle: nil)
+        tableView.register(artistNib, forCellReuseIdentifier: "artistCell")
+    }
+    
     func fetchArtist() {
         do {
             try self.fetchedResultsController.performFetch()
@@ -64,7 +70,7 @@ extension FavoriteArtistTableViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifer = "artistCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath) as! FavoriteArtistTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath) as! ArtistCell
         let artist = fetchedResultsController.object(at: indexPath)
         cell.configure(with: artist)
         return cell
@@ -112,7 +118,7 @@ extension FavoriteArtistTableViewController: NSFetchedResultsControllerDelegate 
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)
             case .update:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath!) as! FavoriteArtistTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath!) as! ArtistCell
                 let artist = fetchedResultsController.object(at: indexPath!)
                 cell.configure(with: artist)
                 break

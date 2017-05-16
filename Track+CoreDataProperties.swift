@@ -53,4 +53,17 @@ extension Track {
         self.duration = Int32(duration)
         self.listened = false
     }
+    
+    class func cloneTrack(_ track: Track, forAlbum album: Album, inContext context: NSManagedObjectContext) -> Track {
+        let entity = NSEntityDescription.entity(forEntityName: "Track", in: context)!
+        let trackCopy = Track(entity: entity, insertInto: context)
+        trackCopy.name = track.name
+        trackCopy.id = track.id
+        trackCopy.trackNumber = track.trackNumber
+        trackCopy.album = album
+        trackCopy.uri = track.uri
+        trackCopy.listened = track.listened
+        
+        return trackCopy
+    }
 }

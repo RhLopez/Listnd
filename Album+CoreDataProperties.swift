@@ -60,6 +60,21 @@ extension Album {
         
         return url
     }
+    
+    class func cloneAlbum(_ album: Album, artist: Artist, context: NSManagedObjectContext) -> Album {
+        let entity = NSEntityDescription.entity(forEntityName: "Album", in: context)!
+        let newAlbum = Album(entity: entity, insertInto: context)
+        newAlbum.name = album.name
+        newAlbum.id = album.id
+        newAlbum.imageURL = album.imageURL
+        newAlbum.uri = album.uri
+        newAlbum.albumImage = album.albumImage
+        newAlbum.artist = artist
+        newAlbum.listened = album.listened
+        newAlbum.listenedCount = album.listenedCount
+        
+        return newAlbum
+    }
 
 }
 

@@ -7,12 +7,10 @@
 //
 
 import Foundation
-import CoreData
 
 class SpotifyAPI {
     
     static let sharedInstance = SpotifyAPI()
-    let trackEntity = NSEntityDescription.entity(forEntityName: "Track", in: CoreDataStack.sharedInstance.managedContext)
 
     let session = URLSession.shared
     var task: URLSessionDataTask?
@@ -77,7 +75,6 @@ class SpotifyAPI {
             components.queryItems!.append(queryItem)
         }
 
-        print(components.url!)
         return components.url!
     }
 }

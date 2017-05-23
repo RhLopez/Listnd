@@ -281,6 +281,7 @@ extension SearchViewController: UITableViewDelegate {
             selectedRow = indexPath
             detailVC.coreDataStack = coreDataStack
             detailVC.albumId = song.album?.id
+            detailVC.songId = song.id
             navigationController?.pushViewController(detailVC, animated: true)
         }
         

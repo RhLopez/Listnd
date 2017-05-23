@@ -14,7 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     lazy var coreDataStack = CoreDataStack(modelName: "Model")
-    let stack = CoreDataStack.sharedInstance
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         guard let tabController = window?.rootViewController as? UITabBarController,
@@ -31,10 +30,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        stack.saveContext()
+        coreDataStack.saveContext()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        stack.saveContext()
+        coreDataStack.saveContext()
     }
 }

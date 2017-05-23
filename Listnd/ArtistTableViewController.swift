@@ -121,6 +121,7 @@ extension ArtistTableViewController: NSFetchedResultsControllerDelegate {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath!) as! ArtistCell
                 let artist = fetchedResultsController.object(at: indexPath!)
                 cell.configure(with: artist)
+                tableView.reloadRows(at: [indexPath!], with: .automatic)
                 break
             case .move:
                 tableView.deleteRows(at: [indexPath!], with: .automatic)

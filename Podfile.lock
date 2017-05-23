@@ -1,18 +1,26 @@
 PODS:
   - GSKStretchyHeaderView (1.0.0)
+  - Realm (2.7.0):
+    - Realm/Headers (= 2.7.0)
+  - Realm/Headers (2.7.0)
+  - RealmSwift (2.7.0):
+    - Realm (= 2.7.0)
   - SVProgressHUD (2.1.2)
   - SwiftMessages (3.3.3)
 
 DEPENDENCIES:
   - GSKStretchyHeaderView
+  - RealmSwift
   - SVProgressHUD
   - SwiftMessages
 
 SPEC CHECKSUMS:
   GSKStretchyHeaderView: daba8f035eaade6326d05ee2a382be714bb019c0
+  Realm: 07e5d3a9e0e41d65fd5f9f05150ed6295d0f093b
+  RealmSwift: 6d06425d3900c86473c4f323bf6949b43fca22bc
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
   SwiftMessages: 09cea3336e3fb63c3578983c8aac65acaa6d884a
 
-PODFILE CHECKSUM: a9df8fcf39d71064fa2a61a4cda0d8bcfb1ffb97
+PODFILE CHECKSUM: 4707a69cbb80f9066c434862ba784c2cd6ebb66b
 
 COCOAPODS: 1.2.1

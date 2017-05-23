@@ -31,6 +31,7 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
     var downloadingSampleClip: Bool?
     var isLoading: Bool?
     var headerView: HeaderView!
+    var songId: String?
     
     // MARK: - Lifecyle
     override func viewWillAppear(_ animated: Bool) {
@@ -99,7 +100,24 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
         SpotifyAPI.sharedInstance.getImageURL(currentAlbum.artist.id) { (url) in
             if let imageURL = url {
                 self.currentAlbum.artist.imageURL = imageURL
+                self.getArtistImage(url: imageURL, completetionHandlerForAlbumImage: { (data) in
+                    self.currentAlbum.artist.artistImage = data
+                })
             }
+        }
+    }
+    
+    func getArtistImage(url: String?, completetionHandlerForAlbumImage: @escaping (_ imageData: NSData) -> Void) {
+        if let urlString = url {
+            SpotifyAPI.sharedInstance.getImage(urlString, completionHandlerForImage: { (result) in
+                if let data = result {
+                    completetionHandlerForAlbumImage(data as NSData)
+                }
+            })
+        } else {
+            let image = UIImage(named: "headerPlaceHolder")
+            let data = UIImagePNGRepresentation(image!)!
+            completetionHandlerForAlbumImage(data as NSData)
         }
     }
     
@@ -174,6 +192,11 @@ extension SearchAlbumDetailViewController {
         
         let track = tracks[indexPath.row]
         cell.trackNameLabel.text = track.name
+        if let id = songId {
+            if track.id == id {
+                cell.trackNameLabel.font = UIFont.boldSystemFont(ofSize: 18.0)
+            }
+        }
         cell.trackDurationLabel.text = timeConversion(duration: Int(track.duration))
 
         if let url = track.previewURL {
@@ -415,6 +438,7 @@ extension SearchAlbumDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let save = UITableViewRowAction(style: .default, title: "Save") { (action, indexPath) in
             self.saveSong(indexPath: indexPath)
+            self.tableView.isEditing = false
         }
         
         save.backgroundColor = .blue

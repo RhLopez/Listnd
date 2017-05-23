@@ -176,6 +176,7 @@ extension AlbumTableViewController: NSFetchedResultsControllerDelegate {
             let cell = tableView.cellForRow(at: indexPath!) as! AlbumCell
             let album = fetchedResultsController.object(at: indexPath!)
             cell.configure(with: album)
+            tableView.reloadRows(at: [indexPath!], with: .automatic)
             break
         case .move:
             tableView.deleteRows(at: [indexPath!], with: .automatic)

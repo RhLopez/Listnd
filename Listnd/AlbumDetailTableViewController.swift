@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 import SwiftMessages
 
 protocol AlbumListenedDelegate: class {
@@ -20,8 +20,9 @@ class AlbumDetailTableViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
+    var tracks: List<Track>!
+    var notificationToken: NotificationToken? = nil
     weak var albumListenedDelegate: AlbumListenedDelegate?
     
     // MARK: - View life cycle
@@ -33,11 +34,12 @@ class AlbumDetailTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
-            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: true)
+            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.artworkImage as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             registerNib()
             fetchTracks()
+            subscribeNotificationToken()
         } else {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load album detail")
         }
@@ -46,19 +48,11 @@ class AlbumDetailTableViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         tracksListened()
-        coreDataStack.saveContext()
     }
     
-    // MARK: - NSFetchedResultsController
-    lazy var fetchedResultsController: NSFetchedResultsController<Track> = {
-        let fetchRequest: NSFetchRequest<Track> = Track.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.album.id), self.currentAlbum.id)
-        let sortDescriptor = NSSortDescriptor(key: #keyPath(Track.trackNumber), ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        let fetchedResultsController = NSFetchedResultsController<Track>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchedResultsController.delegate = self
-        return fetchedResultsController
-    }()
+    deinit {
+        notificationToken?.stop()
+    }
 }
 
 // MARK: - Helper methods
@@ -67,51 +61,70 @@ extension AlbumDetailTableViewController {
         let songNib = UINib(nibName: "SongCell", bundle: nil)
         tableView.register(songNib, forCellReuseIdentifier: "songCell")
     }
+    
     func fetchTracks() {
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to retrieve track information")
+        tracks = currentAlbum.tracks
+    }
+    
+    func subscribeNotificationToken() {
+        notificationToken = tracks.addNotificationBlock { [weak self] (changes: RealmCollectionChange) in
+            guard let tableView = self?.tableView else { return }
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                tableView.reloadData()
+                break
+            case .update(_, let deletions, let insertions, let modifications):
+                // Query results have changed, so apply them to the UITableView
+                tableView.beginUpdates()
+                tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}),
+                                     with: .automatic)
+                tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.endUpdates()
+                break
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+                break
+            }
         }
     }
     
     func tracksListened() {
         var listenedCount = 0
-        let tracks = fetchedResultsController.fetchedObjects!
+        var hasListened = false
+        
         for track in tracks {
             if track.listened {
                 listenedCount += 1
             }
         }
-        currentAlbum.listenedCount = Int16(listenedCount)
         
-        if listenedCount == fetchedResultsController.fetchedObjects?.count {
-            if !currentAlbum.listened {
-                currentAlbum.listened = true
-                albumListenedDelegate?.albumListenedChange()
-            }
-        } else {
-            if currentAlbum.listened {
-                currentAlbum.listened = false
-                albumListenedDelegate?.albumListenedChange()
-            }
+        if listenedCount == tracks.count {
+            hasListened = true
         }
-    }
-    
-    func deleteAction(indexPath: IndexPath) {
-        let trackToDelete = fetchedResultsController.object(at: indexPath)
-        coreDataStack.managedContext.delete(trackToDelete)
-        coreDataStack.saveContext()
+        
+        let realm = try! Realm()
+        try! realm.write {
+            currentAlbum.listened = hasListened
+            currentAlbum.listenedCount = listenedCount
+        }
+        albumListenedDelegate?.albumListenedChange()
     }
     
     func listenedAction(indexPath: IndexPath)  {
-        let track = fetchedResultsController.object(at: indexPath)
-        track.listened = !track.listened
-        coreDataStack.saveContext()
+        let track = tracks[indexPath.row]
+        let realm = try! Realm()
+        try! realm.write {
+            track.listened = !track.listened
+        }
     }
     
     func openSpotifyAction(indexPath: IndexPath) {
-        let track = fetchedResultsController.object(at: indexPath)
+        let track = tracks[indexPath.row]
         let uriString = URL(string: track.uri)!
         if UIApplication.shared.canOpenURL(uriString) {
             UIApplication.shared.open(uriString, options: [:], completionHandler: nil)
@@ -145,18 +158,14 @@ extension AlbumDetailTableViewController: UIGestureRecognizerDelegate {
 
 // MARK: - UITableViewDataSource
 extension AlbumDetailTableViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        return tracks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "songCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SongCell
-        let track = fetchedResultsController.object(at: indexPath)
+        let track = tracks[indexPath.row]
         cell.configure(with: track)
         return cell
     }
@@ -176,39 +185,15 @@ extension AlbumDetailTableViewController: UITableViewDelegate {
         }
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
-            self.deleteAction(indexPath: indexPath)
+            let realm = try! Realm()
+            let track = self.tracks[indexPath.row]
+            try! realm.write {
+                realm.delete(track)
+            }
         }
         
         spotifyAction.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
         
         return [deleteAction, spotifyAction]
-    }
-}
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension AlbumDetailTableViewController: NSFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.beginUpdates()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        switch type {
-        case .insert:
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        case .delete:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-        case .update:
-            let cell = tableView.cellForRow(at: indexPath!) as! SongCell
-            let track = fetchedResultsController.object(at: indexPath!)
-            cell.configure(with: track)
-            break
-        case .move:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        }
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.endUpdates()
     }
 }

@@ -209,7 +209,7 @@ extension SpotifyAPI {
             return
         }
         
-        artists = items.flatMap { Artist(json: $0, context: nil) }
+        artists = items.flatMap { Artist(json: $0) }
         completionHandlerForParseArtistSearch(true, artists, "")
     }
     
@@ -292,8 +292,7 @@ extension SpotifyAPI {
             return
         }
 
-        tracks = items.flatMap { Track(json: $0, context: nil) }
-
+        tracks = items.flatMap { Track(json: $0) }
         completionHandlerForTrackParsing(true, tracks, "")
     }
     

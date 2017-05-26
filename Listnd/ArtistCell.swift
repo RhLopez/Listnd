@@ -31,15 +31,13 @@ class ArtistCell: UITableViewCell {
         self.artistImageView.image = UIImage(named: "headerPlaceHolder")
         
         var albumCountMessage = ""
-        if let count = artist.albums?.count {
-            if count > 0 {
-                albumCountMessage = count > 1 ? "\(count) Albums" : "\(count) Album"
-            } else {
-                albumCountMessage = "No Albums"
-            }
+        
+        if artist.albums.count > 0 {
+            albumCountMessage = artist.albums.count > 1 ? "\(artist.albums.count) Albums" : "\(artist.albums.count) Album"
         } else {
-            albumCountMessage = ""
+            albumCountMessage = "No Albums"
         }
+
         self.albumCountLabel.text = albumCountMessage
         
         if artist.listened {
@@ -49,17 +47,16 @@ class ArtistCell: UITableViewCell {
         }
         
         // Get album image if the album was saved prior to image being saved due to slow connetcion
-        if let data = artist.artistImage {
-            print("setting: \(artist.name)")
+        if let data = artist.image {
             self.artistImageView.image = UIImage(data: data as Data)
         } else {
-            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
-                artist.artistImage = data
-                let image = UIImage(data: data as Data)
-                DispatchQueue.main.async {
-                    UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImageView.image = image }, completion: nil)
-                }
-            })
+//            getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
+//                artist.image = data
+//                let image = UIImage(data: data as Data)
+//                DispatchQueue.main.async {
+//                    UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImageView.image = image }, completion: nil)
+//                }
+//            })
         }
     }
     

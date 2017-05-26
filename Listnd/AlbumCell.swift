@@ -30,20 +30,20 @@ class AlbumCell: UITableViewCell {
         self.albumNameLabel.text = album.name
         self.artworkImageVIew.image = UIImage(named: "headerPlaceHolder")
         
-        if let data = album.albumImage {
+        if let data = album.artworkImage {
             self.artworkImageVIew.image = UIImage(data: data as Data)
         } else {
             // Get album image if the album was saved prior to image being saved due to slow connetcion
-            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data as Data)
-                    UIView.transition(with: self.artworkImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { self.artworkImageVIew.image = image }, completion: nil)
-                    album.albumImage = data
-                }
-            })
+//            getAlbumImage(url: album.artworkUrl, completetionHandlerForAlbumImage: { (data) in
+//                DispatchQueue.main.async {
+//                    let image = UIImage(data: data as Data)
+//                    UIView.transition(with: self.artworkImageVIew, duration: 1, options: .transitionCrossDissolve, animations: { self.artworkImageVIew.image = image }, completion: nil)
+//                    album.artworkImage = data
+//                }
+//            })
         }
         
-        self.albumDetailLabel.text = "\(album.listenedCount) of \(album.tracks!.count) Tracks Lisntd"
+        self.albumDetailLabel.text = "\(album.listenedCount) of \(album.tracks.count) Tracks Lisntd"
         
         if album.listened {
             self.accessoryType = UITableViewCellAccessoryType.checkmark

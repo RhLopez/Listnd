@@ -13,27 +13,14 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    lazy var coreDataStack = CoreDataStack(modelName: "Model")
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        guard let tabController = window?.rootViewController as? UITabBarController,
-            let firstNavController = tabController.viewControllers?[0] as? UINavigationController,
-            let firstTabController = firstNavController.topViewController as? ArtistTableViewController,
-            let secondNavController = tabController.viewControllers?[1] as? UINavigationController,
-            let secondTabController = secondNavController.topViewController as? SearchViewController else {
-                return true
-        }
-        
-        firstTabController.coreDataStack = coreDataStack
-        secondTabController.coreDataStack = coreDataStack
         return true
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        coreDataStack.saveContext()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        coreDataStack.saveContext()
     }
 }

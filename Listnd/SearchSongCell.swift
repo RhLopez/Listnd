@@ -19,6 +19,6 @@ class SearchSongCell: UITableViewCell {
         
         songNameLabel.text = song.name
         songDetailLabel.text = song.album!.name
-        songArtistLabel.text = song.album!.artist.name + " • Song"
+        songArtistLabel.text = song.album!.artist!.name + " • Song"
     }
 }

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 import SVProgressHUD
 import SwiftMessages
 
@@ -21,12 +21,8 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var searchResults = [AnyObject]()
     var filteredResult = [AnyObject]()
-    var artists = [Artist]()
-    var albums = [Album]()
-    var tracks = [Track]()
     var tap: UITapGestureRecognizer!
     var isSearching: Bool?
     var hasSearched = false
@@ -85,9 +81,6 @@ extension SearchViewController {
     }
     
     func deleteObjects() {
-        artists.removeAll()
-        albums.removeAll()
-        tracks.removeAll()
         searchResults.removeAll()
         hasSearched = false
         tableView.reloadData()
@@ -264,14 +257,12 @@ extension SearchViewController: UITableViewDelegate {
             let artist = selectedItem as! Artist
             let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchArtistDetailViewController") as! SearchArtistDetailViewController
             selectedRow = indexPath
-            detailVC.coreDataStack = coreDataStack
             detailVC.currentArtist = artist
             navigationController?.pushViewController(detailVC, animated: true)
         } else if selectedItem is Album {
             let album = selectedItem as! Album
             let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
             selectedRow = indexPath
-            detailVC.coreDataStack = coreDataStack
             detailVC.currentAlbum = album
             detailVC.albumId = album.id
             navigationController?.pushViewController(detailVC, animated: true)
@@ -279,7 +270,6 @@ extension SearchViewController: UITableViewDelegate {
             let song = selectedItem as! Track
             let detailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
             selectedRow = indexPath
-            detailVC.coreDataStack = coreDataStack
             detailVC.albumId = song.album?.id
             detailVC.songId = song.id
             navigationController?.pushViewController(detailVC, animated: true)

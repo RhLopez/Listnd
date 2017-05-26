@@ -33,12 +33,12 @@ class SearchArtistCell: UITableViewCell {
         self.artistNameLabel.text = artist.name
         self.artistDetailLabel.text = "Artist"
         
-        if let data = artist.artistImage {
+        if let data = artist.image {
             let image = UIImage(data: data as Data)
             self.artistImageView?.image = image
         } else {
             getAlbumImage(url: artist.imageURL, completetionHandlerForAlbumImage: { (data) in
-                artist.artistImage = NSData(data: data as Data)
+                artist.image = NSData(data: data as Data)
                 DispatchQueue.main.async {
                     let image = UIImage(data: data as Data)
                     UIView.transition(with: self.artistImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.artistImageView.image = image }, completion: nil)

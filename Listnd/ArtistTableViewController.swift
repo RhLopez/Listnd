@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 import SwiftMessages
 
 class ArtistTableViewController: UIViewController {
@@ -16,8 +16,9 @@ class ArtistTableViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var selectedCell: IndexPath?
+    var artists: Results<Artist>?
+    var notificationToken: NotificationToken? = nil
     
     // MARK: - View life cycle 
     override func viewWillAppear(_ animated: Bool) {
@@ -31,19 +32,14 @@ class ArtistTableViewController: UIViewController {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
         registerNib()
-        fetchArtist()
+        getArtists()
+        subscribeNotificationToken()
+        print(Realm.Configuration.defaultConfiguration.fileURL!)
     }
     
-     //MARK: - FetchedResultsController
-        lazy var fetchedResultsController: NSFetchedResultsController<Artist> = {
-            let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
-            let sort = NSSortDescriptor(key: #keyPath(Artist.name), ascending: true)
-            fetchRequest.sortDescriptors = [sort]
-             let fetchedResultsController = NSFetchedResultsController<Artist>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-            fetchedResultsController.delegate = self
-    
-            return fetchedResultsController
-        }()
+    deinit {
+        notificationToken?.stop()
+    }
 }
 
 // MARK: - Helper methods
@@ -53,11 +49,35 @@ extension ArtistTableViewController {
         tableView.register(artistNib, forCellReuseIdentifier: "artistCell")
     }
     
-    func fetchArtist() {
-        do {
-            try self.fetchedResultsController.performFetch()
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load saved information")
+    func getArtists() {
+        let realm = try? Realm()
+        artists = realm?.objects(Artist.self)
+    }
+    
+    func subscribeNotificationToken() {
+        notificationToken = artists?.addNotificationBlock { [weak self] (changes: RealmCollectionChange) in
+            guard let tableView = self?.tableView else { return }
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                tableView.reloadData()
+                break
+            case .update(_, let deletions, let insertions, let modifications):
+                // Query results have changed, so apply them to the UITableView
+                tableView.beginUpdates()
+                tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}),
+                                     with: .automatic)
+                tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.endUpdates()
+                break
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+                break
+            }
         }
     }
 }
@@ -65,13 +85,13 @@ extension ArtistTableViewController {
 // MARK: - UITableViewDataSouce
 extension ArtistTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        return artists?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifer = "artistCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: identifer, for: indexPath) as! ArtistCell
-        let artist = fetchedResultsController.object(at: indexPath)
+        let artist = artists![indexPath.row]
         cell.configure(with: artist)
         return cell
     }
@@ -81,8 +101,7 @@ extension ArtistTableViewController: UITableViewDataSource {
 extension ArtistTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumVC = storyboard?.instantiateViewController(withIdentifier: "favoriteAlbumTableView") as! AlbumTableViewController
-        albumVC.coreDataStack = coreDataStack
-        albumVC.currentArtist = fetchedResultsController.object(at: indexPath)
+        albumVC.currentArtist = artists![indexPath.row]
         navigationController?.pushViewController(albumVC, animated: true)
         selectedCell = indexPath
         tableView.deselectRow(at: indexPath, animated: true)
@@ -94,42 +113,22 @@ extension ArtistTableViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let delete = UITableViewRowAction(style: .default, title: "Delete") { (action, indexPath) in
-            let artistToDelete = self.fetchedResultsController.object(at: indexPath)
-            self.coreDataStack.managedContext.delete(artistToDelete)
-            self.coreDataStack.saveContext()
+            let realm = try! Realm()
+            let artist = self.artists![indexPath.row]
+            
+            try! realm.write {
+                for album in artist.albums {
+                    for track in album.tracks {
+                        realm.delete(track)
+                    }
+                    realm.delete(album)
+                }
+                realm.delete(artist)
+            }
         }
         
         delete.backgroundColor = .red
         
         return [delete]
     }
-}
-
-// MARK: - NSFecthedResultsControllerDelegate
-extension ArtistTableViewController: NSFetchedResultsControllerDelegate {
-        func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-            tableView.beginUpdates()
-        }
-    
-        func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-            switch type {
-            case .insert:
-                tableView.insertRows(at: [newIndexPath!], with: .automatic)
-            case .delete:
-                tableView.deleteRows(at: [indexPath!], with: .automatic)
-            case .update:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "artistCell", for: indexPath!) as! ArtistCell
-                let artist = fetchedResultsController.object(at: indexPath!)
-                cell.configure(with: artist)
-                tableView.reloadRows(at: [indexPath!], with: .automatic)
-                break
-            case .move:
-                tableView.deleteRows(at: [indexPath!], with: .automatic)
-                tableView.insertRows(at: [newIndexPath!], with: .automatic)
-            }
-        }
-    
-        func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-            tableView.endUpdates()
-        }
 }

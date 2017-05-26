@@ -33,15 +33,15 @@ class SearchAlbumCell: UITableViewCell {
         self.albumImageView.image = UIImage(named: "thumbnailPlaceHolder")
         
         self.albumNameLabel.text = album.name
-        self.albumArtistLabel.text = album.artist.name
+        self.albumArtistLabel.text = album.artist!.name
         self.albumDetailLabel.text = String(album.type.characters.prefix(1)).uppercased() + String(album.type.characters.dropFirst())
         
-        if let data = album.albumImage {
+        if let data = album.artworkImage {
             let image = UIImage(data: data as Data)
             self.albumImageView.image = image
         } else {
-            getAlbumImage(url: album.imageURL, completetionHandlerForAlbumImage: { (data) in
-                album.albumImage = NSData(data: data as Data)
+            getAlbumImage(url: album.artworkUrl, completetionHandlerForAlbumImage: { (data) in
+                album.artworkImage = NSData(data: data as Data)
                 DispatchQueue.main.async {
                     let image = UIImage(data: data as Data)
                     UIView.transition(with: self.albumImageView, duration: 1, options: .transitionCrossDissolve, animations: { self.albumImageView.image = image }, completion: nil)

@@ -21,7 +21,6 @@ class SearchArtistDetailViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
 
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var currentArtist: Artist!
     var sections = [String]()
     var searchItems = [[Album]]()
@@ -58,8 +57,8 @@ extension SearchArtistDetailViewController {
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
-            headerView.configureView(name: currentArtist.name, imageData: currentArtist.artistImage as Data?, hideButton: true)
-            if currentArtist.artistImage == nil {
+            headerView.configureView(name: currentArtist.name, imageData: currentArtist.image as Data?, hideButton: true)
+            if currentArtist.image == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(SearchArtistDetailViewController.artistImageDownloaded), name: NSNotification.Name(rawValue: artistImageDownloadNotification), object: nil)
             }
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
@@ -130,7 +129,7 @@ extension SearchArtistDetailViewController {
     }
     
     func artistImageDownloaded() {
-        if let imageData = currentArtist.artistImage {
+        if let imageData = currentArtist.image {
             headerView.setImage(data: imageData as Data)
         }
     }
@@ -191,7 +190,6 @@ extension SearchArtistDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
         
-        albumDetailVC.coreDataStack = coreDataStack
         albumDetailVC.currentAlbum = searchItems[indexPath.section][indexPath.row]
         selectedRow = indexPath
         navigationController?.pushViewController(albumDetailVC, animated: true)

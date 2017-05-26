@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 import SwiftMessages
 
 class AlbumTableViewController: UIViewController {
@@ -16,11 +16,12 @@ class AlbumTableViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var currentArtist: Artist!
     var artistImageFrame: UIImageView!
     var headerView: HeaderView!
     var selectedCell: IndexPath?
+    var albums: List<Album>?
+    var notificationToken: NotificationToken? = nil
     
     // MARK: - View life cycle
     override func viewWillAppear(_ animated: Bool) {
@@ -36,27 +37,20 @@ class AlbumTableViewController: UIViewController {
         super.viewDidLoad()
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView, let artist = currentArtist {
             self.headerView = headerView
-            headerView.configureView(name: artist.name, imageData: artist.artistImage as Data?, hideButton: true)
+            headerView.configureView(name: artist.name, imageData: artist.image as Data?, hideButton: true)
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
             tableView.addSubview(headerView)
             registerNib()
             getAlbums()
+            subscribeNotificationToken()
         } else {
             SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load. Please try again")
         }
     }
-        
-    // MARK: - NSFetchedResultsController
-        lazy var fetchedResultsController: NSFetchedResultsController<Album> = {
-            let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.artist.id), self.currentArtist!.id)
-            let sort = NSSortDescriptor(key: #keyPath(Album.name), ascending: true)
-            fetchRequest.sortDescriptors = [sort]
-            let fetchedResultsController = NSFetchedResultsController<Album>(fetchRequest: fetchRequest, managedObjectContext: self.coreDataStack.managedContext, sectionNameKeyPath: nil, cacheName: nil)
-            fetchedResultsController.delegate = self
     
-            return fetchedResultsController
-        }()
+    deinit {
+        notificationToken?.stop()
+    }
 }
 
 // MARK: - Helper methods
@@ -66,22 +60,39 @@ extension AlbumTableViewController {
         tableView.register(albumNib, forCellReuseIdentifier: "albumCell")
     }
     
-    func getAlbums() {
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to load information")
+    func subscribeNotificationToken() {
+        notificationToken = albums?.addNotificationBlock { [weak self] (changes: RealmCollectionChange) in
+            guard let tableView = self?.tableView else { return }
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                tableView.reloadData()
+                break
+            case .update(_, let deletions, let insertions, let modifications):
+                // Query results have changed, so apply them to the UITableView
+                tableView.beginUpdates()
+                tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}),
+                                     with: .automatic)
+                tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.endUpdates()
+                break
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+                break
+            }
         }
     }
     
-    func deleteAlbum(indexPath: IndexPath) {
-        let albumToDelete = fetchedResultsController.object(at: indexPath)
-        coreDataStack.managedContext.delete(albumToDelete)
-        coreDataStack.saveContext()
+    func getAlbums() {
+        albums = currentArtist.albums
     }
     
     func openSpotify(indexPath: IndexPath) {
-        let album = fetchedResultsController.object(at: indexPath)
+        let album = albums![indexPath.row]
         let urlString = URL(string: album.uri)!
         if UIApplication.shared.canOpenURL(urlString) {
             UIApplication.shared.open(urlString, options: [:], completionHandler: nil)
@@ -115,18 +126,14 @@ extension AlbumTableViewController: UIGestureRecognizerDelegate {
 
 // MARK: - UITableViewDataSource
 extension AlbumTableViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        return albums?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "albumCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! AlbumCell
-        let album = fetchedResultsController.object(at: indexPath)
+        let album = albums![indexPath.row]
         cell.configure(with: album)
         return cell
     }
@@ -136,8 +143,7 @@ extension AlbumTableViewController: UITableViewDataSource {
 extension AlbumTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "albumDetailTableView") as! AlbumDetailTableViewController
-        albumDetailVC.coreDataStack = coreDataStack
-        albumDetailVC.currentAlbum = fetchedResultsController.object(at: indexPath)
+        albumDetailVC.currentAlbum = albums![indexPath.row]
         albumDetailVC.albumListenedDelegate = self
         navigationController?.pushViewController(albumDetailVC, animated: true)
         selectedCell = indexPath   
@@ -151,7 +157,14 @@ extension AlbumTableViewController: UITableViewDelegate {
         }
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
-            self.deleteAlbum(indexPath: indexPath)
+            let realm = try! Realm()
+            let album = self.albums![indexPath.row]
+            try! realm.write {
+                for track in album.tracks {
+                    realm.delete(track)
+                }
+                realm.delete(album)
+            }
         }
         
         spotify.backgroundColor = UIColor(red: 29/255, green: 185/255, blue: 84/255, alpha: 1)
@@ -160,55 +173,25 @@ extension AlbumTableViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - NSFetchedResultsControllerDelegate
-extension AlbumTableViewController: NSFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.beginUpdates()
-    }
-
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        switch type {
-        case .insert:
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        case .delete:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-        case .update:
-            let cell = tableView.cellForRow(at: indexPath!) as! AlbumCell
-            let album = fetchedResultsController.object(at: indexPath!)
-            cell.configure(with: album)
-            tableView.reloadRows(at: [indexPath!], with: .automatic)
-            break
-        case .move:
-            tableView.deleteRows(at: [indexPath!], with: .automatic)
-            tableView.insertRows(at: [newIndexPath!], with: .automatic)
-        }
-    }
-
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.endUpdates()
-    }
-}
-
 extension AlbumTableViewController: AlbumListenedDelegate {
     func albumListenedChange() {
+        let realm = try! Realm()
         var listenedCount = 0
-        let albums = fetchedResultsController.fetchedObjects!
-        for album in albums {
+        var hasListened = false
+        for album in albums! {
             if album.listened {
                 listenedCount += 1
             }
         }
-        
-        if listenedCount == fetchedResultsController.fetchedObjects?.count {
-            if !currentArtist.listened {
-                currentArtist.listened = true
-            }
+
+        if listenedCount == albums!.count {
+            hasListened = true
         } else {
-            if currentArtist.listened {
-                currentArtist.listened = false
-            }
+            hasListened = false
         }
         
-        coreDataStack.saveContext()
+        try! realm.write {
+            currentArtist.listened = hasListened
+        }
     }
 }

@@ -8,7 +8,7 @@
 
 import UIKit
 import AVFoundation
-import CoreData
+import RealmSwift
 import SVProgressHUD
 import GSKStretchyHeaderView
 import SwiftMessages
@@ -19,10 +19,8 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    var coreDataStack: CoreDataStack!
     var currentAlbum: Album!
     var albumId: String?
-    var currentArtist: Artist!
     var tracks = [Track]()
     var savedTrackIds = [String]()
     var player = AVPlayer()
@@ -73,7 +71,7 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
         SpotifyAPI.sharedInstance.getAlbum(id) { (result, errorMessage) in
             if let album = result {
                 self.currentAlbum = album
-                self.getAlbumImage(withURL: self.currentAlbum.imageURL)
+                self.getAlbumImage(withURL: self.currentAlbum.artworkUrl)
                 completionHander(true, nil)
             } else {
                 completionHander(false, errorMessage)
@@ -84,24 +82,24 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
     func getAlbumImage(withURL url: String?) {
         SpotifyAPI.sharedInstance.getImage(url) { (data) in
             if let imageData = data {
-                self.currentAlbum.albumImage = NSData(data: imageData)
+                self.currentAlbum.artworkImage = NSData(data: imageData)
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: self)
                 }
             } else {
                 let image = UIImage(named: "headerPlaceHolder")
                 let data = UIImagePNGRepresentation(image!)!
-                self.currentAlbum.albumImage = NSData(data: data)
+                self.currentAlbum.artworkImage = NSData(data: data)
             }
         }
     }
     
     func getArtistImageUrl(_ id: String) {
-        SpotifyAPI.sharedInstance.getImageURL(currentAlbum.artist.id) { (url) in
+        SpotifyAPI.sharedInstance.getImageURL(currentAlbum.artist!.id) { (url) in
             if let imageURL = url {
-                self.currentAlbum.artist.imageURL = imageURL
+                self.currentAlbum.artist!.imageURL = imageURL
                 self.getArtistImage(url: imageURL, completetionHandlerForAlbumImage: { (data) in
-                    self.currentAlbum.artist.artistImage = data
+                    self.currentAlbum.artist!.image = data
                 })
             }
         }
@@ -124,8 +122,8 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
     func configureUI() {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
-            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.albumImage as Data?, hideButton: false)
-            if currentAlbum.albumImage == nil {
+            headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.artworkImage as Data?, hideButton: false)
+            if currentAlbum.artworkImage == nil {
                 NotificationCenter.default.addObserver(self, selector: #selector(SearchAlbumDetailViewController.albumImageDownloaded), name: NSNotification.Name(rawValue: albumImageDownloadNotification), object: nil)
             }
             headerView.backButton.addTarget(self, action: #selector(backButtonPressed(sender:)), for: .touchUpInside)
@@ -172,11 +170,14 @@ extension SearchAlbumDetailViewController {
         SpotifyAPI.sharedInstance.getTracks(currentAlbum.id) { (results, errorMessage) in
             if let searchResults = results {
                 self.tracks = searchResults
+                for track in self.tracks {
+                    self.currentAlbum.tracks.append(track)
+                }
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
                     self.tableView.reloadData()
                     self.isLoading = false
-                    self.getArtistImageUrl(self.currentAlbum.artist.id)
+                    self.getArtistImageUrl(self.currentAlbum.artist!.id)
                 }
             } else {
                 DispatchQueue.main.async {
@@ -199,7 +200,7 @@ extension SearchAlbumDetailViewController {
         }
         cell.trackDurationLabel.text = timeConversion(duration: Int(track.duration))
 
-        if let url = track.previewURL {
+        if let url = track.previewUrl {
             cell.playerItem = ListndPlayerItem(url: URL(string: url)!)
             cell.playerItem?.delegate = self
         } else {
@@ -267,121 +268,74 @@ extension SearchAlbumDetailViewController {
         self.tableView.reloadRows(at: rowsToReload as [IndexPath], with: .none)
     }
     
-    func saveSong(indexPath: IndexPath) {
-        if let artist = fetchArtist() {
-            if let album = fetchAlbum() {
-                artist.addToAlbums(album)
-                if let track = fetchTrack(indexPath: indexPath, album: album) {
-                    album.addToTracks(track)
-                    coreDataStack.saveContext()
-                    SwiftMessages.sharedInstance.displayConfirmation(message: "Song saved")
-                } else {
-                    SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
-                }
-            } else {
-                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
-            }
-        } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to save song")
-        }
-    }
-    
     func saveAlbum() {
-        if let artist = fetchArtist() {
-            if  let album = fetchAlbum() {
-                artist.addToAlbums(album)
-                saveSongsFromAlbum(album: album)
-                coreDataStack.saveContext()
-                SwiftMessages.sharedInstance.displayConfirmation(message: "Album Saved")
-            } else {
-                SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
-            }
+        let realm = try! Realm()
+        
+        if let _ = realm.object(ofType: Album.self, forPrimaryKey: currentAlbum.id) {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Album previously saved")
         } else {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Unable to save album")
+            let artist = checkArtist(forAlbum: currentAlbum)
+            let album = currentAlbum!
+            try! realm.write {
+                currentAlbum.artist = nil
+                artist.albums.append(album)
+                realm.add(artist, update: true)
+                SwiftMessages.sharedInstance.displayConfirmation(message: "Album saved")
+            }
         }
     }
     
-    func fetchArtist() -> Artist? {
-        let fetchRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Artist.id), currentAlbum.artist.id)
-        fetchRequest.sortDescriptors = []
-        
-        do {
-            let results = try coreDataStack.managedContext.fetch(fetchRequest)
-            if results.count > 0 {
-                currentArtist = results.first
-            } else {
-                let entity = NSEntityDescription.entity(forEntityName: "Artist", in: coreDataStack.managedContext)
-                currentArtist = Artist(entity: entity!, insertInto: coreDataStack.managedContext)
-                let artistSelected = currentAlbum.artist
-                currentArtist!.name = artistSelected.name
-                currentArtist!.id = artistSelected.id
-                if let imageURL = artistSelected.imageURL {
-                    currentArtist!.imageURL = imageURL
+    func saveSong(forIndexPath indexPath: IndexPath) {
+        let realm = try! Realm()
+        let track = tracks[indexPath.row]
+        if let _ = realm.object(ofType: Track.self, forPrimaryKey: track.id) {
+            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "Song previously saved")
+        } else {
+            let artist = checkArtist(forAlbum: currentAlbum)
+            let album = checkAlbum(currentAlbum)
+            try! realm.write {
+                album.artist = nil
+                track.album = nil
+                if !albumExist(album.id) {
+                    artist.albums.append(album)
+                    album.tracks.removeAll()
                 }
+                album.tracks.append(track)
+                realm.add(artist, update: true)
+                SwiftMessages.sharedInstance.displayConfirmation(message: "Song saved")
             }
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error retrieving saved artist information")
         }
-        
-        return currentArtist
     }
     
-    func fetchAlbum() -> Album? {
-        var album: Album?
-        let fetchRequest: NSFetchRequest<Album> = Album.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Album.id), currentAlbum!.id)
-        fetchRequest.sortDescriptors = []
+    func checkArtist(forAlbum album: Album) -> Artist {
+        let realm = try! Realm()
+        let artist: Artist!
         
-        do {
-            let results = try  coreDataStack.managedContext.fetch(fetchRequest)
-            if results.count > 0 {
-                album = results.first
-                if album?.tracks?.count == tracks.count {
-                    album = nil
-                } else {
-                    for item in (album?.tracks)! {
-                        let track = item as! Track
-                        savedTrackIds.append(track.id)
-                    }
-                }
-            } else {
-                album = Album.cloneAlbum(currentAlbum, artist: currentArtist, context: coreDataStack.managedContext)
-            }
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error retrieving saved album information")
+        if let savedArist = realm.object(ofType: Artist.self, forPrimaryKey: album.artist!.id) {
+            artist = savedArist
+        } else {
+            artist = Artist.clone(currentAlbum.artist!)
         }
-        return album
+        
+        return artist
     }
     
-    func fetchTrack(indexPath: IndexPath, album: Album)  -> Track? {
-        var track: Track?
-        let currentTrack = tracks[indexPath.row]
-        let fetchRequest: NSFetchRequest<Track> = Track.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Track.id), currentTrack.id)
-        fetchRequest.sortDescriptors = []
+    func checkAlbum(_ album: Album) -> Album {
+        let realm = try! Realm()
+        let checkedAlbum: Album!
         
-        do {
-            let results = try coreDataStack.managedContext.fetch(fetchRequest)
-            if results.count > 0 {
-                track = nil
-            } else {
-                track = Track.cloneTrack(currentTrack, forAlbum: album, inContext: coreDataStack.managedContext)
-                coreDataStack.saveContext()
-            }
-        } catch {
-            SwiftMessages.sharedInstance.displayError(title: "Alert", message: "There was an error retrieving saved song information")
+        if let savedAlbum = realm.object(ofType: Album.self, forPrimaryKey: album.id) {
+            checkedAlbum = savedAlbum
+        } else {
+            checkedAlbum = currentAlbum!
         }
-        return track
+        
+        return checkedAlbum
     }
     
-    func saveSongsFromAlbum(album: Album) {
-        for track in tracks {
-            if !savedTrackIds.contains(track.id) {
-                let savedTrack = Track.cloneTrack(track, forAlbum: album, inContext: coreDataStack.managedContext)
-                album.addToTracks(savedTrack)
-            }
-        }
+    func albumExist(_ id: String) -> Bool {
+        let realm = try! Realm()
+        return realm.object(ofType: Album.self, forPrimaryKey: id) != nil ? true : false
     }
     
     func timeConversion(duration: Int) -> String {
@@ -392,7 +346,7 @@ extension SearchAlbumDetailViewController {
     }
     
     func albumImageDownloaded() {
-        if let imageData = currentAlbum.albumImage {
+        if let imageData = currentAlbum.artworkImage {
             headerView.setImage(data: imageData as Data)
         }
     }
@@ -437,7 +391,7 @@ extension SearchAlbumDetailViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let save = UITableViewRowAction(style: .default, title: "Save") { (action, indexPath) in
-            self.saveSong(indexPath: indexPath)
+            self.saveSong(forIndexPath: indexPath)
             self.tableView.isEditing = false
         }
         

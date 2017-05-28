@@ -50,15 +50,18 @@ extension Artist {
         
         return url
     }
+}
+
+// MARK: - Artists albums sections
+extension Artist {
+    var albumTypes: [String] {
+        let albumTypes = albums.map { $0.type }
+        return Array(Set(albumTypes))
+    }
     
-   class func clone(_ artist: Artist) -> Artist {
-        let clonedArtist = Artist()
-        clonedArtist.name = artist.name
-        clonedArtist.id = artist.id
-        clonedArtist.imageURL = artist.imageURL
-        clonedArtist.image = artist.image
-        clonedArtist.listened = artist.listened
-        
-        return clonedArtist
+    var sectionedAlbum: [[Album]] {
+        return albumTypes.map { albumType in
+            return albums.filter { $0.type == albumType }
+        }
     }
 }

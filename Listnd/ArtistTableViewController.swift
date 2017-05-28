@@ -20,14 +20,7 @@ class ArtistTableViewController: UIViewController {
     var artists: Results<Artist>?
     var notificationToken: NotificationToken? = nil
     
-    // MARK: - View life cycle 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-//        if let indexPath = selectedCell {
-//            tableView.reloadRows(at: [indexPath], with: .automatic)
-//        }
-    }
-    
+    // MARK: - View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
@@ -59,11 +52,9 @@ extension ArtistTableViewController {
             guard let tableView = self?.tableView else { return }
             switch changes {
             case .initial:
-                // Results are now populated and can be accessed without blocking the UI
                 tableView.reloadData()
                 break
             case .update(_, let deletions, let insertions, let modifications):
-                // Query results have changed, so apply them to the UITableView
                 tableView.beginUpdates()
                 tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
                                      with: .automatic)

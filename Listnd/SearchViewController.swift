@@ -66,8 +66,6 @@ class SearchViewController: UIViewController {
 
 // MARK: - Helper methods
 extension SearchViewController {
-    // Enable UISearchBar cancel button after calling resignFirstResponder
-    // from stackoverflow post http://stackoverflow.com/questions/27020452/enable-cancel-button-with-uisearchbar-in-ios8
     func enableCancelButton(searchBar: UISearchBar) {
         for view1 in searchBar.subviews {
             for view2 in view1.subviews {

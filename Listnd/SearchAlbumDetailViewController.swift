@@ -314,7 +314,7 @@ extension SearchAlbumDetailViewController {
         if let savedArist = realm.object(ofType: Artist.self, forPrimaryKey: album.artist!.id) {
             artist = savedArist
         } else {
-            artist = Artist.clone(currentAlbum.artist!)
+            artist = currentAlbum.artist!
         }
         
         return artist

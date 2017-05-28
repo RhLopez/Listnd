@@ -14,7 +14,9 @@ extension SpotifyAPI {
         struct API {
             static let APIScheme = "https"
             static let BaseURL = "api.spotify.com"
-            static let APIPath = "/v1"
+            static let TokenURL = "accounts.spotify.com"
+            static let API = "/api"
+            static let APIVersion = "/v1"
         }
         
         struct ParametersKeys {
@@ -29,6 +31,8 @@ extension SpotifyAPI {
             static let Market = "market"
             static let AlbumType = "album_type"
             static let Limit = "limit"
+            static let Token = "/token"
+            static let GrantType = "grant_type"
         }
         
         struct ParameterValues {
@@ -38,6 +42,7 @@ extension SpotifyAPI {
             static let Track = "track"
             static let US = "US"
             static let LimitAmount = "50"
+            static let ClientCred = "client_credentials"
         }
     }
 }

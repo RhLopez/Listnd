@@ -22,17 +22,23 @@ extension SpotifyAPI {
             Constants.ParametersKeys.Limit: Constants.ParameterValues.LimitAmount
         ]
         
-        taskForGetMethod(parameters as [String: AnyObject], path: Constants.ParametersKeys.Search) { (success, errorMessage, data) in
+        taskForTokenMethod { (success) in
             if success {
-               self.parseSearchResult(data as AnyObject, completionHandlerForSearchResult: { (success, result, errorMessage) in
-                if success {
-                    completionHanderForSearch(true, result, "")
-                } else {
-                    completionHanderForSearch(false, nil, errorMessage)
+                self.taskForGetMethod(parameters as [String: AnyObject], path: Constants.ParametersKeys.Search) { (success, errorMessage, data) in
+                    if success {
+                        self.parseSearchResult(data as AnyObject, completionHandlerForSearchResult: { (success, result, errorMessage) in
+                            if success {
+                                completionHanderForSearch(true, result, "")
+                            } else {
+                                completionHanderForSearch(false, nil, errorMessage)
+                            }
+                        })
+                    } else {
+                        completionHanderForSearch(false, nil, "")
+                    }
                 }
-               })
             } else {
-                completionHanderForSearch(false, nil, "")
+                completionHanderForSearch(false, nil, "Unable to search")
             }
         }
     }
@@ -136,6 +142,19 @@ extension SpotifyAPI {
                 completionHandlerForTracks(nil, errorMessage)
             }
         }
+    }
+    
+    // MARK: - Parsers
+    
+    func parseToken(withData data: Any?) {
+        guard let data = data as? [String:Any] else { return }
+        guard let token = data["access_token"] as? String,
+            let timeExperiration = data["expires_in"] as? Int,
+            let tokenType = data["token_type"] as? String else { return }
+        
+        self.accessToken = token
+        self.tokenType = tokenType
+        self.experationTime = timeExperiration
     }
     
     func parseSearchResult(_ data: AnyObject?, completionHandlerForSearchResult: @escaping (_ success: Bool, _ results: [AnyObject]?, _ errorMessage: String) -> Void) {

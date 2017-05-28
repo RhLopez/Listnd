@@ -26,7 +26,7 @@ class Album: Object {
         guard let name = json["name"] as? String,
             let id = json["id"] as? String,
             let uri = json["uri"] as? String,
-            let type = json["type"] as? String,
+            let type = json["album_type"] as? String,
             let images = json["images"] as? [[String: AnyObject]],
             let artistInfo = json["artists"] as? [[String: AnyObject]] else { return nil }
         

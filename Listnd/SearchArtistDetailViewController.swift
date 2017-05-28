@@ -22,14 +22,11 @@ class SearchArtistDetailViewController: UIViewController {
 
     // MARK: - Properties
     var currentArtist: Artist!
-    var sections = [String]()
-    var searchItems = [[Album]]()
-    var albumIndex: Int?
-    var singleIndex: Int?
     var selectedRow: IndexPath?
     var isLoading: Bool?
     var headerView: HeaderView!
     var fetchingAlbums = true
+    var sections: [[Album]] = [[]]
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -84,10 +81,11 @@ extension SearchArtistDetailViewController {
         SpotifyAPI.sharedInstance.getAlbums(artistId) { (results, errorMessage) in
             self.fetchingAlbums = false
             if let searchResults = results {
-                if !searchResults.isEmpty {
-                   self.processAlbumSections(albums: searchResults)
+                for album in searchResults {
+                    self.currentArtist.albums.append(album)
                 }
                 DispatchQueue.main.async {
+                    self.sections = self.currentArtist.sectionedAlbum
                     SVProgressHUD.dismiss()
                     self.tableView.reloadData()
                     self.isLoading = false
@@ -96,33 +94,6 @@ extension SearchArtistDetailViewController {
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
                     SwiftMessages.sharedInstance.displayError(title: "Alert", message: errorMessage)
-                }
-            }
-        }
-    }
-    
-    func processAlbumSections(albums: [Album]) {
-        for album in albums {
-            album.artist = self.currentArtist
-            if album.type == "single" {
-                if !sections.contains("Single") {
-                    sections.append("Single")
-                    singleIndex = sections.index(of: "Single")
-                }
-                if searchItems.isEmpty || (sections[0] == "Album" && searchItems.count == 1) {
-                    searchItems.append([album])
-                } else {
-                    searchItems[singleIndex!].append(album)
-                }
-            } else if album.type == "album" {
-                if !sections.contains("Album") {
-                    sections.append("Album")
-                    albumIndex = sections.index(of: "Album")
-                }
-                if searchItems.isEmpty || (sections[0] == "Single" && searchItems.count == 1){
-                    searchItems.append([album])
-                } else {
-                    searchItems[albumIndex!].append(album)
                 }
             }
         }
@@ -144,7 +115,7 @@ extension SearchArtistDetailViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         if fetchingAlbums {
             return 0
-        } else if searchItems.isEmpty {
+        } else if sections.isEmpty {
             return 1
         } else {
             return sections.count
@@ -155,8 +126,9 @@ extension SearchArtistDetailViewController: UITableViewDataSource {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
         var title: String?
         
-        if !searchItems.isEmpty {
-            title = sections[section]
+        if !sections.isEmpty {
+            let sectionTitle = currentArtist.albumTypes[section]
+            title = String(sectionTitle.characters.prefix(1)).uppercased() + String(sectionTitle.characters.dropFirst())
         }
         
         header.titleLabel.text = title != nil ? title! : ""
@@ -165,20 +137,20 @@ extension SearchArtistDetailViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchItems.isEmpty {
+        if sections.isEmpty {
             return 1
         } else {
-            return searchItems[section].count
+            return sections[section].count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if searchItems.count == 0 {
+        if sections.count == 0 {
             return tableView.dequeueReusableCell(withIdentifier: "noResultCell", for: indexPath)
         } else {
             let identifier = "albumCell"
             let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SearchAlbumCell
-            let album = searchItems[indexPath.section][indexPath.row]
+            let album = sections[indexPath.section][indexPath.row]
             cell.configure(withAlbum: album)
             return cell
         }
@@ -190,14 +162,14 @@ extension SearchArtistDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDetailVC = storyboard?.instantiateViewController(withIdentifier: "SearchAlbumDetailViewController") as! SearchAlbumDetailViewController
         
-        albumDetailVC.currentAlbum = searchItems[indexPath.section][indexPath.row]
+        albumDetailVC.currentAlbum = sections[indexPath.section][indexPath.row]
         selectedRow = indexPath
         navigationController?.pushViewController(albumDetailVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if searchItems.isEmpty {
+        if sections.isEmpty {
             return CGFloat.leastNormalMagnitude
         } else {
             return 24.0
@@ -209,7 +181,7 @@ extension SearchArtistDetailViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if searchItems.isEmpty {
+        if sections.isEmpty {
             return nil
         } else {
             return indexPath

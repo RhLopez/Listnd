@@ -19,6 +19,8 @@
 		DD2E927A1EB0625500D471FE /* SearchAlbumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2E92791EB0625500D471FE /* SearchAlbumCell.swift */; };
 		DD324F031DF3367A006AC03F /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD324F021DF3367A006AC03F /* HeaderView.xib */; };
 		DD33B8571DE0041000A9D66F /* SearchArtistDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD33B8561DE0041000A9D66F /* SearchArtistDetailViewController.swift */; };
+		DD34ACCE1EDA86A900E21BD5 /* SpotifyAPIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD34ACCD1EDA86A900E21BD5 /* SpotifyAPIKey.swift */; };
+		DD3527811EDA4E0C00786B8D /* EmptyLodingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD3527801EDA4E0C00786B8D /* EmptyLodingView.xib */; };
 		DD3BDD991ECA8C160090968D /* SongCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD3BDD981ECA8C160090968D /* SongCell.xib */; };
 		DD3BDD9B1ECA8D0D0090968D /* SongCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3BDD9A1ECA8D0D0090968D /* SongCell.swift */; };
 		DD3F434C1EA1FC46002F0BB1 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3F434B1EA1FC46002F0BB1 /* CustomTabBar.swift */; };
@@ -93,6 +95,8 @@
 		DD2E92791EB0625500D471FE /* SearchAlbumCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchAlbumCell.swift; sourceTree = "<group>"; };
 		DD324F021DF3367A006AC03F /* HeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
 		DD33B8561DE0041000A9D66F /* SearchArtistDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchArtistDetailViewController.swift; sourceTree = "<group>"; };
+		DD34ACCD1EDA86A900E21BD5 /* SpotifyAPIKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPIKey.swift; sourceTree = "<group>"; };
+		DD3527801EDA4E0C00786B8D /* EmptyLodingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EmptyLodingView.xib; sourceTree = "<group>"; };
 		DD3BDD981ECA8C160090968D /* SongCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SongCell.xib; sourceTree = "<group>"; };
 		DD3BDD9A1ECA8D0D0090968D /* SongCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongCell.swift; sourceTree = "<group>"; };
 		DD3F434B1EA1FC46002F0BB1 /* CustomTabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -229,6 +233,7 @@
 				DD324F021DF3367A006AC03F /* HeaderView.xib */,
 				DDEB0BAB1E58361C00E70B4A /* TableSectionHeader.xib */,
 				DD8F03F61DA23267000837DE /* LaunchScreen.storyboard */,
+				DD3527801EDA4E0C00786B8D /* EmptyLodingView.xib */,
 			);
 			name = Storyboards;
 			sourceTree = "<group>";
@@ -319,6 +324,7 @@
 				DD293FEF1E0DA11800F6EB76 /* Constants.swift */,
 				DD293FF11E0DA13100F6EB76 /* SpotifyAPI.swift */,
 				DD8F04261DA23910000837DE /* SpotifyAPIConvinience.swift */,
+				DD34ACCD1EDA86A900E21BD5 /* SpotifyAPIKey.swift */,
 			);
 			name = SpotifyAPI;
 			sourceTree = "<group>";
@@ -468,6 +474,7 @@
 				DDC114F31EB18C7C00C4B975 /* SearchSongCell.xib in Resources */,
 				DD8F03F31DA23267000837DE /* Main.storyboard in Resources */,
 				DD993D5D1ECA5161009A4DED /* AlbumCell.xib in Resources */,
+				DD3527811EDA4E0C00786B8D /* EmptyLodingView.xib in Resources */,
 				DD324F031DF3367A006AC03F /* HeaderView.xib in Resources */,
 				DD6EEDC31EB68EAA006B2D5E /* SearchArtistCell.xib in Resources */,
 				DD2E92781EB05C3200D471FE /* SearchAlbumCell.xib in Resources */,
@@ -644,6 +651,7 @@
 				DD0A17CE1E051B8C00578E4E /* Reachability.swift in Sources */,
 				DDE21A0C1DB4A870000A9318 /* AlbumTableViewController.swift in Sources */,
 				DD5DEF631DAAFC4900BDF98C /* AlbumDetailTableViewCell.swift in Sources */,
+				DD34ACCE1EDA86A900E21BD5 /* SpotifyAPIKey.swift in Sources */,
 				DD33B8571DE0041000A9D66F /* SearchArtistDetailViewController.swift in Sources */,
 				DD03388F1DB88BAF00515724 /* AlbumDetailTableViewController.swift in Sources */,
 				DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */,

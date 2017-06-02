@@ -228,6 +228,7 @@ extension SpotifyAPI {
             return
         }
         
+        
         artists = items.flatMap { Artist(json: $0) }
         completionHandlerForParseArtistSearch(true, artists, "")
     }

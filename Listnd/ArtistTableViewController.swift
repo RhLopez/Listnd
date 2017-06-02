@@ -44,7 +44,7 @@ extension ArtistTableViewController {
     
     func getArtists() {
         let realm = try? Realm()
-        artists = realm?.objects(Artist.self)
+        artists = realm?.objects(Artist.self).sorted(byKeyPath: "name", ascending: true)
     }
     
     func subscribeNotificationToken() {

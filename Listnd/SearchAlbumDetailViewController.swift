@@ -120,6 +120,7 @@ class SearchAlbumDetailViewController: UIViewController, ListndPlayerItemDelegat
     }
     
     func configureUI() {
+        print(currentAlbum)
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
             self.headerView = headerView
             headerView.configureView(name: currentAlbum.name, imageData: currentAlbum.artworkImage as Data?, hideButton: false)
@@ -309,12 +310,14 @@ extension SearchAlbumDetailViewController {
     
     func checkArtist(forAlbum album: Album) -> Artist {
         let realm = try! Realm()
-        let artist: Artist!
+        var artist = Artist()
         
         if let savedArist = realm.object(ofType: Artist.self, forPrimaryKey: album.artist!.id) {
             artist = savedArist
         } else {
-            artist = currentAlbum.artist!
+            try! realm.write {
+                artist = realm.create(Artist.self, value: currentAlbum.artist!, update: false)
+            }
         }
         
         return artist
@@ -322,12 +325,14 @@ extension SearchAlbumDetailViewController {
     
     func checkAlbum(_ album: Album) -> Album {
         let realm = try! Realm()
-        let checkedAlbum: Album!
+        var checkedAlbum = Album()
         
         if let savedAlbum = realm.object(ofType: Album.self, forPrimaryKey: album.id) {
             checkedAlbum = savedAlbum
         } else {
-            checkedAlbum = currentAlbum!
+            try! realm.write {
+                checkedAlbum = realm.create(Album.self, value: currentAlbum, update: false)
+            }
         }
         
         return checkedAlbum

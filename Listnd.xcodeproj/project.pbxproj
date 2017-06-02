@@ -329,20 +329,11 @@
 			name = SpotifyAPI;
 			sourceTree = "<group>";
 		};
-		DDFF1E651DAA244D00E8231E /* Core Data */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Core Data";
-			path = ..;
-			sourceTree = "<group>";
-		};
 		DDFF1E671DAA249100E8231E /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				DD64DDF71ED3DC9100A88060 /* RealmModels */,
 				DD8F04251DA23888000837DE /* SpotifyAPI */,
-				DDFF1E651DAA244D00E8231E /* Core Data */,
 			);
 			name = Model;
 			sourceTree = "<group>";

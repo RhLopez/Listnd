@@ -41,6 +41,7 @@ class SearchViewController: UIViewController {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white], for: .normal)
         registerNibs()
         setupSearchBar()
+        
     }
     
     func registerNibs() {

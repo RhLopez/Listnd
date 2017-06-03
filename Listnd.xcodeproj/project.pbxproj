@@ -12,6 +12,9 @@
 		DD03388F1DB88BAF00515724 /* AlbumDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD03388E1DB88BAF00515724 /* AlbumDetailTableViewController.swift */; };
 		DD0338911DB88C0A00515724 /* FavoriteAlbumDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0338901DB88C0A00515724 /* FavoriteAlbumDetailTableViewCell.swift */; };
 		DD0A17CE1E051B8C00578E4E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0A17CD1E051B8C00578E4E /* Reachability.swift */; };
+		DD14071C1EE254710068B20D /* SpotifyAudioPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1407191EE254710068B20D /* SpotifyAudioPlayback.framework */; };
+		DD14071D1EE254710068B20D /* SpotifyAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD14071A1EE254710068B20D /* SpotifyAuthentication.framework */; };
+		DD14071E1EE254710068B20D /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD14071B1EE254710068B20D /* SpotifyMetadata.framework */; };
 		DD293FF01E0DA11800F6EB76 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FEF1E0DA11800F6EB76 /* Constants.swift */; };
 		DD293FF21E0DA13100F6EB76 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF11E0DA13100F6EB76 /* SpotifyAPI.swift */; };
 		DD293FF61E0DA16200F6EB76 /* ArtistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD293FF51E0DA16200F6EB76 /* ArtistTableViewController.swift */; };
@@ -88,6 +91,9 @@
 		DD03388E1DB88BAF00515724 /* AlbumDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumDetailTableViewController.swift; sourceTree = "<group>"; };
 		DD0338901DB88C0A00515724 /* FavoriteAlbumDetailTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteAlbumDetailTableViewCell.swift; sourceTree = "<group>"; };
 		DD0A17CD1E051B8C00578E4E /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		DD1407191EE254710068B20D /* SpotifyAudioPlayback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAudioPlayback.framework; sourceTree = "<group>"; };
+		DD14071A1EE254710068B20D /* SpotifyAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAuthentication.framework; sourceTree = "<group>"; };
+		DD14071B1EE254710068B20D /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		DD293FEF1E0DA11800F6EB76 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DD293FF11E0DA13100F6EB76 /* SpotifyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
 		DD293FF51E0DA16200F6EB76 /* ArtistTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistTableViewController.swift; sourceTree = "<group>"; };
@@ -144,7 +150,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD14071E1EE254710068B20D /* SpotifyMetadata.framework in Frameworks */,
 				687C44A104AD8B312BC52D8D /* Pods_Listnd.framework in Frameworks */,
+				DD14071D1EE254710068B20D /* SpotifyAuthentication.framework in Frameworks */,
+				DD14071C1EE254710068B20D /* SpotifyAudioPlayback.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +262,9 @@
 		DD8F03E11DA23267000837DE = {
 			isa = PBXGroup;
 			children = (
+				DD1407191EE254710068B20D /* SpotifyAudioPlayback.framework */,
+				DD14071A1EE254710068B20D /* SpotifyAuthentication.framework */,
+				DD14071B1EE254710068B20D /* SpotifyMetadata.framework */,
 				DD8F03EC1DA23267000837DE /* Listnd */,
 				DD8F04011DA23267000837DE /* ListndTests */,
 				DD8F040C1DA23267000837DE /* ListndUITests */,
@@ -819,6 +831,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Listnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RhL.Listnd;
@@ -835,6 +851,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7C7E58NWQY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Listnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RhL.Listnd;

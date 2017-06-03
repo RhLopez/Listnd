@@ -222,7 +222,7 @@ extension SpotifyAPI {
             parsingFailed()
             return
         }
-        
+        print(data)
         guard let items = data["items"] as? [[String:AnyObject]] else {
             parsingFailed()
             return
